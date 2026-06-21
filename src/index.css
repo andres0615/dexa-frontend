@@ -1,0 +1,28 @@
+@import "tailwindcss";
+@plugin "daisyui";
+
+:root {
+  --color-base-200: #F4F7F5;
+  --color-primary: #10B981;
+  --color-primary-content: #f4fcf7;
+  --font-heading: 'Lexend', ui-sans-serif, system-ui, sans-serif;
+  --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
+  --btn-font-weight-cust: 500;
+}
+
+.input:focus-within, .textarea:focus, .file-input:focus, .select:focus-within {
+  outline: none !important;
+  --input-color: var(--color-primary);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+}
+
+.btn {
+  font-weight: var(--btn-font-weight-cust);
+}
+
+.file-input::file-selector-button {
+  font-weight: var(--btn-font-weight-cust);
+}
