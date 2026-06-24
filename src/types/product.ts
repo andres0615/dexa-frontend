@@ -1,0 +1,29 @@
+export interface Product {
+  id: number;
+  code: string;
+  barcode: string | null;
+  name: string;
+  description: string | null;
+  category_id: number;
+  subcategory_id: number | null;
+  brand: string | null;
+  image: string | null;
+  unit_of_measurement: string;
+  presentation_unit: string | null;
+  cost_price: string;
+  sale_price: string;
+  wholesale_price: string | null;
+  applies_tax: boolean;
+  vat_percentage: number;
+  initial_stock: number;
+  minimum_stock: number;
+  maximum_stock: number | null;
+  location: string | null;
+  supplier_id: number | null;
+  allow_negative_sales: boolean;
+  is_service: boolean;
+  status: string;
+  notes: string | null;
+  created_at: string;
+  updated_at: string;
+}

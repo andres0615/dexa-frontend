@@ -1,14 +1,143 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useLayoutContext } from '../../../contexts/LayoutContext';
+import type { Product } from '../../../types/product';
+import { fetchProducts } from '../../../services/productService';
 
 export default function ProductListPage() {
   const { setMaxWidth } = useLayoutContext();
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     setMaxWidth('max-w-[61rem]');
     return () => setMaxWidth('max-w-4xl');
   }, [setMaxWidth]);
+
+  useEffect(() => {
+    fetchProducts()
+      .then(setProducts)
+      .catch((err) => setError(err.message))
+      .finally(() => setLoading(false));
+  }, []);
+
+  const productRowsDemo = (
+    <>
+      <tr>
+        <th>
+          <label>
+            <input type="checkbox" className="checkbox" />
+          </label>
+        </th>
+        <td>
+          <div className="flex items-center gap-3">
+            <div className="avatar avatar-placeholder">
+              <div className="bg-secondary text-secondary-content w-12 rounded-full">
+                <span>C2</span>
+              </div>
+            </div>
+            <div>
+              <div className="font-bold">Camiseta Algodón Premium</div>
+              <div className="text-sm opacity-50">SKU: CAM-002</div>
+            </div>
+          </div>
+        </td>
+        <td>Ropa</td>
+        <td>$24.99</td>
+        <td>
+          <div className="flex items-center gap-2">
+            <span>128</span>
+            <progress className="progress progress-success w-16" value="80" max="100"></progress>
+          </div>
+        </td>
+        <td><span className="badge badge-success badge-sm">Activo</span></td>
+        <td>
+          <div className="flex items-center gap-1">
+
+            {/* Editar */}
+            <div className="tooltip" data-tip="Editar">
+              <button className="btn btn-ghost btn-sm btn-square">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor"
+                  className="size-5">
+                  <path strokeLinecap="round" strokeLinejoin="round"
+                    d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
+                </svg>
+              </button>
+            </div>
+
+            {/* Eliminar */}
+            <div className="tooltip" data-tip="Eliminar">
+              <button className="btn btn-ghost btn-sm btn-square text-error">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5"
+                  stroke="currentColor" className="size-5">
+                  <path strokeLinecap="round" strokeLinejoin="round"
+                    d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
+                </svg>
+              </button>
+            </div>
+
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <th>
+          <label>
+            <input type="checkbox" className="checkbox" />
+          </label>
+        </th>
+        <td>
+          <div className="flex items-center gap-3">
+            <div className="avatar avatar-placeholder">
+              <div className="bg-accent text-accent-content w-12 rounded-full">
+                <span>L3</span>
+              </div>
+            </div>
+            <div>
+              <div className="font-bold">Lámpara LED Inteligente</div>
+              <div className="text-sm opacity-50">SKU: LAM-003</div>
+            </div>
+          </div>
+        </td>
+        <td>Hogar</td>
+        <td>$49.99</td>
+        <td>
+          <div className="flex items-center gap-2">
+            <span>0</span>
+            <progress className="progress progress-error w-16" value="0" max="100"></progress>
+          </div>
+        </td>
+        <td><span className="badge badge-error badge-sm">Agotado</span></td>
+        <td>
+          <div className="flex items-center gap-1">
+
+            {/* Editar */}
+            <div className="tooltip" data-tip="Editar">
+              <button className="btn btn-ghost btn-sm btn-square">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor"
+                  className="size-5">
+                  <path strokeLinecap="round" strokeLinejoin="round"
+                    d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
+                </svg>
+              </button>
+            </div>
+
+            {/* Eliminar */}
+            <div className="tooltip" data-tip="Eliminar">
+              <button className="btn btn-ghost btn-sm btn-square text-error">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5"
+                  stroke="currentColor" className="size-5">
+                  <path strokeLinecap="round" strokeLinejoin="round"
+                    d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
+                </svg>
+              </button>
+            </div>
+
+          </div>
+        </td>
+      </tr>
+    </>
+  );
 
   return (
     <>
@@ -131,545 +260,88 @@ export default function ProductListPage() {
                 </tr>
               </thead>
               <tbody>
-                {/* <tr>
-                  <th>
-                    <label>
-                      <input type="checkbox" className="checkbox" />
-                    </label>
-                  </th>
-                  <td>
-                    <div className="flex items-center gap-3">
-                      <div className="avatar avatar-placeholder">
-                        <div className="bg-primary text-primary-content w-12 rounded-full">
-                          <span>A1</span>
-                        </div>
-                      </div>
-                      <div>
-                        <div className="font-bold">Auriculares Pro Max</div>
-                        <div className="text-sm opacity-50">SKU: AUR-001</div>
-                      </div>
-                    </div>
-                  </td>
-                  <td>Electrónica</td>
-                  <td>$89.99</td>
-                  <td>
-                    <div className="flex items-center gap-2">
-                      <span>45</span>
-                      <progress className="progress progress-success w-16" value="45" max="100"></progress>
-                    </div>
-                  </td>
-                  <td><span className="badge badge-success badge-sm">Activo</span></td>
-                  <td>
-                    <div className="flex gap-1">
-                      <button className="btn btn-sm">✏️</button>
-                      <button className="btn btn-sm text-error">🗑️</button>
-                    </div>
-                  </td>
-                </tr> */}
-                <tr>
-                  <th>
-                    <label>
-                      <input type="checkbox" className="checkbox" />
-                    </label>
-                  </th>
-                  <td>
-                    <div className="flex items-center gap-3">
-                      <div className="avatar avatar-placeholder">
-                        <div className="bg-secondary text-secondary-content w-12 rounded-full">
-                          <span>C2</span>
-                        </div>
-                      </div>
-                      <div>
-                        <div className="font-bold">Camiseta Algodón Premium</div>
-                        <div className="text-sm opacity-50">SKU: CAM-002</div>
-                      </div>
-                    </div>
-                  </td>
-                  <td>Ropa</td>
-                  <td>$24.99</td>
-                  <td>
-                    <div className="flex items-center gap-2">
-                      <span>128</span>
-                      <progress className="progress progress-success w-16" value="80" max="100"></progress>
-                    </div>
-                  </td>
-                  <td><span className="badge badge-success badge-sm">Activo</span></td>
-                  <td>
-                    <div className="flex items-center gap-1">
+                {products.length === 0 ? (
+                  <tr>
+                    <td colSpan={7} className="text-center py-8 text-base-content/60">
+                      No hay productos
+                    </td>
+                  </tr>
+                ) : (
+                  products.map((product) => {
+                    const stockRatio = product.maximum_stock
+                      ? Math.min((product.initial_stock / product.maximum_stock) * 100, 100)
+                      : Math.min(product.initial_stock, 100);
+                    const isOutOfStock = product.initial_stock === 0;
+                    const isLowStock = product.initial_stock <= product.minimum_stock && !isOutOfStock;
+                    const progressColor = isOutOfStock ? 'error' : isLowStock ? 'warning' : 'success';
+                    const statusLabel = isOutOfStock ? 'Agotado' : isLowStock ? 'Stock Bajo' : 'Activo';
+                    const statusColor = isOutOfStock ? 'error' : isLowStock ? 'warning' : 'success';
 
-                      {/* Editar */}
-                      <div className="tooltip" data-tip="Editar">
-                        <button className="btn btn-ghost btn-sm btn-square">
-                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor"
-                            className="size-5">
-                            <path strokeLinecap="round" strokeLinejoin="round"
-                              d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
-                          </svg>
-                        </button>
-                      </div>
+                    return (
+                      <tr key={product.id}>
+                        <th>
+                          <label>
+                            <input type="checkbox" className="checkbox" />
+                          </label>
+                        </th>
+                        <td>
+                          <div className="flex items-center gap-3">
+                            <div className="avatar avatar-placeholder">
+                              <div className="bg-primary text-primary-content w-12 rounded-full">
+                                <span>{product.name.charAt(0).toUpperCase()}</span>
+                              </div>
+                            </div>
+                            <div>
+                              <div className="font-bold">{product.name}</div>
+                              <div className="text-sm opacity-50">SKU: {product.code}</div>
+                            </div>
+                          </div>
+                        </td>
+                        <td>{product.category_id}</td>
+                        <td>${Number(product.sale_price).toFixed(2)}</td>
+                        <td>
+                          <div className="flex items-center gap-2">
+                            <span>{product.initial_stock}</span>
+                            <progress className={`progress progress-${progressColor} w-16`} value={stockRatio} max="100" />
+                          </div>
+                        </td>
+                        <td>
+                          <span className={`badge badge-${statusColor} badge-sm`}>{statusLabel}</span>
+                        </td>
+                        <td>
+                          <div className="flex items-center gap-1">
 
-                      {/* Eliminar */}
-                      <div className="tooltip" data-tip="Eliminar">
-                        <button className="btn btn-ghost btn-sm btn-square text-error">
-                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5"
-                            stroke="currentColor" className="size-5">
-                            <path strokeLinecap="round" strokeLinejoin="round"
-                              d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
-                          </svg>
-                        </button>
-                      </div>
+                            {/* Editar */}
+                            <div className="tooltip" data-tip="Editar">
+                              <button className="btn btn-ghost btn-sm btn-square">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor"
+                                  className="size-5">
+                                  <path strokeLinecap="round" strokeLinejoin="round"
+                                    d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
+                                </svg>
+                              </button>
+                            </div>
 
-                    </div>
-                  </td>
-                </tr>
-                <tr>
-                  <th>
-                    <label>
-                      <input type="checkbox" className="checkbox" />
-                    </label>
-                  </th>
-                  <td>
-                    <div className="flex items-center gap-3">
-                      <div className="avatar avatar-placeholder">
-                        <div className="bg-accent text-accent-content w-12 rounded-full">
-                          <span>L3</span>
-                        </div>
-                      </div>
-                      <div>
-                        <div className="font-bold">Lámpara LED Inteligente</div>
-                        <div className="text-sm opacity-50">SKU: LAM-003</div>
-                      </div>
-                    </div>
-                  </td>
-                  <td>Hogar</td>
-                  <td>$49.99</td>
-                  <td>
-                    <div className="flex items-center gap-2">
-                      <span>0</span>
-                      <progress className="progress progress-error w-16" value="0" max="100"></progress>
-                    </div>
-                  </td>
-                  <td><span className="badge badge-error badge-sm">Agotado</span></td>
-                  <td>
-                    <div className="flex items-center gap-1">
+                            {/* Eliminar */}
+                            <div className="tooltip" data-tip="Eliminar">
+                              <button className="btn btn-ghost btn-sm btn-square text-error">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5"
+                                  stroke="currentColor" className="size-5">
+                                  <path strokeLinecap="round" strokeLinejoin="round"
+                                    d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
+                                </svg>
+                              </button>
+                            </div>
 
-                      {/* Editar */}
-                      <div className="tooltip" data-tip="Editar">
-                        <button className="btn btn-ghost btn-sm btn-square">
-                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor"
-                            className="size-5">
-                            <path strokeLinecap="round" strokeLinejoin="round"
-                              d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
-                          </svg>
-                        </button>
-                      </div>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })
+                )}
 
-                      {/* Eliminar */}
-                      <div className="tooltip" data-tip="Eliminar">
-                        <button className="btn btn-ghost btn-sm btn-square text-error">
-                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5"
-                            stroke="currentColor" className="size-5">
-                            <path strokeLinecap="round" strokeLinejoin="round"
-                              d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
-                          </svg>
-                        </button>
-                      </div>
-
-                    </div>
-                  </td>
-                </tr>
-                <tr>
-                  <th>
-                    <label>
-                      <input type="checkbox" className="checkbox" />
-                    </label>
-                  </th>
-                  <td>
-                    <div className="flex items-center gap-3">
-                      <div className="avatar avatar-placeholder">
-                        <div className="bg-neutral text-neutral-content w-12 rounded-full">
-                          <span>B4</span>
-                        </div>
-                      </div>
-                      <div>
-                        <div className="font-bold">Balón de Fútbol Profesional</div>
-                        <div className="text-sm opacity-50">SKU: BAL-004</div>
-                      </div>
-                    </div>
-                  </td>
-                  <td>Deportes</td>
-                  <td>$39.99</td>
-                  <td>
-                    <div className="flex items-center gap-2">
-                      <span>3</span>
-                      <progress className="progress progress-warning w-16" value="3" max="100"></progress>
-                    </div>
-                  </td>
-                  <td><span className="badge badge-warning badge-sm">Stock Bajo</span></td>
-                  <td>
-                    <div className="flex items-center gap-1">
-
-                      {/* Editar */}
-                      <div className="tooltip" data-tip="Editar">
-                        <button className="btn btn-ghost btn-sm btn-square">
-                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor"
-                            className="size-5">
-                            <path strokeLinecap="round" strokeLinejoin="round"
-                              d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
-                          </svg>
-                        </button>
-                      </div>
-
-                      {/* Eliminar */}
-                      <div className="tooltip" data-tip="Eliminar">
-                        <button className="btn btn-ghost btn-sm btn-square text-error">
-                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5"
-                            stroke="currentColor" className="size-5">
-                            <path strokeLinecap="round" strokeLinejoin="round"
-                              d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
-                          </svg>
-                        </button>
-                      </div>
-
-                    </div>
-                  </td>
-                </tr>
-                <tr>
-                  <th>
-                    <label>
-                      <input type="checkbox" className="checkbox" />
-                    </label>
-                  </th>
-                  <td>
-                    <div className="flex items-center gap-3">
-                      <div className="avatar avatar-placeholder">
-                        <div className="bg-primary text-primary-content w-12 rounded-full">
-                          <span>R5</span>
-                        </div>
-                      </div>
-                      <div>
-                        <div className="font-bold">Reloj Deportivo Digital</div>
-                        <div className="text-sm opacity-50">SKU: REL-005</div>
-                      </div>
-                    </div>
-                  </td>
-                  <td>Accesorios</td>
-                  <td>$129.99</td>
-                  <td>
-                    <div className="flex items-center gap-2">
-                      <span>18</span>
-                      <progress className="progress progress-success w-16" value="18" max="100"></progress>
-                    </div>
-                  </td>
-                  <td><span className="badge badge-success badge-sm">Activo</span></td>
-                  <td>
-                    <div className="flex items-center gap-1">
-
-                      {/* Editar */}
-                      <div className="tooltip" data-tip="Editar">
-                        <button className="btn btn-ghost btn-sm btn-square">
-                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor"
-                            className="size-5">
-                            <path strokeLinecap="round" strokeLinejoin="round"
-                              d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
-                          </svg>
-                        </button>
-                      </div>
-
-                      {/* Eliminar */}
-                      <div className="tooltip" data-tip="Eliminar">
-                        <button className="btn btn-ghost btn-sm btn-square text-error">
-                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5"
-                            stroke="currentColor" className="size-5">
-                            <path strokeLinecap="round" strokeLinejoin="round"
-                              d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
-                          </svg>
-                        </button>
-                      </div>
-
-                    </div>
-                  </td>
-                </tr>
-                <tr>
-                  <th>
-                    <label>
-                      <input type="checkbox" className="checkbox" />
-                    </label>
-                  </th>
-                  <td>
-                    <div className="flex items-center gap-3">
-                      <div className="avatar avatar-placeholder">
-                        <div className="bg-secondary text-secondary-content w-12 rounded-full">
-                          <span>M6</span>
-                        </div>
-                      </div>
-                      <div>
-                        <div className="font-bold">Mochila Urbana 30L</div>
-                        <div className="text-sm opacity-50">SKU: MOC-006</div>
-                      </div>
-                    </div>
-                  </td>
-                  <td>Accesorios</td>
-                  <td>$59.99</td>
-                  <td>
-                    <div className="flex items-center gap-2">
-                      <span>62</span>
-                      <progress className="progress progress-success w-16" value="62" max="100"></progress>
-                    </div>
-                  </td>
-                  <td><span className="badge badge-success badge-sm">Activo</span></td>
-                  <td>
-                    <div className="flex items-center gap-1">
-
-                      {/* Editar */}
-                      <div className="tooltip" data-tip="Editar">
-                        <button className="btn btn-ghost btn-sm btn-square">
-                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor"
-                            className="size-5">
-                            <path strokeLinecap="round" strokeLinejoin="round"
-                              d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
-                          </svg>
-                        </button>
-                      </div>
-
-                      {/* Eliminar */}
-                      <div className="tooltip" data-tip="Eliminar">
-                        <button className="btn btn-ghost btn-sm btn-square text-error">
-                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5"
-                            stroke="currentColor" className="size-5">
-                            <path strokeLinecap="round" strokeLinejoin="round"
-                              d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
-                          </svg>
-                        </button>
-                      </div>
-
-                    </div>
-                  </td>
-                </tr>
-                <tr>
-                  <th>
-                    <label>
-                      <input type="checkbox" className="checkbox" />
-                    </label>
-                  </th>
-                  <td>
-                    <div className="flex items-center gap-3">
-                      <div className="avatar avatar-placeholder">
-                        <div className="bg-accent text-accent-content w-12 rounded-full">
-                          <span>T7</span>
-                        </div>
-                      </div>
-                      <div>
-                        <div className="font-bold">Teclado Mecánico RGB</div>
-                        <div className="text-sm opacity-50">SKU: TEC-007</div>
-                      </div>
-                    </div>
-                  </td>
-                  <td>Electrónica</td>
-                  <td>$79.99</td>
-                  <td>
-                    <div className="flex items-center gap-2">
-                      <span>0</span>
-                      <progress className="progress progress-error w-16" value="0" max="100"></progress>
-                    </div>
-                  </td>
-                  <td><span className="badge badge-error badge-sm">Agotado</span></td>
-                  <td>
-                    <div className="flex items-center gap-1">
-
-                      {/* Editar */}
-                      <div className="tooltip" data-tip="Editar">
-                        <button className="btn btn-ghost btn-sm btn-square">
-                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor"
-                            className="size-5">
-                            <path strokeLinecap="round" strokeLinejoin="round"
-                              d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
-                          </svg>
-                        </button>
-                      </div>
-
-                      {/* Eliminar */}
-                      <div className="tooltip" data-tip="Eliminar">
-                        <button className="btn btn-ghost btn-sm btn-square text-error">
-                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5"
-                            stroke="currentColor" className="size-5">
-                            <path strokeLinecap="round" strokeLinejoin="round"
-                              d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
-                          </svg>
-                        </button>
-                      </div>
-
-                    </div>
-                  </td>
-                </tr>
-                <tr>
-                  <th>
-                    <label>
-                      <input type="checkbox" className="checkbox" />
-                    </label>
-                  </th>
-                  <td>
-                    <div className="flex items-center gap-3">
-                      <div className="avatar avatar-placeholder">
-                        <div className="bg-neutral text-neutral-content w-12 rounded-full">
-                          <span>Z8</span>
-                        </div>
-                      </div>
-                      <div>
-                        <div className="font-bold">Zapatillas Running Ultra</div>
-                        <div className="text-sm opacity-50">SKU: ZAP-008</div>
-                      </div>
-                    </div>
-                  </td>
-                  <td>Deportes</td>
-                  <td>$94.99</td>
-                  <td>
-                    <div className="flex items-center gap-2">
-                      <span>7</span>
-                      <progress className="progress progress-warning w-16" value="7" max="100"></progress>
-                    </div>
-                  </td>
-                  <td><span className="badge badge-warning badge-sm">Stock Bajo</span></td>
-                  <td>
-                    <div className="flex items-center gap-1">
-
-                      {/* Editar */}
-                      <div className="tooltip" data-tip="Editar">
-                        <button className="btn btn-ghost btn-sm btn-square">
-                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor"
-                            className="size-5">
-                            <path strokeLinecap="round" strokeLinejoin="round"
-                              d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
-                          </svg>
-                        </button>
-                      </div>
-
-                      {/* Eliminar */}
-                      <div className="tooltip" data-tip="Eliminar">
-                        <button className="btn btn-ghost btn-sm btn-square text-error">
-                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5"
-                            stroke="currentColor" className="size-5">
-                            <path strokeLinecap="round" strokeLinejoin="round"
-                              d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
-                          </svg>
-                        </button>
-                      </div>
-
-                    </div>
-                  </td>
-                </tr>
-                <tr>
-                  <th>
-                    <label>
-                      <input type="checkbox" className="checkbox" />
-                    </label>
-                  </th>
-                  <td>
-                    <div className="flex items-center gap-3">
-                      <div className="avatar avatar-placeholder">
-                        <div className="bg-primary text-primary-content w-12 rounded-full">
-                          <span>S9</span>
-                        </div>
-                      </div>
-                      <div>
-                        <div className="font-bold">Silla Ergonómica Oficina</div>
-                        <div className="text-sm opacity-50">SKU: SIL-009</div>
-                      </div>
-                    </div>
-                  </td>
-                  <td>Hogar</td>
-                  <td>$249.99</td>
-                  <td>
-                    <div className="flex items-center gap-2">
-                      <span>15</span>
-                      <progress className="progress progress-success w-16" value="15" max="100"></progress>
-                    </div>
-                  </td>
-                  <td><span className="badge badge-success badge-sm">Activo</span></td>
-                  <td>
-                    <div className="flex items-center gap-1">
-
-                      {/* Editar */}
-                      <div className="tooltip" data-tip="Editar">
-                        <button className="btn btn-ghost btn-sm btn-square">
-                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor"
-                            className="size-5">
-                            <path strokeLinecap="round" strokeLinejoin="round"
-                              d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
-                          </svg>
-                        </button>
-                      </div>
-
-                      {/* Eliminar */}
-                      <div className="tooltip" data-tip="Eliminar">
-                        <button className="btn btn-ghost btn-sm btn-square text-error">
-                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5"
-                            stroke="currentColor" className="size-5">
-                            <path strokeLinecap="round" strokeLinejoin="round"
-                              d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
-                          </svg>
-                        </button>
-                      </div>
-
-                    </div>
-                  </td>
-                </tr>
-                <tr>
-                  <th>
-                    <label>
-                      <input type="checkbox" className="checkbox" />
-                    </label>
-                  </th>
-                  <td>
-                    <div className="flex items-center gap-3">
-                      <div className="avatar avatar-placeholder">
-                        <div className="bg-secondary text-secondary-content w-12 rounded-full">
-                          <span>C0</span>
-                        </div>
-                      </div>
-                      <div>
-                        <div className="font-bold">Cargador Inalámbrico Rápido</div>
-                        <div className="text-sm opacity-50">SKU: CAR-010</div>
-                      </div>
-                    </div>
-                  </td>
-                  <td>Electrónica</td>
-                  <td>$34.99</td>
-                  <td>
-                    <div className="flex items-center gap-2">
-                      <span>91</span>
-                      <progress className="progress progress-success w-16" value="91" max="100"></progress>
-                    </div>
-                  </td>
-                  <td><span className="badge badge-success badge-sm">Activo</span></td>
-                  <td>
-                    <div className="flex items-center gap-1">
-
-                      {/* Editar */}
-                      <div className="tooltip" data-tip="Editar">
-                        <button className="btn btn-ghost btn-sm btn-square">
-                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor"
-                            className="size-5">
-                            <path strokeLinecap="round" strokeLinejoin="round"
-                              d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
-                          </svg>
-                        </button>
-                      </div>
-
-                      {/* Eliminar */}
-                      <div className="tooltip" data-tip="Eliminar">
-                        <button className="btn btn-ghost btn-sm btn-square text-error">
-                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5"
-                            stroke="currentColor" className="size-5">
-                            <path strokeLinecap="round" strokeLinejoin="round"
-                              d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
-                          </svg>
-                        </button>
-                      </div>
-
-                    </div>
-                  </td>
-                </tr>
+                {/* Productos para demo */}
+                {/* {productRowsDemo} */}
               </tbody>
             </table>
           </div>
