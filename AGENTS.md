@@ -53,3 +53,9 @@ Fase temprana de maquetación UI. Placeholders sin implementar:
 - `opencode.json` y `maquetas/` están en `.gitignore`
 - No hay Prettier, no hay CI
 - CSS Modules disponibles (`Layout.module.css`) pero sin uso activo
+
+## Context7 (consulta de documentación)
+
+- Usa `context7` para consultar la documentación de React.
+- El id de la libreria de react es `/reactjs/react.dev`
+- El id de la libreria de Reack Hook Form es `/react-hook-form/react-hook-form`

@@ -27,3 +27,5 @@ export interface Product {
   created_at: string;
   updated_at: string;
 }
+
+export type CreateProductPayload = Omit<Product, 'id' | 'created_at' | 'updated_at'>;

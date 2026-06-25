@@ -1,6 +1,40 @@
 import { Link } from 'react-router-dom';
+import { useForm } from 'react-hook-form';
+import type { CreateProductPayload } from '../../types/product';
 
 export default function ProductFormPage() {
+    const {
+        register,
+        handleSubmit,
+        formState: { errors },
+    } = useForm<CreateProductPayload>({
+        defaultValues: {
+            status: 'activo',
+            applies_tax: false,
+            allow_negative_sales: false,
+            is_service: false,
+            initial_stock: 0,
+            minimum_stock: 0,
+            vat_percentage: 0,
+        },
+    });
+
+    const onSubmit = async (data: CreateProductPayload) => {
+        const payload: CreateProductPayload = {
+            ...data,
+            barcode: data.barcode || null,
+            description: data.description || null,
+            brand: data.brand || null,
+            presentation_unit: data.presentation_unit || null,
+            wholesale_price: data.wholesale_price || null,
+            maximum_stock: data.maximum_stock || null,
+            location: data.location || null,
+            supplier_id: data.supplier_id || null,
+            notes: data.notes || null,
+        };
+        console.log(payload);
+    };
+
     return (
         <>
             {/* Breadcrumbs */}
@@ -12,60 +46,70 @@ export default function ProductFormPage() {
             </nav>
 
             <h2 className="text-2xl font-bold mb-8">Crear Producto</h2>
-            <form>
+            <form onSubmit={handleSubmit(onSubmit)}>
 
                 {/* Información General */}
                 <div className="card bg-base-100 shadow-md mb-6">
                     <div className="card-body">
                         <h3 className="card-title text-lg mb-4">Información General</h3>
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                            <label className="floating-label">
-                                <span>Código / SKU</span>
-                                <input type="text" placeholder="Código / SKU" className="input input-md w-full" required />
-                            </label>
-                            <label className="floating-label">
-                                <span>Código de Barras</span>
-                                <input type="text" placeholder="Código de Barras" className="input input-md w-full" />
-                            </label>
-                            <label className="floating-label">
-                                <span>Nombre del Producto</span>
-                                <input type="text" placeholder="Nombre del Producto" className="input input-md w-full" required />
-                            </label>
+                            <div>
+                                <label className="floating-label">
+                                    <span>Código / SKU</span>
+                                    <input type="text" placeholder="Código / SKU" className={`input input-md w-full ${errors.code ? 'input-error' : ''}`} {...register('code', { required: 'El código es requerido' })} />
+                                </label>
+                                {errors.code && <p className="text-error text-xs mt-1">{errors.code.message}</p>}
+                            </div>
+                            <div>
+                                <label className="floating-label">
+                                    <span>Código de Barras</span>
+                                    <input type="text" placeholder="Código de Barras" className="input input-md w-full" {...register('barcode')} />
+                                </label>
+                            </div>
+                            <div>
+                                <label className="floating-label">
+                                    <span>Nombre del Producto</span>
+                                    <input type="text" placeholder="Nombre del Producto" className={`input input-md w-full ${errors.name ? 'input-error' : ''}`} {...register('name', { required: 'El nombre es requerido' })} />
+                                </label>
+                                {errors.name && <p className="text-error text-xs mt-1">{errors.name.message}</p>}
+                            </div>
                             <div className="md:col-span-3">
                                 <label className="floating-label">
                                     <span>Descripción</span>
-                                    <textarea className="textarea textarea-md w-full h-24" placeholder="Descripción"></textarea>
+                                    <textarea className="textarea textarea-md w-full h-24" placeholder="Descripción" {...register('description')}></textarea>
                                 </label>
                             </div>
-                            <label className="floating-label">
-                                <select className="select select-md w-full" required>
-                                    <option disabled selected>Seleccionar</option>
-                                    <option>Electrónica</option>
-                                    <option>Ropa</option>
-                                    <option>Alimentos</option>
-                                    <option>Hogar</option>
-                                    <option>Deportes</option>
-                                </select>
-                                <span>Categoría</span>
-                            </label>
-                            <label className="floating-label">
-                                <select className="select select-md w-full">
-                                    <option disabled selected>Seleccionar</option>
-                                    <option>Opción 1</option>
-                                    <option>Opción 2</option>
-                                    <option>Opción 3</option>
-                                </select>
-                                <span>Subcategoría</span>
-                            </label>
-                            <label className="floating-label">
-                                <span>Marca</span>
-                                <input type="text" placeholder="Marca" className="input input-md w-full" />
-                            </label>
-                            {/* <div className="md:col-span-3">
-                                <label className="label text-xs mb-2 font-bold" htmlFor="imagen">Imagen del Producto</label>
-                                <input type="file" id="imagen" className="file-input file-input-md file-input-primary w-full" />
-                                <p className="label-text-alt text-base-content/60 mt-1 text-xs">JPG, PNG o WebP (máx. 5 MB)</p>
-                            </div> */}
+                            <div>
+                                <label className="floating-label">
+                                    <select className={`select select-md w-full ${errors.category_id ? 'select-error' : ''}`} {...register('category_id', { required: 'La categoría es requerida', valueAsNumber: true })}>
+                                        <option value="">Seleccionar</option>
+                                        <option value="1">Electrónica</option>
+                                        <option value="2">Ropa</option>
+                                        <option value="3">Alimentos</option>
+                                        <option value="4">Hogar</option>
+                                        <option value="5">Deportes</option>
+                                    </select>
+                                    <span>Categoría</span>
+                                </label>
+                                {errors.category_id && <p className="text-error text-xs mt-1">{errors.category_id.message}</p>}
+                            </div>
+                            <div>
+                                <label className="floating-label">
+                                    <select className="select select-md w-full" {...register('subcategory_id', { valueAsNumber: true })}>
+                                        <option value="">Seleccionar</option>
+                                        <option value="1">Opción 1</option>
+                                        <option value="2">Opción 2</option>
+                                        <option value="3">Opción 3</option>
+                                    </select>
+                                    <span>Subcategoría</span>
+                                </label>
+                            </div>
+                            <div>
+                                <label className="floating-label">
+                                    <span>Marca</span>
+                                    <input type="text" placeholder="Marca" className="input input-md w-full" {...register('brand')} />
+                                </label>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -75,23 +119,28 @@ export default function ProductFormPage() {
                     <div className="card-body">
                         <h3 className="card-title text-lg mb-4">Unidad y Medidas</h3>
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                            <label className="floating-label">
-                                <select className="select select-md w-full" required>
-                                    <option disabled selected>Seleccionar</option>
-                                    <option>UND — Unidad</option>
-                                    <option>KG — Kilogramo</option>
-                                    <option>LT — Litro</option>
-                                    <option>MT — Metro</option>
-                                    <option>CM — Centímetro</option>
-                                    <option>CJA — Caja</option>
-                                    <option>PAR — Par</option>
-                                </select>
-                                <span>Unidad de Medida</span>
-                            </label>
-                            <label className="floating-label">
-                                <span>Presentación</span>
-                                <input type="text" placeholder="Presentación" className="input input-md w-full" />
-                            </label>
+                            <div>
+                                <label className="floating-label">
+                                    <select className={`select select-md w-full ${errors.unit_of_measurement ? 'select-error' : ''}`} {...register('unit_of_measurement', { required: 'La unidad es requerida' })}>
+                                        <option value="">Seleccionar</option>
+                                        <option value="UND">UND — Unidad</option>
+                                        <option value="KG">KG — Kilogramo</option>
+                                        <option value="LT">LT — Litro</option>
+                                        <option value="MT">MT — Metro</option>
+                                        <option value="CM">CM — Centímetro</option>
+                                        <option value="CJA">CJA — Caja</option>
+                                        <option value="PAR">PAR — Par</option>
+                                    </select>
+                                    <span>Unidad de Medida</span>
+                                </label>
+                                {errors.unit_of_measurement && <p className="text-error text-xs mt-1">{errors.unit_of_measurement.message}</p>}
+                            </div>
+                            <div>
+                                <label className="floating-label">
+                                    <span>Presentación</span>
+                                    <input type="text" placeholder="Presentación" className="input input-md w-full" {...register('presentation_unit')} />
+                                </label>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -101,29 +150,39 @@ export default function ProductFormPage() {
                     <div className="card-body">
                         <h3 className="card-title text-lg mb-4">Precios</h3>
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                            <label className="floating-label">
-                                <span>Precio de Costo</span>
-                                <input type="number" placeholder="Precio de Costo" className="input input-md w-full" min="0" step="0.01" required />
-                            </label>
-                            <label className="floating-label">
-                                <span>Precio de Venta</span>
-                                <input type="number" placeholder="Precio de Venta" className="input input-md w-full" min="0" step="0.01" required />
-                            </label>
-                            <label className="floating-label">
-                                <span>Precio Mayorista</span>
-                                <input type="number" placeholder="Precio Mayorista" className="input input-md w-full" min="0" step="0.01" />
-                            </label>
+                            <div>
+                                <label className="floating-label">
+                                    <span>Precio de Costo</span>
+                                    <input type="number" placeholder="Precio de Costo" className={`input input-md w-full ${errors.cost_price ? 'input-error' : ''}`} min="0" step="0.01" {...register('cost_price', { required: 'El precio de costo es requerido', min: 0 })} />
+                                </label>
+                                {errors.cost_price && <p className="text-error text-xs mt-1">{errors.cost_price.message}</p>}
+                            </div>
+                            <div>
+                                <label className="floating-label">
+                                    <span>Precio de Venta</span>
+                                    <input type="number" placeholder="Precio de Venta" className={`input input-md w-full ${errors.sale_price ? 'input-error' : ''}`} min="0" step="0.01" {...register('sale_price', { required: 'El precio de venta es requerido', min: 0 })} />
+                                </label>
+                                {errors.sale_price && <p className="text-error text-xs mt-1">{errors.sale_price.message}</p>}
+                            </div>
+                            <div>
+                                <label className="floating-label">
+                                    <span>Precio Mayorista</span>
+                                    <input type="number" placeholder="Precio Mayorista" className="input input-md w-full" min="0" step="0.01" {...register('wholesale_price', { min: 0 })} />
+                                </label>
+                            </div>
                             <div>
                                 <span className="font-medium text-sm block">Aplica Impuesto</span>
                                 <div className="flex items-center gap-3 h-10">
-                                    <input type="checkbox" className="toggle toggle-primary" />
+                                    <input type="checkbox" className="toggle toggle-primary" {...register('applies_tax')} />
                                     <span className="text-sm font-light">No</span>
                                 </div>
                             </div>
-                            <label className="floating-label">
-                                <span>% IVA</span>
-                                <input type="number" placeholder="% IVA" className="input input-md w-full" min="0" step="0.01" />
-                            </label>
+                            <div>
+                                <label className="floating-label">
+                                    <span>% IVA</span>
+                                    <input type="number" placeholder="% IVA" className="input input-md w-full" min="0" step="0.01" {...register('vat_percentage', { valueAsNumber: true, min: 0 })} />
+                                </label>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -133,31 +192,43 @@ export default function ProductFormPage() {
                     <div className="card-body">
                         <h3 className="card-title text-lg mb-4">Control de Inventario</h3>
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                            <label className="floating-label">
-                                <span>Stock Inicial</span>
-                                <input type="number" placeholder="Stock Inicial" className="input input-md w-full" min="0" required />
-                            </label>
-                            <label className="floating-label">
-                                <span>Stock Mínimo</span>
-                                <input type="number" placeholder="Stock Mínimo" className="input input-md w-full" min="0" required />
-                            </label>
-                            <label className="floating-label">
-                                <span>Stock Máximo</span>
-                                <input type="number" placeholder="Stock Máximo" className="input input-md w-full" min="0" />
-                            </label>
-                            <label className="floating-label">
-                                <span>Ubicación en Bodega</span>
-                                <input type="text" placeholder="Ubicación en Bodega" className="input input-md w-full" />
-                            </label>
-                            <label className="floating-label">
-                                <select className="select select-md w-full">
-                                    <option disabled selected>Seleccionar</option>
-                                    <option>Proveedor A</option>
-                                    <option>Proveedor B</option>
-                                    <option>Proveedor C</option>
-                                </select>
-                                <span>Proveedor Principal</span>
-                            </label>
+                            <div>
+                                <label className="floating-label">
+                                    <span>Stock Inicial</span>
+                                    <input type="number" placeholder="Stock Inicial" className={`input input-md w-full ${errors.initial_stock ? 'input-error' : ''}`} min="0" {...register('initial_stock', { required: 'El stock inicial es requerido', valueAsNumber: true, min: 0 })} />
+                                </label>
+                                {errors.initial_stock && <p className="text-error text-xs mt-1">{errors.initial_stock.message}</p>}
+                            </div>
+                            <div>
+                                <label className="floating-label">
+                                    <span>Stock Mínimo</span>
+                                    <input type="number" placeholder="Stock Mínimo" className={`input input-md w-full ${errors.minimum_stock ? 'input-error' : ''}`} min="0" {...register('minimum_stock', { required: 'El stock mínimo es requerido', valueAsNumber: true, min: 0 })} />
+                                </label>
+                                {errors.minimum_stock && <p className="text-error text-xs mt-1">{errors.minimum_stock.message}</p>}
+                            </div>
+                            <div>
+                                <label className="floating-label">
+                                    <span>Stock Máximo</span>
+                                    <input type="number" placeholder="Stock Máximo" className="input input-md w-full" min="0" {...register('maximum_stock', { valueAsNumber: true, min: 0 })} />
+                                </label>
+                            </div>
+                            <div>
+                                <label className="floating-label">
+                                    <span>Ubicación en Bodega</span>
+                                    <input type="text" placeholder="Ubicación en Bodega" className="input input-md w-full" {...register('location')} />
+                                </label>
+                            </div>
+                            <div>
+                                <label className="floating-label">
+                                    <select className="select select-md w-full" {...register('supplier_id', { valueAsNumber: true })}>
+                                        <option value="">Seleccionar</option>
+                                        <option value="1">Proveedor A</option>
+                                        <option value="2">Proveedor B</option>
+                                        <option value="3">Proveedor C</option>
+                                    </select>
+                                    <span>Proveedor Principal</span>
+                                </label>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -170,29 +241,31 @@ export default function ProductFormPage() {
                             <div>
                                 <span className="font-medium text-sm block">Vender sin Stock</span>
                                 <div className="flex items-center gap-3 h-10">
-                                    <input type="checkbox" className="toggle toggle-primary" />
+                                    <input type="checkbox" className="toggle toggle-primary" {...register('allow_negative_sales')} />
                                     <span className="text-sm font-light">No</span>
                                 </div>
                             </div>
                             <div>
                                 <span className="font-medium text-sm block">Es un Servicio</span>
                                 <div className="flex items-center gap-3 h-10">
-                                    <input type="checkbox" className="toggle toggle-primary" />
+                                    <input type="checkbox" className="toggle toggle-primary" {...register('is_service')} />
                                     <span className="text-sm font-light">No</span>
                                 </div>
                                 <p className="label-text-alt text-base-content/60 text-xs">No descuenta inventario</p>
                             </div>
-                            <label className="floating-label">
-                                <select className="select select-md w-full" required>
-                                    <option value="activo" selected>Activo</option>
-                                    <option value="inactivo">Inactivo</option>
-                                </select>
-                                <span>Estado</span>
-                            </label>
+                            <div>
+                                <label className="floating-label">
+                                    <select className="select select-md w-full" {...register('status', { required: true })}>
+                                        <option value="activo">Activo</option>
+                                        <option value="inactivo">Inactivo</option>
+                                    </select>
+                                    <span>Estado</span>
+                                </label>
+                            </div>
                             <div className="md:col-span-3">
                                 <label className="floating-label">
                                     <span>Notas Internas</span>
-                                    <textarea className="textarea textarea-md w-full h-24" placeholder="Notas Internas"></textarea>
+                                    <textarea className="textarea textarea-md w-full h-24" placeholder="Notas Internas" {...register('notes')}></textarea>
                                 </label>
                             </div>
                         </div>
