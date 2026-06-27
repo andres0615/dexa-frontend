@@ -33,7 +33,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
   const showToast = useCallback((message: string, type: ToastType = 'info') => {
     const id = nextId++
     setToasts((prev) => [...prev, { id, message, type }])
-    // setTimeout(() => removeToast(id), 6000)
+    setTimeout(() => removeToast(id), 6000)
   }, [removeToast])
 
   return (

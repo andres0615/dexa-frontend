@@ -22,6 +22,7 @@ export default function ProductListPage() {
       .finally(() => setLoading(false));
   }, []);
 
+  // Records para demo
   const productRowsDemo = (
     <>
       <tr>
