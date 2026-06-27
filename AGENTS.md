@@ -59,3 +59,4 @@ Fase temprana de maquetación UI. Placeholders sin implementar:
 - Usa `context7` para consultar la documentación de React.
 - El id de la libreria de react es `/reactjs/react.dev`
 - El id de la libreria de Reack Hook Form es `/react-hook-form/react-hook-form`
+- El id de la libreria de Daisy UI es `/websites/daisyui`

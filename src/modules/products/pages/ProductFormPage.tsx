@@ -2,9 +2,11 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import type { CreateProductPayload } from '../../types/product';
 import { createProduct } from '../../../services/productService';
+import { useToast } from '../../../components/toast/ToastContext';
 
 export default function ProductFormPage() {
     const navigate = useNavigate();
+    const { showToast } = useToast();
     const {
         register,
         handleSubmit,
@@ -49,9 +51,11 @@ export default function ProductFormPage() {
 
         try {
             await createProduct(payload);
+            showToast('Producto creado exitosamente', 'success');
             navigate('/products');
         } catch (error) {
             console.error(error);
+            showToast('Error al crear el producto', 'error');
         }
     };
 
