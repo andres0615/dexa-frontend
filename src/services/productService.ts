@@ -21,3 +21,11 @@ export async function createProduct(
   }
   return response.json();
 }
+
+export async function fetchProduct(id: number): Promise<any> {
+  const response = await fetch(`/api/products/${id}`);
+  if (!response.ok) {
+    throw new Error(`Error al obtener producto: ${response.status}`);
+  }
+  return response.json();
+}

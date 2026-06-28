@@ -1,5 +1,5 @@
 import { useForm } from 'react-hook-form';
-import type { CreateProductPayload } from '../../types/product';
+import type { CreateProductPayload } from '../../../types/product';
 
 interface ProductFormProps {
     onSubmit: (data: CreateProductPayload) => Promise<void>;
@@ -8,7 +8,7 @@ interface ProductFormProps {
 }
 
 export default function ProductForm({ onSubmit: externalOnSubmit, defaultValues, submitLabel = 'Guardar' }: ProductFormProps) {
-    const mergedDefaults: CreateProductPayload = {
+    const mergedDefaults: any = {
         status: 'activo',
         applies_tax: false,
         allow_negative_sales: false,
@@ -25,7 +25,8 @@ export default function ProductForm({ onSubmit: externalOnSubmit, defaultValues,
         handleSubmit,
         formState: { errors },
     } = useForm<CreateProductPayload>({
-        defaultValues: mergedDefaults,
+        // defaultValues: mergedDefaults,
+        values: mergedDefaults,
     });
 
     const onSubmit = async (data: CreateProductPayload) => {

@@ -2,7 +2,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { createProduct } from '../../../services/productService';
 import { useToast } from '../../../components/toast/ToastContext';
 import ProductForm from '../components/ProductForm';
-import type { CreateProductPayload } from '../../types/product';
+import type { CreateProductPayload } from '../../../types/product';
 
 export default function ProductCreatePage() {
     const navigate = useNavigate();

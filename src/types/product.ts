@@ -10,9 +10,9 @@ export interface Product {
   image: string | null;
   unit_of_measurement: string;
   presentation_unit: string | null;
-  cost_price: string;
-  sale_price: string;
-  wholesale_price: string | null;
+  cost_price: number | string;
+  sale_price: number | string;
+  wholesale_price: number | string | null;
   applies_tax: boolean;
   vat_percentage: number;
   initial_stock: number;

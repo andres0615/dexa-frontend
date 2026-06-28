@@ -5,6 +5,7 @@ import { ToastProvider } from './components/toast/ToastContext'
 import Toast from './components/toast/Toast'
 import ProductListPage from './modules/products/pages/ProductListPage'
 import ProductCreatePage from './modules/products/pages/ProductCreatePage'
+import ProductEditPage from './modules/products/pages/ProductEditPage'
 import './App.css'
 
 function App() {
@@ -16,6 +17,7 @@ function App() {
             <Route path="/" element={<Navigate to="/products" replace />} />
             <Route path="/products" element={<ProductListPage />} />
             <Route path="/products/create" element={<ProductCreatePage />} />
+            <Route path="/products/:id/edit" element={<ProductEditPage />} />
           </Routes>
         </LayoutAdmin>
         {/* Componente que muestra los notificaciones en la esquina inferior derecha */}
