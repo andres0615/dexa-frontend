@@ -31,3 +31,17 @@ export interface Product {
 export type CreateProductPayload = Omit<Product, 'id' | 'created_at' | 'updated_at'>;
 
 export type UpdateProductPayload = Partial<Omit<Product, 'id' | 'created_at' | 'updated_at'>>;
+
+export interface PaginationMeta {
+  currentPage: number;
+  lastPage: number;
+  perPage: number;
+  total: number;
+  from: number | null;
+  to: number | null;
+}
+
+export interface PaginatedResult<T> {
+  data: T[];
+  pagination: PaginationMeta;
+}

@@ -1,16 +1,19 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useLayoutContext } from '../../../contexts/LayoutContext';
-import type { Product } from '../../../types/product';
-import { fetchProducts, deleteProduct } from '../../../services/productService';
+import type { Product, PaginationMeta } from '../../../types/product';
+import { fetchProductsPaginated, deleteProduct } from '../../../services/productService';
 import ConfirmDeleteModal from '../components/ConfirmDeleteModal';
 import { useToast } from '../../../components/toast/ToastContext';
+import TablePagination from '../components/TablePagination';
 
 export default function ProductListPage() {
   const { setMaxWidth } = useLayoutContext();
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pagination, setPagination] = useState<PaginationMeta | null>(null);
   const [productToDelete, setProductToDelete] = useState<Product | null>(null);
   const deleteDialogRef = useRef<HTMLDialogElement>(null);
   const { showToast } = useToast();
@@ -21,17 +24,25 @@ export default function ProductListPage() {
     deleteDialogRef.current?.showModal();
   }
 
+  // Cambiar de página en la paginación
+  function handlePageChange(page: number): void {
+    setCurrentPage(page);
+  }
+
   useEffect(() => {
     setMaxWidth('max-w-[61rem]');
     return () => setMaxWidth('max-w-4xl');
   }, [setMaxWidth]);
 
   useEffect(() => {
-    fetchProducts()
-      .then(setProducts)
+    fetchProductsPaginated(currentPage)
+      .then((result) => {
+        setProducts(result.data);
+        setPagination(result.pagination);
+      })
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
-  }, []);
+  }, [currentPage]);
 
   // Records para demo
   const productRowsDemo = (
@@ -382,18 +393,14 @@ export default function ProductListPage() {
       </div>
 
       {/* Paginación */}
-      <div className="flex justify-between items-center">
-        <p className="text-sm text-base-content/60 ml-2">Mostrando 1-10 de 248 productos</p>
-        <div className="join">
-          <button className="join-item btn btn-soft btn-sm">«</button>
-          <button className="join-item btn btn-soft btn-sm btn-active">1</button>
-          <button className="join-item btn btn-soft btn-sm">2</button>
-          <button className="join-item btn btn-soft btn-sm">3</button>
-          <button className="join-item btn btn-soft btn-sm">4</button>
-          <button className="join-item btn btn-soft btn-sm">5</button>
-          <button className="join-item btn btn-soft btn-sm">»</button>
-        </div>
-      </div>
+      <TablePagination
+        currentPage={currentPage}
+        lastPage={pagination?.lastPage ?? 1}
+        total={pagination?.total ?? 0}
+        from={pagination?.from ?? null}
+        to={pagination?.to ?? null}
+        onPageChange={handlePageChange}
+      />
 
       <ConfirmDeleteModal
         dialogRef={deleteDialogRef}

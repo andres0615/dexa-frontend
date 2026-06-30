@@ -1,4 +1,4 @@
-import type { Product, CreateProductPayload, UpdateProductPayload } from '../types/product';
+import type { Product, CreateProductPayload, UpdateProductPayload, PaginatedResult } from '../types/product';
 
 // Obtener todos los productos
 export async function fetchProducts(): Promise<Product[]> {
@@ -18,6 +18,42 @@ export async function fetchProducts(): Promise<Product[]> {
 
   // si la respuesta es exitosa, retornar los productos
   return data.products;
+}
+
+// Obtener productos con paginación
+export async function fetchProductsPaginated(
+  page: number = 1,
+  perPage: number = 10
+): Promise<PaginatedResult<Product>> {
+  const url = `/api/products?page=${page}&per_page=${perPage}`;
+
+  const response = await fetch(url, {
+    headers: { 'Accept': 'application/json' },
+  });
+
+  const body = await response.json();
+  const { success, data, message } = body;
+
+  if (!success) {
+    throw new Error(message ?? 'Error al obtener productos');
+  }
+
+  // Respuesta paginada: data.products es un objeto con { data, current_page, ... }
+  const productsPaginated = data.products;
+
+  return {
+    // Data es el array de productos
+    data: productsPaginated.data as Product[],
+    // Metadata de la paginacion
+    pagination: {
+      currentPage: productsPaginated.current_page,
+      lastPage: productsPaginated.last_page,
+      perPage: productsPaginated.per_page,
+      total: productsPaginated.total,
+      from: productsPaginated.from,
+      to: productsPaginated.to,
+    },
+  };
 }
 
 // Crear un nuevo producto
