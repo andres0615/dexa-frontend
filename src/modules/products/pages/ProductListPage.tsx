@@ -12,6 +12,7 @@ import type { ProductStatus } from '../../../types/product-status';
 import type { ProductCategory } from '../../../types/product-category';
 import { ucfirst, sleep } from '../../../utils/utils';
 import ProductStatusBadge from '../components/ProductStatusBadge';
+import CategoryLabel from '../components/CategoryLabel';
 
 export default function ProductListPage() {
   const { setMaxWidth } = useLayoutContext();
@@ -28,6 +29,7 @@ export default function ProductListPage() {
   const [filters, setFilters] = useState<ProductFilters>({ name: '', status_id: null });
   const [loadingProducts, setLoadingProducts] = useState(false)
   const loadingProductsTimeout: number = 1000;
+  const [countFilters, setCountFilters] = useState(0)
 
   // Click en el botón de eliminar
   function handleDeleteClick(product: Product): void {
@@ -220,6 +222,10 @@ export default function ProductListPage() {
     setCurrentPage(1)
     setLoadingProducts(true)
 
+    // Contar filtros activos
+    const count = Object.values(filters).filter(value => value !== null && value !== '').length;
+    setCountFilters(count);
+
     // Implementar lógica de filtrado
     fetchProductsPaginated(1, 10, filters)
       .then((result) => {
@@ -349,7 +355,9 @@ export default function ProductListPage() {
                 {productStatusSelect}
             </label>
             <div className="indicator w-full lg:w-auto">
-              <span className="indicator-item badge badge-primary badge-sm">2</span>
+              {countFilters > 0 && (
+                <span className="indicator-item badge badge-primary badge-sm">{countFilters}</span>
+              )}
               <button className="btn btn-soft btn-md w-full" onClick={handleFilter}>Filtrar</button>
             </div>
           </div>
@@ -420,7 +428,13 @@ export default function ProductListPage() {
                             </div>
                           </div>
                         </td>
-                        <td>{product.category_id}</td>
+                        {/* Categoria */}
+                        <td>
+                          <CategoryLabel 
+                            categoryId={product.category_id} 
+                            categories={productCategories} 
+                          />
+                        </td>
                         <td>${Number(product.sale_price).toFixed(2)}</td>
                         <td>
                           <div className="flex items-center gap-2">
