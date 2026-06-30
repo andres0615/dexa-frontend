@@ -6,6 +6,9 @@ import { fetchProductsPaginated, deleteProduct } from '../../../services/product
 import ConfirmDeleteModal from '../components/ConfirmDeleteModal';
 import { useToast } from '../../../components/toast/ToastContext';
 import TablePagination from '../components/TablePagination';
+import { fetchProductStatus } from '../../../services/productStatusService';
+import type { ProductStatus } from '../../../types/product-status';
+import { ucfirst } from '../../../utils/utils';
 
 export default function ProductListPage() {
   const { setMaxWidth } = useLayoutContext();
@@ -17,6 +20,7 @@ export default function ProductListPage() {
   const [productToDelete, setProductToDelete] = useState<Product | null>(null);
   const deleteDialogRef = useRef<HTMLDialogElement>(null);
   const { showToast } = useToast();
+  const [productStatuses, setProductStatuses] = useState<ProductStatus[]>([])
 
   // Click en el botón de eliminar
   function handleDeleteClick(product: Product): void {
@@ -43,6 +47,15 @@ export default function ProductListPage() {
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
   }, [currentPage]);
+
+  useEffect(() => {
+    fetchProductStatus()
+      .then((result) => {
+        setProductStatuses(result);
+      })
+      .catch((err) => setError(err.message))
+      .finally(() => setLoading(false));
+  }, []);
 
   // Records para demo
   const productRowsDemo = (
@@ -180,6 +193,17 @@ export default function ProductListPage() {
     }
   }
 
+  const productStatusSelect = (
+    <select className="select select-md w-full">
+      <option value="">Seleccionar</option>
+      {productStatuses.map((status) => (
+        <option key={status.id} value={status.id}>
+          {ucfirst(status.name)}
+        </option>
+      ))}
+    </select>
+  );
+
   return (
     <>
       {/* Header */}
@@ -265,12 +289,7 @@ export default function ProductListPage() {
             </label>
             <label className="floating-label w-full lg:w-auto min-w-[200px]">
               <span>Estado</span>
-              <select className="select select-md w-full">
-                <option disabled>Seleccionar</option>
-                <option>Activo</option>
-                <option>Agotado</option>
-                <option>Stock Bajo</option>
-              </select>
+                {productStatusSelect}
             </label>
             <div className="indicator w-full lg:w-auto">
               <span className="indicator-item badge badge-primary badge-sm">2</span>
