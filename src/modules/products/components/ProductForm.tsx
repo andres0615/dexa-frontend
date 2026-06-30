@@ -1,13 +1,19 @@
 import { useForm } from 'react-hook-form';
-import type { CreateProductPayload } from '../../../types/product';
+import type { CreateProductPayload, UpdateProductPayload } from '../../../types/product';
 
 interface ProductFormProps {
-    onSubmit: (data: CreateProductPayload) => Promise<void>;
+    onSubmit: (data: CreateProductPayload | UpdateProductPayload) => Promise<void>;
     defaultValues?: Partial<CreateProductPayload>;
     submitLabel?: string;
 }
 
-export default function ProductForm({ onSubmit: externalOnSubmit, defaultValues, submitLabel = 'Guardar' }: ProductFormProps) {
+export default function ProductForm({
+    onSubmit: parentOnSubmit,
+    defaultValues,
+    submitLabel = 'Guardar',
+}: ProductFormProps) {
+    // Valores por defecto fusionados con los defaultValues del padre.
+    // Garantiza valores iniciales aunque el padre no los provea.
     const mergedDefaults: any = {
         status: 'activo',
         applies_tax: false,
@@ -20,6 +26,9 @@ export default function ProductForm({ onSubmit: externalOnSubmit, defaultValues,
         ...defaultValues,
     };
 
+    // Uso de useForm
+    // "values" en vez de "defaultValues" para que el formulario
+    // se re-renderice cuando cambien los props externos (ej. carga asíncrona del producto).
     const {
         register,
         handleSubmit,
@@ -29,8 +38,12 @@ export default function ProductForm({ onSubmit: externalOnSubmit, defaultValues,
         values: mergedDefaults,
     });
 
-    const onSubmit = async (data: CreateProductPayload) => {
-        const payload: CreateProductPayload = {
+    // Limpieza: convierte strings vacíos a null para que el backend
+    // los interprete como "sin valor" en vez de cadena vacía.
+    const onSubmit = async (data: CreateProductPayload | UpdateProductPayload) => {
+
+        // castear valores nulos
+        const payload: CreateProductPayload | UpdateProductPayload = {
             ...data,
             barcode: data.barcode || null,
             description: data.description || null,
@@ -44,7 +57,7 @@ export default function ProductForm({ onSubmit: externalOnSubmit, defaultValues,
             subcategory_id: data.subcategory_id || null,
         };
 
-        await externalOnSubmit(payload);
+        await parentOnSubmit(payload);
     };
 
     return (

@@ -29,3 +29,5 @@ export interface Product {
 }
 
 export type CreateProductPayload = Omit<Product, 'id' | 'created_at' | 'updated_at'>;
+
+export type UpdateProductPayload = Partial<Omit<Product, 'id' | 'created_at' | 'updated_at'>>;

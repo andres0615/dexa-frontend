@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
-import type { Product, CreateProductPayload } from '../../../types/product';
-import { fetchProduct } from '../../../services/productService';
+import type { Product, CreateProductPayload, UpdateProductPayload } from '../../../types/product';
+import { fetchProduct, updateProduct } from '../../../services/productService';
 import { useToast } from '../../../components/toast/ToastContext';
 import ProductForm from '../components/ProductForm';
 
@@ -39,8 +39,18 @@ export default function ProductEditPage() {
       .finally(() => setLoading(false));
   }, [id]);
 
-  const handleSubmit = async (_data: CreateProductPayload) => {
-    showToast('Funcionalidad no implementada', 'info');
+  const handleSubmit = async (data: UpdateProductPayload) => {
+    if (!id) return;
+    const numericId = Number(id);
+    if (Number.isNaN(numericId)) return;
+
+    try {
+      await updateProduct(numericId, data);
+      showToast('Producto actualizado exitosamente', 'success');
+      // navigate('/products');
+    } catch (err) {
+      showToast(err instanceof Error ? err.message : 'Error al actualizar el producto', 'error');
+    }
   };
 
 //   if (loading) {
