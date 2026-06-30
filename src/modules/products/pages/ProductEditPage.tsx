@@ -30,9 +30,7 @@ export default function ProductEditPage() {
 
     // Obtener el producto desde la API
     fetchProduct(numericId)
-      .then((response) => {
-        let { product } = response;
-
+      .then((product) => {
         // Aquí puedes hacer algo con el producto obtenido
         console.log('Producto obtenido:', product);
         setProduct(product);
