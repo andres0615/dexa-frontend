@@ -1,9 +1,11 @@
 import { useForm } from 'react-hook-form';
 import type { CreateProductPayload, UpdateProductPayload } from '../../../types/product';
 import type { ProductStatus } from '../../../types/product-status';
+import type { ProductCategory } from '../../../types/product-category';
 import { ucfirst } from '../../../utils/utils';
 import { useEffect, useState } from 'react';
 import { fetchProductStatus } from '../../../services/productStatusService';
+import { fetchProductCategories } from '../../../services/productCategoryService';
 
 interface ProductFormProps {
     onSubmit: (data: CreateProductPayload | UpdateProductPayload) => Promise<void>;
@@ -31,6 +33,7 @@ export default function ProductForm({
     };
 
     const [productStatuses, setProductStatuses] = useState<ProductStatus[]>([])
+    const [productCategories, setProductCategories] = useState<ProductCategory[]>([])
 
     // Uso de useForm
     // "values" en vez de "defaultValues" para que el formulario
@@ -67,20 +70,28 @@ export default function ProductForm({
     };
 
     // Obtener status de productos
-      useEffect(() => {
+    useEffect(() => {
         fetchProductStatus()
-          .then((result) => {
-            setProductStatuses(result);
-          })
-          .catch((err) => console.error(err))
-          .finally(() => {});
-      }, []);
+            .then((result) => {
+                setProductStatuses(result);
+            })
+            .catch((err) => console.error(err))
+            .finally(() => { });
+    }, []);
+
+    // Obtener categorías de productos
+    useEffect(() => {
+        fetchProductCategories()
+            .then((result) => {
+                setProductCategories(result);
+            })
+            .catch((err) => console.error(err))
+            .finally(() => { });
+    }, []);
 
     const statusSelect = (
         <select className="select select-md w-full"
             {...register('status_id', { required: true })}>
-            {/* <option value="activo">Activo</option>
-            <option value="inactivo">Inactivo</option> */}
             {productStatuses.map((status) => (
                 <option key={status.id} value={status.id}>
                     {ucfirst(status.name)}
@@ -88,6 +99,18 @@ export default function ProductForm({
             ))}
         </select>
     )
+
+    const categorySelect = (
+        <select className={`select select-md w-full ${errors.category_id ? 'select-error' : ''}`}
+            {...register('category_id', { required: 'La categoría es requerida', valueAsNumber: true })}>
+            <option value="">Seleccionar</option>
+            {productCategories.map((category) => (
+                <option key={category.id} value={category.id}>
+                    {category.name}
+                </option>
+            ))}
+        </select>
+    );
 
     return (
         <form onSubmit={handleSubmit(onSubmit)}>
@@ -136,15 +159,7 @@ export default function ProductForm({
                         </div>
                         <div>
                             <label className="floating-label">
-                                <select className={`select select-md w-full ${errors.category_id ? 'select-error' : ''}`}
-                                    {...register('category_id', { required: 'La categoría es requerida', valueAsNumber: true })}>
-                                    <option value="">Seleccionar</option>
-                                    <option value="1">Ropa</option>
-                                    <option value="2">Electrónica</option>
-                                    <option value="3">Alimentos</option>
-                                    <option value="4">Hogar</option>
-                                    <option value="5">Deportes</option>
-                                </select>
+                                {categorySelect}
                                 <span>Categoría</span>
                             </label>
                             {errors.category_id && <p className="text-error text-xs mt-1">{errors.category_id.message}</p>}
