@@ -3,7 +3,9 @@ import type { Product, CreateProductPayload, UpdateProductPayload } from '../typ
 // Obtener todos los productos
 export async function fetchProducts(): Promise<Product[]> {
   // Petición GET al endpoint de productos
-  const response = await fetch('/api/products');
+  const response = await fetch('/api/products', {
+    headers: { 'Accept': 'application/json' },
+  });
   
   // Extraer datos del wrapper
   const { success, data, message } = await response.json();
@@ -25,7 +27,10 @@ export async function createProduct(
   // Petición POST al endpoint de productos
   const response = await fetch('/api/products', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+    },
     body: JSON.stringify(payload),
   });
 
@@ -48,10 +53,29 @@ export async function createProduct(
   return data.product;
 }
 
+// Eliminar un producto
+export async function deleteProduct(id: number): Promise<void> {
+  // Petición DELETE al endpoint de productos
+  const response = await fetch(`/api/products/${id}`, {
+    method: 'DELETE',
+    headers: { 'Accept': 'application/json' },
+  });
+
+  // Extraer datos del wrapper
+  const { success, message } = await response.json();
+
+  // Verificar si la respuesta es exitosa
+  if (!success) {
+    throw new Error(message ?? 'Error al eliminar el producto');
+  }
+}
+
 // Obtener un producto por ID
 export async function fetchProduct(id: number): Promise<any> {
   // Petición GET al endpoint de consulta de producto
-  const response = await fetch(`/api/products/${id}`);
+  const response = await fetch(`/api/products/${id}`, {
+    headers: { 'Accept': 'application/json' },
+  });
   // Extraer datos del wrapper
   const { success, data, message } = await response.json();
 

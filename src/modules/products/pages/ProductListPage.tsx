@@ -1,14 +1,25 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useLayoutContext } from '../../../contexts/LayoutContext';
 import type { Product } from '../../../types/product';
-import { fetchProducts } from '../../../services/productService';
+import { fetchProducts, deleteProduct } from '../../../services/productService';
+import ConfirmDeleteModal from '../components/ConfirmDeleteModal';
+import { useToast } from '../../../components/toast/ToastContext';
 
 export default function ProductListPage() {
   const { setMaxWidth } = useLayoutContext();
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [productToDelete, setProductToDelete] = useState<Product | null>(null);
+  const deleteDialogRef = useRef<HTMLDialogElement>(null);
+  const { showToast } = useToast();
+
+  // Click en el botón de eliminar
+  function handleDeleteClick(product: Product): void {
+    setProductToDelete(product);
+    deleteDialogRef.current?.showModal();
+  }
 
   useEffect(() => {
     setMaxWidth('max-w-[61rem]');
@@ -139,6 +150,24 @@ export default function ProductListPage() {
       </tr>
     </>
   );
+
+  // Cuando el usuario confirma la eliminacion
+  async function handleConfirmDelete(): Promise<void> {
+    // Si no hay un producto para eliminar, salir
+    if (!productToDelete) return;
+    try {
+      await deleteProduct(productToDelete.id);
+      // Remover el producto eliminado de la lista local sin recargar del backend
+      setProducts((prev) => prev.filter((p) => p.id !== productToDelete.id));
+      showToast('Producto eliminado exitosamente', 'success');
+    } catch (err) {
+      console.error(err);
+      showToast(err as string, 'error');
+    } finally {
+      // Cerrar el modal limpiando el producto seleccionado
+      setProductToDelete(null);
+    }
+  }
 
   return (
     <>
@@ -325,7 +354,10 @@ export default function ProductListPage() {
 
                             {/* Eliminar */}
                             <div className="tooltip" data-tip="Eliminar">
-                              <button className="btn btn-ghost btn-sm btn-square text-error">
+                              <button
+                                className="btn btn-ghost btn-sm btn-square text-error"
+                                onClick={() => handleDeleteClick(product)}
+                              >
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5"
                                   stroke="currentColor" className="size-5">
                                   <path strokeLinecap="round" strokeLinejoin="round"
@@ -362,6 +394,12 @@ export default function ProductListPage() {
           <button className="join-item btn btn-soft btn-sm">»</button>
         </div>
       </div>
+
+      <ConfirmDeleteModal
+        dialogRef={deleteDialogRef}
+        name={productToDelete?.name ?? null}
+        onConfirm={handleConfirmDelete}
+      />
     </>
   );
 }
