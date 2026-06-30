@@ -48,6 +48,7 @@ export default function ProductListPage() {
       .finally(() => setLoading(false));
   }, [currentPage]);
 
+  // Obtener status de productos
   useEffect(() => {
     fetchProductStatus()
       .then((result) => {
@@ -193,6 +194,7 @@ export default function ProductListPage() {
     }
   }
 
+  // Select para status de productos
   const productStatusSelect = (
     <select className="select select-md w-full">
       <option value="">Seleccionar</option>

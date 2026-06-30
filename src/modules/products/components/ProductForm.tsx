@@ -1,5 +1,9 @@
 import { useForm } from 'react-hook-form';
 import type { CreateProductPayload, UpdateProductPayload } from '../../../types/product';
+import type { ProductStatus } from '../../../types/product-status';
+import { ucfirst } from '../../../utils/utils';
+import { useEffect, useState } from 'react';
+import { fetchProductStatus } from '../../../services/productStatusService';
 
 interface ProductFormProps {
     onSubmit: (data: CreateProductPayload | UpdateProductPayload) => Promise<void>;
@@ -25,6 +29,8 @@ export default function ProductForm({
         subcategory_id: null,
         ...defaultValues,
     };
+
+    const [productStatuses, setProductStatuses] = useState<ProductStatus[]>([])
 
     // Uso de useForm
     // "values" en vez de "defaultValues" para que el formulario
@@ -59,6 +65,29 @@ export default function ProductForm({
 
         await parentOnSubmit(payload);
     };
+
+    // Obtener status de productos
+      useEffect(() => {
+        fetchProductStatus()
+          .then((result) => {
+            setProductStatuses(result);
+          })
+          .catch((err) => console.error(err))
+          .finally(() => {});
+      }, []);
+
+    const statusSelect = (
+        <select className="select select-md w-full"
+            {...register('status', { required: true })}>
+            {/* <option value="activo">Activo</option>
+            <option value="inactivo">Inactivo</option> */}
+            {productStatuses.map((status) => (
+                <option key={status.id} value={status.id}>
+                    {ucfirst(status.name)}
+                </option>
+            ))}
+        </select>
+    )
 
     return (
         <form onSubmit={handleSubmit(onSubmit)}>
@@ -332,11 +361,7 @@ export default function ProductForm({
                         </div>
                         <div>
                             <label className="floating-label">
-                                <select className="select select-md w-full"
-                                    {...register('status', { required: true })}>
-                                    <option value="activo">Activo</option>
-                                    <option value="inactivo">Inactivo</option>
-                                </select>
+                                {statusSelect}
                                 <span>Estado</span>
                             </label>
                         </div>
