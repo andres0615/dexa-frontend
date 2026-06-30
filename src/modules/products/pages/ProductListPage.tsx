@@ -8,7 +8,7 @@ import { useToast } from '../../../components/toast/ToastContext';
 import TablePagination from '../components/TablePagination';
 import { fetchProductStatus } from '../../../services/productStatusService';
 import type { ProductStatus } from '../../../types/product-status';
-import { ucfirst } from '../../../utils/utils';
+import { ucfirst, sleep } from '../../../utils/utils';
 
 export default function ProductListPage() {
   const { setMaxWidth } = useLayoutContext();
@@ -22,6 +22,8 @@ export default function ProductListPage() {
   const { showToast } = useToast();
   const [productStatuses, setProductStatuses] = useState<ProductStatus[]>([])
   const [filters, setFilters] = useState<ProductFilters>({ name: '' });
+  const [loadingProducts, setLoadingProducts] = useState(false)
+  const loadingProductsTimeout: number = 1000;
 
   // Click en el botón de eliminar
   function handleDeleteClick(product: Product): void {
@@ -39,14 +41,19 @@ export default function ProductListPage() {
     return () => setMaxWidth('max-w-4xl');
   }, [setMaxWidth]);
 
+  // Cargar productos
   useEffect(() => {
+    // startLoadingProducts()
+    setLoadingProducts(true)
     fetchProductsPaginated(currentPage)
       .then((result) => {
         setProducts(result.data);
         setPagination(result.pagination);
+        // return result; // pasa al siguiente then
       })
+      // .then(() => sleep(loadingProductsTimeout)) // espera 1s después del fetch
       .catch((err) => setError(err.message))
-      .finally(() => setLoading(false));
+      .finally(() => setLoadingProducts(false));
   }, [currentPage]);
 
   // Obtener status de productos
@@ -197,6 +204,7 @@ export default function ProductListPage() {
 
   function handleFilter(): void {
     setCurrentPage(1)
+    setLoadingProducts(true)
 
     // Implementar lógica de filtrado
     fetchProductsPaginated(1, 10, filters)
@@ -204,8 +212,9 @@ export default function ProductListPage() {
         setProducts(result.data);
         setPagination(result.pagination);
       })
+      .then(() => sleep(loadingProductsTimeout)) // espera 1s después del fetch
       .catch((err) => setError(err.message))
-      .finally(() => setLoading(false));
+      .finally(() => setLoadingProducts(false));
   }
 
   // Select para status de productos
@@ -342,7 +351,13 @@ export default function ProductListPage() {
                 </tr>
               </thead>
               <tbody>
-                {products.length === 0 ? (
+                {loadingProducts ? (
+                  <tr>
+                    <td colSpan={7} className="text-center py-8">
+                      <span className="loading loading-ring loading-lg text-primary"></span>
+                    </td>
+                  </tr>
+                ) : products.length === 0 ? (
                   <tr>
                     <td colSpan={7} className="text-center py-8 text-base-content/60">
                       No hay productos
