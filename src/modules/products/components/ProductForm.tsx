@@ -78,7 +78,7 @@ export default function ProductForm({
 
     const statusSelect = (
         <select className="select select-md w-full"
-            {...register('status', { required: true })}>
+            {...register('status_id', { required: true })}>
             {/* <option value="activo">Activo</option>
             <option value="inactivo">Inactivo</option> */}
             {productStatuses.map((status) => (

@@ -22,7 +22,7 @@ export interface Product {
   supplier_id: number | null;
   allow_negative_sales: boolean;
   is_service: boolean;
-  status: string;
+  status_id: number;
   notes: string | null;
   created_at: string;
   updated_at: string;

@@ -9,6 +9,7 @@ import TablePagination from '../components/TablePagination';
 import { fetchProductStatus } from '../../../services/productStatusService';
 import type { ProductStatus } from '../../../types/product-status';
 import { ucfirst, sleep } from '../../../utils/utils';
+import ProductStatusBadge from '../components/ProductStatusBadge';
 
 export default function ProductListPage() {
   const { setMaxWidth } = useLayoutContext();
@@ -403,7 +404,8 @@ export default function ProductListPage() {
                           </div>
                         </td>
                         <td>
-                          <span className={`badge badge-${statusColor} badge-sm`}>{statusLabel}</span>
+                          {/* <span className={`badge badge-${statusColor} badge-sm`}>{statusLabel}</span> */}
+                          <ProductStatusBadge product={product} statuses={productStatuses} />
                         </td>
                         <td>
                           <div className="flex items-center gap-1">
