@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useLayoutContext } from '../../../contexts/LayoutContext';
-import type { Product, PaginationMeta } from '../../../types/product';
+import type { Product, PaginationMeta, ProductFilters } from '../../../types/product';
 import { fetchProductsPaginated, deleteProduct } from '../../../services/productService';
 import ConfirmDeleteModal from '../components/ConfirmDeleteModal';
 import { useToast } from '../../../components/toast/ToastContext';
@@ -21,6 +21,7 @@ export default function ProductListPage() {
   const deleteDialogRef = useRef<HTMLDialogElement>(null);
   const { showToast } = useToast();
   const [productStatuses, setProductStatuses] = useState<ProductStatus[]>([])
+  const [filters, setFilters] = useState<ProductFilters>({ name: '' });
 
   // Click en el botón de eliminar
   function handleDeleteClick(product: Product): void {
@@ -194,6 +195,19 @@ export default function ProductListPage() {
     }
   }
 
+  function handleFilter(): void {
+    setCurrentPage(1)
+
+    // Implementar lógica de filtrado
+    fetchProductsPaginated(1, 10, filters)
+      .then((result) => {
+        setProducts(result.data);
+        setPagination(result.pagination);
+      })
+      .catch((err) => setError(err.message))
+      .finally(() => setLoading(false));
+  }
+
   // Select para status de productos
   const productStatusSelect = (
     <select className="select select-md w-full">
@@ -274,7 +288,13 @@ export default function ProductListPage() {
                   <svg className="h-5 w-5 opacity-60" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                   </svg>
-                  <input type="text" placeholder="Buscar producto..." className="grow" />
+                  <input 
+                    type="text" 
+                    placeholder="Buscar producto..." 
+                    className="grow" 
+                    value={filters.name ?? ''} 
+                    onChange={(e) => setFilters(prev => ({ ...prev, name: e.target.value }))} 
+                  />
                 </label>
               </label>
             </div>
@@ -295,7 +315,7 @@ export default function ProductListPage() {
             </label>
             <div className="indicator w-full lg:w-auto">
               <span className="indicator-item badge badge-primary badge-sm">2</span>
-              <button className="btn btn-soft btn-md w-full">Filtrar</button>
+              <button className="btn btn-soft btn-md w-full" onClick={handleFilter}>Filtrar</button>
             </div>
           </div>
         </div>

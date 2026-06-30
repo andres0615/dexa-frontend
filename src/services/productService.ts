@@ -1,4 +1,4 @@
-import type { Product, CreateProductPayload, UpdateProductPayload, PaginatedResult } from '../types/product';
+import type { Product, CreateProductPayload, UpdateProductPayload, PaginatedResult, ProductFilters } from '../types/product';
 
 // Obtener todos los productos
 export async function fetchProducts(): Promise<Product[]> {
@@ -23,9 +23,23 @@ export async function fetchProducts(): Promise<Product[]> {
 // Obtener productos con paginación
 export async function fetchProductsPaginated(
   page: number = 1,
-  perPage: number = 10
+  perPage: number = 10,
+  filters?: ProductFilters
 ): Promise<PaginatedResult<Product>> {
-  const url = `/api/products?page=${page}&per_page=${perPage}`;
+  const params = new URLSearchParams();
+  params.set('page', String(page));
+  params.set('per_page', String(perPage));
+
+  // Agregar filtros si existen
+  if (filters) {
+    for (const [key, value] of Object.entries(filters)) {
+      if (value !== undefined && value !== null && value !== '') {
+        params.append(key, String(value));
+      }
+    }
+  }
+
+  const url = `/api/products?${params.toString()}`;
 
   const response = await fetch(url, {
     headers: { 'Accept': 'application/json' },

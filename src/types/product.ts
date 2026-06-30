@@ -41,6 +41,14 @@ export interface PaginationMeta {
   to: number | null;
 }
 
+export interface ProductFilters {
+  name?: string;
+  code?: string;
+  status?: string;
+  category_id?: number;
+  brand?: string;
+}
+
 export interface PaginatedResult<T> {
   data: T[];
   pagination: PaginationMeta;
