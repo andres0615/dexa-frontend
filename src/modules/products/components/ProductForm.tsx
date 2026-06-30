@@ -6,6 +6,7 @@ import { ucfirst } from '../../../utils/utils';
 import { useEffect, useState } from 'react';
 import { fetchProductStatus } from '../../../services/productStatusService';
 import { fetchProductCategories } from '../../../services/productCategoryService';
+import ToggleField from '../../../components/ui/ToggleField';
 
 interface ProductFormProps {
     onSubmit: (data: CreateProductPayload | UpdateProductPayload) => Promise<void>;
@@ -42,6 +43,7 @@ export default function ProductForm({
         register,
         handleSubmit,
         formState: { errors },
+        watch,
     } = useForm<CreateProductPayload>({
         // defaultValues: mergedDefaults,
         values: mergedDefaults,
@@ -267,10 +269,7 @@ export default function ProductForm({
                         <div>
                             <span className="font-medium text-sm block">Aplica Impuesto</span>
                             <div className="flex items-center gap-3 h-10">
-                                <input type="checkbox"
-                                    className="toggle toggle-primary"
-                                    {...register('applies_tax')} />
-                                <span className="text-sm font-light">No</span>
+                                <ToggleField registration={register('applies_tax')} checked={watch('applies_tax')} />
                             </div>
                         </div>
                         <div>
@@ -358,19 +357,13 @@ export default function ProductForm({
                         <div>
                             <span className="font-medium text-sm block">Vender sin Stock</span>
                             <div className="flex items-center gap-3 h-10">
-                                <input type="checkbox"
-                                    className="toggle toggle-primary"
-                                    {...register('allow_negative_sales')} />
-                                <span className="text-sm font-light">No</span>
+                                <ToggleField registration={register('allow_negative_sales')} checked={watch('allow_negative_sales')} />
                             </div>
                         </div>
                         <div>
                             <span className="font-medium text-sm block">Es un Servicio</span>
                             <div className="flex items-center gap-3 h-10">
-                                <input type="checkbox"
-                                    className="toggle toggle-primary"
-                                    {...register('is_service')} />
-                                <span className="text-sm font-light">No</span>
+                                <ToggleField registration={register('is_service')} checked={watch('is_service')} />
                             </div>
                             <p className="label-text-alt text-base-content/60 text-xs">No descuenta inventario</p>
                         </div>
