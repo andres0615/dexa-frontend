@@ -1,31 +1,63 @@
 import type { Product, CreateProductPayload } from '../types/product';
 
+// Obtener todos los productos
 export async function fetchProducts(): Promise<Product[]> {
+  // Petición GET al endpoint de productos
   const response = await fetch('/api/products');
-  if (!response.ok) {
-    throw new Error(`Error al obtener productos: ${response.status}`);
+  
+  // Extraer datos del wrapper
+  const { success, data, message } = await response.json();
+
+  // Verificar si la respuesta es exitosa
+  // desde el back los errores se capturan con try-catch y se convierten en HTTP 500/422 con success: false
+  if (!success) {
+    throw new Error(message ?? 'Error al obtener productos');
   }
-  return response.json();
+
+  // si la respuesta es exitosa, retornar los productos
+  return data.products;
 }
 
+// Crear un nuevo producto
 export async function createProduct(
-  data: CreateProductPayload
+  payload: CreateProductPayload
 ): Promise<Product> {
+  // Petición POST al endpoint de productos
   const response = await fetch('/api/products', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(data),
+    body: JSON.stringify(payload),
   });
-  if (!response.ok) {
-    throw new Error(`Error al crear producto: ${response.status}`);
+
+  // Extraer datos del wrapper
+  const { success, data, message, errors } = await response.json();
+
+  // Verificar si la respuesta es exitosa
+  // desde el back los errores se capturan con try-catch y se convierten en HTTP 500/422 con success: false
+  if (!success) {
+    let errorMessage = message ?? 'Error al crear el producto'
+
+    // Si hay errores de validación, agregarlos al mensaje
+    if (errors && errors.length > 0) {
+      errorMessage += '\n' + errors.join('\n');
+    }
+
+    throw new Error(errorMessage);
   }
-  return response.json();
+  return data.product;
 }
 
+// Obtener un producto por ID
 export async function fetchProduct(id: number): Promise<any> {
+  // Petición GET al endpoint de consulta de producto
   const response = await fetch(`/api/products/${id}`);
-  if (!response.ok) {
-    throw new Error(`Error al obtener producto: ${response.status}`);
+  // Extraer datos del wrapper
+  const { success, data, message } = await response.json();
+
+  // Verificar si la respuesta es exitosa
+  // desde el back los errores se capturan con try-catch y se convierten en HTTP 500/422 con success: false
+  if (!success) {
+    throw new Error(message ?? 'Error al obtener el producto');
   }
-  return response.json();
+  return data.product;
 }
