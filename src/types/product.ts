@@ -43,10 +43,8 @@ export interface PaginationMeta {
 
 export interface ProductFilters {
   name?: string;
-  code?: string;
-  status?: string;
+  status_id?: number;
   category_id?: number;
-  brand?: string;
 }
 
 export interface PaginatedResult<T> {

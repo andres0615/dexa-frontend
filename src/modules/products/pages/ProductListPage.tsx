@@ -7,7 +7,9 @@ import ConfirmDeleteModal from '../components/ConfirmDeleteModal';
 import { useToast } from '../../../components/toast/ToastContext';
 import TablePagination from '../components/TablePagination';
 import { fetchProductStatus } from '../../../services/productStatusService';
+import { fetchProductCategories } from '../../../services/productCategoryService';
 import type { ProductStatus } from '../../../types/product-status';
+import type { ProductCategory } from '../../../types/product-category';
 import { ucfirst, sleep } from '../../../utils/utils';
 import ProductStatusBadge from '../components/ProductStatusBadge';
 
@@ -22,7 +24,8 @@ export default function ProductListPage() {
   const deleteDialogRef = useRef<HTMLDialogElement>(null);
   const { showToast } = useToast();
   const [productStatuses, setProductStatuses] = useState<ProductStatus[]>([])
-  const [filters, setFilters] = useState<ProductFilters>({ name: '' });
+  const [productCategories, setProductCategories] = useState<ProductCategory[]>([])
+  const [filters, setFilters] = useState<ProductFilters>({ name: '', status_id: null });
   const [loadingProducts, setLoadingProducts] = useState(false)
   const loadingProductsTimeout: number = 1000;
 
@@ -46,7 +49,7 @@ export default function ProductListPage() {
   useEffect(() => {
     // startLoadingProducts()
     setLoadingProducts(true)
-    fetchProductsPaginated(currentPage)
+    fetchProductsPaginated(currentPage, 10, filters)
       .then((result) => {
         setProducts(result.data);
         setPagination(result.pagination);
@@ -57,11 +60,21 @@ export default function ProductListPage() {
       .finally(() => setLoadingProducts(false));
   }, [currentPage]);
 
-  // Obtener status de productos
+  // Obtener lista de status de producto
   useEffect(() => {
     fetchProductStatus()
       .then((result) => {
         setProductStatuses(result);
+      })
+      .catch((err) => setError(err.message))
+      .finally(() => setLoading(false));
+  }, []);
+  
+  // Obtener categorias de producto
+  useEffect(() => {
+    fetchProductCategories()
+      .then((result) => {
+        setProductCategories(result);
       })
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
@@ -220,11 +233,27 @@ export default function ProductListPage() {
 
   // Select para status de productos
   const productStatusSelect = (
-    <select className="select select-md w-full">
+    <select className="select select-md w-full" 
+    value={filters.status_id ?? ''} 
+    onChange={(e) => setFilters(prev => ({ ...prev, status_id: e.target.value ? Number(e.target.value) : null }))} >
       <option value="">Seleccionar</option>
       {productStatuses.map((status) => (
         <option key={status.id} value={status.id}>
           {ucfirst(status.name)}
+        </option>
+      ))}
+    </select>
+  );
+
+  // Select para categoría de productos
+  const productCategorySelect = (
+    <select className="select select-md w-full"
+    value={filters.category_id ?? ''}
+    onChange={(e) => setFilters(prev => ({ ...prev, category_id: e.target.value ? Number(e.target.value) : null }))} >
+      <option value="">Seleccionar</option>
+      {productCategories.map((category) => (
+        <option key={category.id} value={category.id}>
+          {category.name}
         </option>
       ))}
     </select>
@@ -291,6 +320,7 @@ export default function ProductListPage() {
       <div className="card bg-base-100 shadow-sm mb-4">
         <div className="card-body p-4">
           <div className="flex flex-col lg:flex-row gap-2 w-full items-end">
+            {/* Filtro nombre */}
             <div className="grow w-full lg:w-auto">
               <label className="floating-label w-full">
                 <span>Buscar producto</span>
@@ -308,17 +338,12 @@ export default function ProductListPage() {
                 </label>
               </label>
             </div>
+            {/* Filtro categoría */}
             <label className="floating-label w-full lg:w-auto min-w-[200px]">
               <span>Categoría</span>
-              <select className="select select-md w-full">
-                <option disabled>Seleccionar</option>
-                <option>Electrónica</option>
-                <option>Ropa</option>
-                <option>Hogar</option>
-                <option>Deportes</option>
-                <option>Accesorios</option>
-              </select>
+              { productCategorySelect }
             </label>
+            {/* Filtro estado */}
             <label className="floating-label w-full lg:w-auto min-w-[200px]">
               <span>Estado</span>
                 {productStatusSelect}
