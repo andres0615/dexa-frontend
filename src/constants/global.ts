@@ -1,7 +1,7 @@
 export const MOVEMENT_TYPE_IDS = {
-  PURCHASE: 1,
-  SALE: 2,
-  ADJUSTMENT: 3,
-  RETURN: 4,
-  TRANSFER: 5,
+  COMPRA: 1,
+  VENTA: 2,
+  AJUSTE: 3,
+  DEVOLUCION: 4,
+  TRASLADO: 5,
 } as const;

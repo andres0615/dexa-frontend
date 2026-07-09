@@ -1,8 +1,7 @@
 import { useState, useEffect } from 'react';
 import type { MovementType } from '@/types/movement-types';
 import { fetchMovementTypes } from '@/services/movementTypeService';
-
-type MovementTypeL = '' | 'compra' | 'venta' | 'ajuste' | 'devolucion' | 'traslado';
+import { MOVEMENT_TYPE_IDS } from '@/constants/global';
 
 interface ItemRow {
   id: string;
@@ -25,7 +24,7 @@ function generateId() {
 }
 
 export default function MovementCreatePage() {
-  const [movementType, setMovementType] = useState<MovementTypeL>('');
+  const [movementType, setMovementType] = useState<number | null>(null);
   const [adjustmentIsEntry, setAdjustmentIsEntry] = useState(true);
   const [allowOutOfStock, setAllowOutOfStock] = useState(false);
   const [generateReverse, setGenerateReverse] = useState(true);
@@ -34,13 +33,16 @@ export default function MovementCreatePage() {
     { id: generateId(), product_id: '', quantity: 0, unit_cost: 0 },
   ]);
 
-  const showAdjustmentToggle = movementType === 'ajuste';
-  const showSourceWarehouse = movementType === 'ajuste' || movementType === 'traslado';
-  const showDestinationWarehouse = movementType === 'traslado';
-  const showOriginalVoucher = movementType === 'devolucion';
-  const showThirdParty = movementType !== 'ajuste' && movementType !== 'traslado' && movementType !== '';
-  const thirdPartyTitle = movementType === 'venta' ? 'Cliente' : 'Proveedor';
-  const unitCostHeader = movementType === 'venta' ? 'Precio Unitario' : 'Costo Unitario';
+  // Mostrar u ocultar campos según el tipo de movimiento
+  const showAdjustmentToggle = movementType === MOVEMENT_TYPE_IDS.AJUSTE;
+  const showSourceWarehouse = movementType === MOVEMENT_TYPE_IDS.AJUSTE || movementType === MOVEMENT_TYPE_IDS.TRASLADO;
+  const showDestinationWarehouse = movementType === MOVEMENT_TYPE_IDS.TRASLADO;
+  const showOriginalVoucher = movementType === MOVEMENT_TYPE_IDS.DEVOLUCION;
+  const showThirdParty = movementType !== MOVEMENT_TYPE_IDS.AJUSTE && movementType !== MOVEMENT_TYPE_IDS.TRASLADO && movementType !== null;
+
+  // Cambio de textos según el tipo de movimiento
+  const thirdPartyTitle = movementType === MOVEMENT_TYPE_IDS.VENTA ? 'Cliente' : 'Proveedor';
+  const unitCostHeader = movementType === MOVEMENT_TYPE_IDS.VENTA ? 'Precio Unitario' : 'Costo Unitario';
 
   const [movementTypes, setMovementTypes] = useState<MovementType[]>([]);
 
@@ -82,15 +84,10 @@ export default function MovementCreatePage() {
         id="movement_type"
         className="select select-md w-full"
         value={movementType}
-        onChange={e => setMovementType(e.target.value as MovementTypeL)}
+        onChange={e => setMovementType(e.target.value ? Number(e.target.value) : null)}
         required
       >
         <option value="">Seleccionar</option>
-        {/* <option value="compra">Compra (Entrada)</option>
-        <option value="venta">Venta (Salida)</option>
-        <option value="ajuste">Ajuste</option>
-        <option value="devolucion">Devolución</option>
-        <option value="traslado">Traslado entre almacenes</option> */}
         {movementTypes.map((type) => (
           <option key={type.id} value={type.id}>
             {type.name}
