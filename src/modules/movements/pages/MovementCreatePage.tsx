@@ -1,6 +1,8 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import type { MovementType } from '@/types/movement-types';
+import { fetchMovementTypes } from '@/services/movementTypeService';
 
-type MovementType = '' | 'compra' | 'venta' | 'ajuste' | 'devolucion' | 'traslado';
+type MovementTypeL = '' | 'compra' | 'venta' | 'ajuste' | 'devolucion' | 'traslado';
 
 interface ItemRow {
   id: string;
@@ -23,7 +25,7 @@ function generateId() {
 }
 
 export default function MovementCreatePage() {
-  const [movementType, setMovementType] = useState<MovementType>('');
+  const [movementType, setMovementType] = useState<MovementTypeL>('');
   const [adjustmentIsEntry, setAdjustmentIsEntry] = useState(true);
   const [allowOutOfStock, setAllowOutOfStock] = useState(false);
   const [generateReverse, setGenerateReverse] = useState(true);
@@ -39,6 +41,8 @@ export default function MovementCreatePage() {
   const showThirdParty = movementType !== 'ajuste' && movementType !== 'traslado' && movementType !== '';
   const thirdPartyTitle = movementType === 'venta' ? 'Cliente' : 'Proveedor';
   const unitCostHeader = movementType === 'venta' ? 'Precio Unitario' : 'Costo Unitario';
+
+  const [movementTypes, setMovementTypes] = useState<MovementType[]>([]);
 
   const total = items.reduce((acc, p) => acc + p.quantity * p.unit_cost, 0);
 
@@ -59,6 +63,44 @@ export default function MovementCreatePage() {
     });
   }
 
+  // Cargar los tipos de movimiento
+  useEffect(() => {
+    fetchMovementTypes()
+      .then((result) => {
+        console.log('movement types: ', result);        
+        setMovementTypes(result);
+      })
+      .catch((err) => console.error(err))
+      .finally(() => { });
+  }, []);
+
+  // Select para tipos de movimientos
+  const movementTypesSelect = (
+    <label className="floating-label">
+      <select
+        name="movement_type"
+        id="movement_type"
+        className="select select-md w-full"
+        value={movementType}
+        onChange={e => setMovementType(e.target.value as MovementTypeL)}
+        required
+      >
+        <option value="">Seleccionar</option>
+        {/* <option value="compra">Compra (Entrada)</option>
+        <option value="venta">Venta (Salida)</option>
+        <option value="ajuste">Ajuste</option>
+        <option value="devolucion">Devolución</option>
+        <option value="traslado">Traslado entre almacenes</option> */}
+        {movementTypes.map((type) => (
+          <option key={type.id} value={type.id}>
+            {type.name}
+          </option>
+        ))}
+      </select>
+      <span>Tipo de Movimiento</span>
+    </label>
+  );
+
   return (
     <>
       {/* Breadcrumbs */}
@@ -76,24 +118,7 @@ export default function MovementCreatePage() {
           <div className="card-body">
             <h3 className="card-title text-lg mb-4">Tipo de Movimiento</h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <label className="floating-label">
-                <select
-                  name="movement_type"
-                  id="movement_type"
-                  className="select select-md w-full"
-                  value={movementType}
-                  onChange={e => setMovementType(e.target.value as MovementType)}
-                  required
-                >
-                  <option value="" disabled>Seleccionar</option>
-                  <option value="compra">Compra (Entrada)</option>
-                  <option value="venta">Venta (Salida)</option>
-                  <option value="ajuste">Ajuste</option>
-                  <option value="devolucion">Devolución</option>
-                  <option value="traslado">Traslado entre almacenes</option>
-                </select>
-                <span>Tipo de Movimiento</span>
-              </label>
+              { movementTypesSelect }
 
               {showAdjustmentToggle && (
                 <div id="adjustment_type">
