@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import type { MovementType } from '@/types/movement-types';
 import { fetchMovementTypes } from '@/services/movementTypeService';
 import { MOVEMENT_TYPE_IDS } from '@/constants/global';
+import type { Warehouse } from '@/types/warehouse';
+import { fetchWarehouses } from '@/services/warehouseService';
 
 interface ItemRow {
   id: string;
@@ -32,6 +34,7 @@ export default function MovementCreatePage() {
   const [items, setItems] = useState<ItemRow[]>([
     { id: generateId(), product_id: '', quantity: 0, unit_cost: 0 },
   ]);
+  const [warehouses, setWarehouses] = useState<Warehouse[]>([]);
 
   // Mostrar u ocultar campos según el tipo de movimiento
   const showAdjustmentToggle = movementType === MOVEMENT_TYPE_IDS.AJUSTE;
@@ -71,6 +74,17 @@ export default function MovementCreatePage() {
       .then((result) => {
         console.log('movement types: ', result);        
         setMovementTypes(result);
+      })
+      .catch((err) => console.error(err))
+      .finally(() => { });
+  }, []);
+
+  // Cargar los almacenes
+  useEffect(() => {
+    fetchWarehouses()
+      .then((result) => {
+        console.log('warehouses: ', result);        
+        setWarehouses(result);
       })
       .catch((err) => console.error(err))
       .finally(() => { });
@@ -152,10 +166,12 @@ export default function MovementCreatePage() {
               </label>
               <label className="floating-label">
                 <select name="warehouse_id" id="warehouse_id" className="select select-md w-full" required defaultValue="">
-                  <option value="" disabled>Seleccionar</option>
-                  <option>Almacén Principal</option>
-                  <option>Almacén Secundario</option>
-                  <option>Taller</option>
+                  <option value="">Seleccionar</option>
+                  {warehouses.map((warehouse) => (
+                    <option key={warehouse.id} value={warehouse.id}>
+                      {warehouse.name}
+                    </option>
+                  ))}
                 </select>
                 <span>Almacén</span>
               </label>
@@ -164,10 +180,12 @@ export default function MovementCreatePage() {
                 <div id="source_warehouse_id">
                   <label className="floating-label">
                     <select name="source_warehouse_id" id="source_warehouse_id" className="select select-md w-full" required defaultValue="">
-                      <option value="" disabled>Seleccionar</option>
-                      <option>Almacén Principal</option>
-                      <option>Almacén Secundario</option>
-                      <option>Taller</option>
+                      <option value="">Seleccionar</option>
+                      {warehouses.map((warehouse) => (
+                        <option key={warehouse.id} value={warehouse.id}>
+                          {warehouse.name}
+                        </option>
+                      ))}
                     </select>
                     <span>Almacén Origen</span>
                   </label>
@@ -178,10 +196,12 @@ export default function MovementCreatePage() {
                 <div id="destination_warehouse_id">
                   <label className="floating-label">
                     <select name="destination_warehouse_id" id="destination_warehouse_id" className="select select-md w-full" required defaultValue="">
-                      <option value="" disabled>Seleccionar</option>
-                      <option>Almacén Principal</option>
-                      <option>Almacén Secundario</option>
-                      <option>Taller</option>
+                      <option value="">Seleccionar</option>
+                      {warehouses.map((warehouse) => (
+                        <option key={warehouse.id} value={warehouse.id}>
+                          {warehouse.name}
+                        </option>
+                      ))}
                     </select>
                     <span>Almacén Destino</span>
                   </label>
