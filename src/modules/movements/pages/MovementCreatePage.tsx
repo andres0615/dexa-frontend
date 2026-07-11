@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
 import type { MovementType } from '@/types/movement-types';
 import { fetchMovementTypes } from '@/services/movementTypeService';
-import { MOVEMENT_TYPE_IDS } from '@/constants/global';
+import { MOVEMENT_TYPE_IDS, TIPOS_TERCERO } from '@/constants/global';
 import type { Warehouse } from '@/types/warehouse';
 import { fetchWarehouses } from '@/services/warehouseService';
+import type { ThirdParty } from '@/types/third-party';
+import { fetchThirdParties } from '@/services/thirdPartyService';
 
 interface ItemRow {
   id: string;
@@ -35,13 +37,21 @@ export default function MovementCreatePage() {
     { id: generateId(), product_id: '', quantity: 0, unit_cost: 0 },
   ]);
   const [warehouses, setWarehouses] = useState<Warehouse[]>([]);
+  const [customers, setCustomers] = useState<ThirdParty[]>([]);
+  const [suppliers, setSuppliers] = useState<ThirdParty[]>([]);
 
   // Mostrar u ocultar campos según el tipo de movimiento
   const showAdjustmentToggle = movementType === MOVEMENT_TYPE_IDS.AJUSTE;
-  const showSourceWarehouse = movementType === MOVEMENT_TYPE_IDS.AJUSTE || movementType === MOVEMENT_TYPE_IDS.TRASLADO;
-  const showDestinationWarehouse = movementType === MOVEMENT_TYPE_IDS.TRASLADO;
+  const showSourceWarehouse = movementType === MOVEMENT_TYPE_IDS.VENTA
+    || movementType === MOVEMENT_TYPE_IDS.AJUSTE
+    || movementType === MOVEMENT_TYPE_IDS.TRASLADO;
+  const showDestinationWarehouse = movementType === MOVEMENT_TYPE_IDS.COMPRA
+    || movementType === MOVEMENT_TYPE_IDS.DEVOLUCION
+    || movementType === MOVEMENT_TYPE_IDS.TRASLADO;
   const showOriginalVoucher = movementType === MOVEMENT_TYPE_IDS.DEVOLUCION;
   const showThirdParty = movementType !== MOVEMENT_TYPE_IDS.AJUSTE && movementType !== MOVEMENT_TYPE_IDS.TRASLADO && movementType !== null;
+  const showCustomers = movementType === MOVEMENT_TYPE_IDS.VENTA;
+  const showSuppliers = movementType === MOVEMENT_TYPE_IDS.COMPRA;
 
   // Cambio de textos según el tipo de movimiento
   const thirdPartyTitle = movementType === MOVEMENT_TYPE_IDS.VENTA ? 'Cliente' : 'Proveedor';
@@ -85,6 +95,28 @@ export default function MovementCreatePage() {
       .then((result) => {
         console.log('warehouses: ', result);        
         setWarehouses(result);
+      })
+      .catch((err) => console.error(err))
+      .finally(() => { });
+  }, []);
+
+  // Cargar los clientes
+  useEffect(() => {
+    fetchThirdParties({ third_party_type_id: TIPOS_TERCERO.CLIENTE })
+      .then((result) => {
+        console.log('customers: ', result);        
+        setCustomers(result);
+      })
+      .catch((err) => console.error(err))
+      .finally(() => { });
+  }, []);
+
+  // Cargar los proveedores
+  useEffect(() => {
+    fetchThirdParties({ third_party_type_id: TIPOS_TERCERO.PROVEEDOR })
+      .then((result) => {
+        console.log('suppliers: ', result);        
+        setSuppliers(result);
       })
       .catch((err) => console.error(err))
       .finally(() => { });
@@ -164,18 +196,6 @@ export default function MovementCreatePage() {
                 <span>N° Comprobante / Factura</span>
                 <input name="voucher" id="voucher" type="text" placeholder="N° Comprobante / Factura" className="input input-md w-full" />
               </label>
-              <label className="floating-label">
-                <select name="warehouse_id" id="warehouse_id" className="select select-md w-full" required defaultValue="">
-                  <option value="">Seleccionar</option>
-                  {warehouses.map((warehouse) => (
-                    <option key={warehouse.id} value={warehouse.id}>
-                      {warehouse.name}
-                    </option>
-                  ))}
-                </select>
-                <span>Almacén</span>
-              </label>
-
               {showSourceWarehouse && (
                 <div id="source_warehouse_id">
                   <label className="floating-label">
@@ -233,15 +253,34 @@ export default function MovementCreatePage() {
             <div className="card-body">
               <h3 className="card-title text-lg mb-4" id="third_party_label">{thirdPartyTitle}</h3>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <label className="floating-label">
-                  <select name="third_party_id" id="third_party_id" className="select select-md w-full" defaultValue="">
-                    <option value="" disabled>Seleccionar</option>
-                    <option>Proveedor A</option>
-                    <option>Proveedor B</option>
-                    <option>Proveedor C</option>
-                  </select>
-                  <span id="third_party_id_label">{thirdPartyTitle}</span>
-                </label>
+                {/* Clientes */}
+                {showCustomers && (
+                  <label className="floating-label">
+                    <select name="third_party_id" id="third_party_id" className="select select-md w-full" defaultValue="">
+                      <option value="">Seleccionar</option>
+                      {customers.map((customer) => (
+                        <option key={customer.id} value={customer.id}>
+                          {customer.name}
+                        </option>
+                      ))}
+                    </select>
+                    <span id="third_party_id_label">Cliente</span>
+                  </label>
+                )}
+                {/* Proveedores */}
+                {showSuppliers && (
+                  <label className="floating-label">
+                    <select name="third_party_id" id="third_party_id" className="select select-md w-full" defaultValue="">
+                      <option value="">Seleccionar</option>
+                      {suppliers.map((supplier) => (
+                        <option key={supplier.id} value={supplier.id}>
+                          {supplier.name}
+                        </option>
+                      ))}
+                    </select>
+                    <span id="third_party_id_label">Proveedor</span>
+                  </label>
+                )}
                 <label className="floating-label">
                   <span>N° Documento</span>
                   <input name="third_party_document" id="third_party_document" type="text" placeholder="N° Documento" className="input input-md w-full" />
