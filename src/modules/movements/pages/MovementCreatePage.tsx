@@ -1,11 +1,16 @@
 import { useState, useEffect } from 'react';
+import { useForm } from 'react-hook-form';
+import type { CreateMovementPayload } from '@/types/movements';
 import type { MovementType } from '@/types/movement-types';
 import { fetchMovementTypes } from '@/services/movementTypeService';
-import { MOVEMENT_TYPE_IDS, TIPOS_TERCERO } from '@/constants/global';
+import { MOVEMENT_TYPE_IDS, TIPOS_TERCERO, DEMO_VALUES } from '@/constants/global';
 import type { Warehouse } from '@/types/warehouse';
 import { fetchWarehouses } from '@/services/warehouseService';
 import type { ThirdParty } from '@/types/third-party';
 import { fetchThirdParties } from '@/services/thirdPartyService';
+import ToggleField from '@/components/ui/ToggleField';
+import { createMovement } from '@/services/movementService';
+import { useToast } from '@/components/toast/ToastContext';
 
 interface ItemRow {
   id: string;
@@ -28,11 +33,56 @@ function generateId() {
 }
 
 export default function MovementCreatePage() {
-  const [movementType, setMovementType] = useState<number | null>(null);
-  const [adjustmentIsEntry, setAdjustmentIsEntry] = useState(true);
-  const [allowOutOfStock, setAllowOutOfStock] = useState(false);
-  const [generateReverse, setGenerateReverse] = useState(true);
-  const [valuationMethod, setValuationMethod] = useState('promedio');
+  const { showToast } = useToast();
+  // const mergedDefaults: any = {
+  //   movement_type_id: null,
+  //   adjustment_is_entry: false,
+  //   movement_date: '',
+  //   voucher: null,
+  //   source_warehouse_id: null,
+  //   destination_warehouse_id: null,
+  //   original_voucher: null,
+  //   third_party_id: null,
+  //   third_party_document: null,
+  //   third_party_phone: null,
+  //   note: null,
+  //   valuation_method: 'promedio',
+  //   allow_out_of_stock: false,
+  //   generate_reverse_movement: true,
+  //   observations: null,
+  // };
+  
+  // Valores demo
+  const mergedDefaults: any = {
+    movement_type_id: DEMO_VALUES.movement_type_id,
+    adjustment_is_entry: false,
+    movement_date: new Date().toISOString().split('T')[0],
+    voucher: null,
+    source_warehouse_id: null,
+    destination_warehouse_id: DEMO_VALUES.destination_warehouse_id,
+    original_voucher: null,
+    third_party_id: DEMO_VALUES.third_party_id,
+    third_party_document: null,
+    third_party_phone: null,
+    note: null,
+    valuation_method: 'promedio',
+    allow_out_of_stock: false,
+    generate_reverse_movement: true,
+    observations: null,
+  };
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    watch,
+    setValue,
+  } = useForm<CreateMovementPayload>({
+    values: mergedDefaults,
+    // defaultValues: mergedDefaults,
+  });
+
+  const movementType = watch('movement_type_id');
   const [items, setItems] = useState<ItemRow[]>([
     { id: generateId(), product_id: '', quantity: 0, unit_cost: 0 },
   ]);
@@ -122,16 +172,22 @@ export default function MovementCreatePage() {
       .finally(() => { });
   }, []);
 
+  // cargar demo de los select
+  useEffect(() => {
+    setValue("movement_type_id", DEMO_VALUES.movement_type_id);
+    setValue("destination_warehouse_id", DEMO_VALUES.destination_warehouse_id);
+    setValue("third_party_id", DEMO_VALUES.third_party_id);
+  }, [movementTypes, customers, suppliers, warehouses]);
+
   // Select para tipos de movimientos
   const movementTypesSelect = (
     <label className="floating-label">
       <select
-        name="movement_type"
-        id="movement_type"
-        className="select select-md w-full"
-        value={movementType}
-        onChange={e => setMovementType(e.target.value ? Number(e.target.value) : null)}
-        required
+        className={`select select-md w-full ${errors.movement_type_id ? 'select-error' : ''}`}
+        {...register('movement_type_id', {
+          required: 'El tipo de movimiento es requerido',
+          setValueAs: (v: string) => v === '' ? undefined : Number(v),
+        })}
       >
         <option value="">Seleccionar</option>
         {movementTypes.map((type) => (
@@ -141,8 +197,42 @@ export default function MovementCreatePage() {
         ))}
       </select>
       <span>Tipo de Movimiento</span>
+      {errors.movement_type_id && (
+        <p className="text-error text-xs mt-1">{errors.movement_type_id.message}</p>
+      )}
     </label>
   );
+
+  const onSubmit = async (data: any) => {
+    const payload: CreateMovementPayload = {
+      movement_type_id: data.movement_type_id,
+      adjustment_is_entry: data.adjustment_is_entry,
+      movement_date: data.movement_date,
+      voucher: data.voucher || null,
+      source_warehouse_id: data.source_warehouse_id || null,
+      destination_warehouse_id: data.destination_warehouse_id || null,
+      original_voucher: data.original_voucher || null,
+      third_party_id: data.third_party_id ?? null,
+      third_party_document: data.third_party_document || null,
+      third_party_phone: data.third_party_phone || null,
+      note: data.note || null,
+      valuation_method: data.valuation_method,
+      allow_out_of_stock: data.allow_out_of_stock,
+      generate_reverse_movement: data.generate_reverse_movement,
+      observations: data.observations || null,
+    };
+    console.log('Payload:', payload);
+    // TODO: llamar al servicio de creación de movimiento
+
+    try {
+      await createMovement(payload);
+      showToast('Movimiento creado exitosamente', 'success');
+      // navigate('/movements');
+    } catch (error) {
+      console.error(error);
+      showToast('Error al crear el movimiento', 'error');
+    }
+  };
 
   return (
     <>
@@ -155,7 +245,7 @@ export default function MovementCreatePage() {
       </nav>
 
       <h2 className="text-2xl font-bold mb-8">Registrar Movimiento de Inventario</h2>
-      <form>
+      <form onSubmit={handleSubmit(onSubmit)}>
         {/* Tipo de Movimiento */}
         <div className="card bg-base-100 shadow-md mb-6">
           <div className="card-body">
@@ -168,14 +258,11 @@ export default function MovementCreatePage() {
                   <span className="font-medium text-sm block">Tipo de Ajuste</span>
                   <div className="flex items-center gap-3 h-10">
                     <input
-                      name="adjustment_type"
-                      id="adjustment_type_input"
                       type="checkbox"
                       className="toggle toggle-primary"
-                      checked={adjustmentIsEntry}
-                      onChange={e => setAdjustmentIsEntry(e.target.checked)}
+                      {...register('adjustment_is_entry')}
                     />
-                    <span className="text-sm font-light">{adjustmentIsEntry ? 'Entrada' : 'Salida'}</span>
+                    <span className="text-sm font-light">{watch('adjustment_is_entry') ? 'Entrada' : 'Salida'}</span>
                   </div>
                 </div>
               )}
@@ -190,16 +277,34 @@ export default function MovementCreatePage() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <label className="floating-label">
                 <span>Fecha del Movimiento</span>
-                <input name="movement_date" id="movement_date" type="date" className="input input-md w-full" required />
+                <input
+                  type="date"
+                  className={`input input-md w-full ${errors.movement_date ? 'input-error' : ''}`}
+                  {...register('movement_date', { required: 'La fecha es requerida' })}
+                />
+                {errors.movement_date && (
+                  <p className="text-error text-xs mt-1">{errors.movement_date.message}</p>
+                )}
               </label>
               <label className="floating-label">
                 <span>N° Comprobante / Factura</span>
-                <input name="voucher" id="voucher" type="text" placeholder="N° Comprobante / Factura" className="input input-md w-full" />
+                <input
+                  type="text"
+                  placeholder="N° Comprobante / Factura"
+                  className="input input-md w-full"
+                  {...register('voucher')}
+                />
               </label>
               {showSourceWarehouse && (
                 <div id="source_warehouse_id">
                   <label className="floating-label">
-                    <select name="source_warehouse_id" id="source_warehouse_id" className="select select-md w-full" required defaultValue="">
+                    <select
+                      className={`select select-md w-full ${errors.source_warehouse_id ? 'select-error' : ''}`}
+                      {...register('source_warehouse_id', {
+                        required: showSourceWarehouse ? 'El almacén origen es requerido' : false,
+                        setValueAs: (v: string) => v === '' ? null : Number(v),
+                      })}
+                    >
                       <option value="">Seleccionar</option>
                       {warehouses.map((warehouse) => (
                         <option key={warehouse.id} value={warehouse.id}>
@@ -208,6 +313,9 @@ export default function MovementCreatePage() {
                       ))}
                     </select>
                     <span>Almacén Origen</span>
+                    {errors.source_warehouse_id && (
+                      <p className="text-error text-xs mt-1">{errors.source_warehouse_id.message}</p>
+                    )}
                   </label>
                 </div>
               )}
@@ -215,7 +323,13 @@ export default function MovementCreatePage() {
               {showDestinationWarehouse && (
                 <div id="destination_warehouse_id">
                   <label className="floating-label">
-                    <select name="destination_warehouse_id" id="destination_warehouse_id" className="select select-md w-full" required defaultValue="">
+                    <select
+                      className={`select select-md w-full ${errors.destination_warehouse_id ? 'select-error' : ''}`}
+                      {...register('destination_warehouse_id', {
+                        required: showDestinationWarehouse ? 'El almacén destino es requerido' : false,
+                        setValueAs: (v: string) => v === '' ? null : Number(v),
+                      })}
+                    >
                       <option value="">Seleccionar</option>
                       {warehouses.map((warehouse) => (
                         <option key={warehouse.id} value={warehouse.id}>
@@ -224,6 +338,9 @@ export default function MovementCreatePage() {
                       ))}
                     </select>
                     <span>Almacén Destino</span>
+                    {errors.destination_warehouse_id && (
+                      <p className="text-error text-xs mt-1">{errors.destination_warehouse_id.message}</p>
+                    )}
                   </label>
                 </div>
               )}
@@ -232,7 +349,12 @@ export default function MovementCreatePage() {
                 <div id="original_voucher_wrapper" className="md:col-span-3">
                   <label className="floating-label">
                     <span>Comprobante Original</span>
-                    <input name="original_voucher" id="original_voucher" type="text" placeholder="N° de comprobante que origina la devolución" className="input input-md w-full" />
+                    <input
+                      type="text"
+                      placeholder="N° de comprobante que origina la devolución"
+                      className="input input-md w-full"
+                      {...register('original_voucher')}
+                    />
                   </label>
                 </div>
               )}
@@ -240,7 +362,11 @@ export default function MovementCreatePage() {
               <div className="md:col-span-3">
                 <label className="floating-label">
                   <span>Nota / Concepto</span>
-                  <textarea name="note" id="note" className="textarea textarea-md w-full h-24" placeholder="Nota o concepto del movimiento"></textarea>
+                  <textarea
+                    className="textarea textarea-md w-full h-24"
+                    placeholder="Nota o concepto del movimiento"
+                    {...register('note')}
+                  ></textarea>
                 </label>
               </div>
             </div>
@@ -256,7 +382,13 @@ export default function MovementCreatePage() {
                 {/* Clientes */}
                 {showCustomers && (
                   <label className="floating-label">
-                    <select name="third_party_id" id="third_party_id" className="select select-md w-full" defaultValue="">
+                    <select
+                      className={`select select-md w-full ${errors.third_party_id ? 'select-error' : ''}`}
+                      {...register('third_party_id', {
+                        required: showCustomers ? 'El cliente es requerido' : false,
+                        setValueAs: (v: string) => v === '' ? null : Number(v),
+                      })}
+                    >
                       <option value="">Seleccionar</option>
                       {customers.map((customer) => (
                         <option key={customer.id} value={customer.id}>
@@ -264,13 +396,22 @@ export default function MovementCreatePage() {
                         </option>
                       ))}
                     </select>
-                    <span id="third_party_id_label">Cliente</span>
+                    <span>Cliente</span>
+                    {errors.third_party_id && (
+                      <p className="text-error text-xs mt-1">{errors.third_party_id.message}</p>
+                    )}
                   </label>
                 )}
                 {/* Proveedores */}
                 {showSuppliers && (
                   <label className="floating-label">
-                    <select name="third_party_id" id="third_party_id" className="select select-md w-full" defaultValue="">
+                    <select
+                      className={`select select-md w-full ${errors.third_party_id ? 'select-error' : ''}`}
+                      {...register('third_party_id', {
+                        required: showSuppliers ? 'El proveedor es requerido' : false,
+                        setValueAs: (v: string) => v === '' ? null : Number(v),
+                      })}
+                    >
                       <option value="">Seleccionar</option>
                       {suppliers.map((supplier) => (
                         <option key={supplier.id} value={supplier.id}>
@@ -278,16 +419,29 @@ export default function MovementCreatePage() {
                         </option>
                       ))}
                     </select>
-                    <span id="third_party_id_label">Proveedor</span>
+                    <span>Proveedor</span>
+                    {errors.third_party_id && (
+                      <p className="text-error text-xs mt-1">{errors.third_party_id.message}</p>
+                    )}
                   </label>
                 )}
                 <label className="floating-label">
                   <span>N° Documento</span>
-                  <input name="third_party_document" id="third_party_document" type="text" placeholder="N° Documento" className="input input-md w-full" />
+                  <input
+                    type="text"
+                    placeholder="N° Documento"
+                    className="input input-md w-full"
+                    {...register('third_party_document')}
+                  />
                 </label>
                 <label className="floating-label">
                   <span>Teléfono</span>
-                  <input name="third_party_phone" id="third_party_phone" type="text" placeholder="Teléfono" className="input input-md w-full" />
+                  <input
+                    type="text"
+                    placeholder="Teléfono"
+                    className="input input-md w-full"
+                    {...register('third_party_phone')}
+                  />
                 </label>
               </div>
             </div>
@@ -401,12 +555,8 @@ export default function MovementCreatePage() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <label className="floating-label">
                 <select
-                  name="valuation_method"
-                  id="valuation_method"
-                  className="select select-md w-full"
-                  value={valuationMethod}
-                  onChange={e => setValuationMethod(e.target.value)}
-                  required
+                  className={`select select-md w-full ${errors.valuation_method ? 'select-error' : ''}`}
+                  {...register('valuation_method', { required: 'El método de valuación es requerido' })}
                 >
                   <option value="promedio">Promedio Ponderado</option>
                   <option value="peps">PEPS</option>
@@ -414,39 +564,30 @@ export default function MovementCreatePage() {
                   <option value="costo-promedio">Costo Promedio</option>
                 </select>
                 <span>Método de Valuación</span>
+                {errors.valuation_method && (
+                  <p className="text-error text-xs mt-1">{errors.valuation_method.message}</p>
+                )}
               </label>
               <div>
                 <span className="font-medium text-sm block">Permitir salida sin stock</span>
                 <div className="flex items-center gap-3 h-10">
-                  <input
-                    name="allow_out_of_stock"
-                    id="allow_out_of_stock"
-                    type="checkbox"
-                    className="toggle toggle-primary"
-                    checked={allowOutOfStock}
-                    onChange={e => setAllowOutOfStock(e.target.checked)}
-                  />
-                  <span className="text-sm font-light">{allowOutOfStock ? 'Sí' : 'No'}</span>
+                  <ToggleField registration={register('allow_out_of_stock')} checked={watch('allow_out_of_stock')} />
                 </div>
               </div>
               <div>
                 <span className="font-medium text-sm block">Generar movimiento inverso al anular</span>
                 <div className="flex items-center gap-3 h-10">
-                  <input
-                    name="generate_reverse_movement"
-                    id="generate_reverse_movement"
-                    type="checkbox"
-                    className="toggle toggle-primary"
-                    checked={generateReverse}
-                    onChange={e => setGenerateReverse(e.target.checked)}
-                  />
-                  <span className="text-sm font-light">{generateReverse ? 'Sí' : 'No'}</span>
+                  <ToggleField registration={register('generate_reverse_movement')} checked={watch('generate_reverse_movement')} />
                 </div>
               </div>
               <div className="md:col-span-3">
                 <label className="floating-label">
                   <span>Observaciones</span>
-                  <textarea name="observations" id="observations" className="textarea textarea-md w-full h-24" placeholder="Observaciones adicionales"></textarea>
+                  <textarea
+                    className="textarea textarea-md w-full h-24"
+                    placeholder="Observaciones adicionales"
+                    {...register('observations')}
+                  ></textarea>
                 </label>
               </div>
             </div>
