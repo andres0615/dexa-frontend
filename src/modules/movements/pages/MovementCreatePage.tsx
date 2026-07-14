@@ -11,13 +11,14 @@ import { fetchThirdParties } from '@/services/thirdPartyService';
 import ToggleField from '@/components/ui/ToggleField';
 import { createMovement } from '@/services/movementService';
 import { useToast } from '@/components/toast/ToastContext';
+import type { CreateMovementDetailPayload } from '@/types/movement-detail';
 
-interface ItemRow {
-  id: string;
-  product_id: string;
-  quantity: number;
-  unit_cost: number;
-}
+// interface ItemRow {
+//   id: string;
+//   product_id: string;
+//   quantity: number;
+//   unit_cost: number;
+// }
 
 const PRODUCT_OPTIONS = [
   'PROD-001 — Laptop HP',
@@ -57,18 +58,18 @@ export default function MovementCreatePage() {
     movement_type_id: DEMO_VALUES.movement_type_id,
     adjustment_is_entry: false,
     movement_date: new Date().toISOString().split('T')[0],
-    voucher: null,
+    voucher: 'FV-001-00000123',
     source_warehouse_id: null,
     destination_warehouse_id: DEMO_VALUES.destination_warehouse_id,
     original_voucher: null,
     third_party_id: DEMO_VALUES.third_party_id,
-    third_party_document: null,
-    third_party_phone: null,
-    note: null,
+    third_party_document: '12345678',
+    third_party_phone: '999888777',
+    note: 'Compra de prueba — verificar flujo completo',
     valuation_method: 'promedio',
     allow_out_of_stock: false,
     generate_reverse_movement: true,
-    observations: null,
+    observations: 'Observaciones de prueba',
   };
 
   const {
@@ -83,8 +84,8 @@ export default function MovementCreatePage() {
   });
 
   const movementType = watch('movement_type_id');
-  const [items, setItems] = useState<ItemRow[]>([
-    { id: generateId(), product_id: '', quantity: 0, unit_cost: 0 },
+  const [items, setItems] = useState<CreateMovementDetailPayload[]>([
+    { product_id: null, quantity: 1, unit_cost: 0, subtotal: 0 },
   ]);
   const [warehouses, setWarehouses] = useState<Warehouse[]>([]);
   const [customers, setCustomers] = useState<ThirdParty[]>([]);
@@ -111,20 +112,29 @@ export default function MovementCreatePage() {
 
   const total = items.reduce((acc, p) => acc + p.quantity * p.unit_cost, 0);
 
-  function handleItemChange(id: string, field: 'product_id' | 'quantity' | 'unit_cost', value: string | number) {
+  // Manejar cambios en los items
+  function handleItemChange(keyId: string, field: 'product_id' | 'quantity' | 'unit_cost', value: string | number) {
     setItems(prev => prev.map(p =>
-      p.id === id ? { ...p, [field]: value } : p
+      p.keyId === keyId ? { ...p, [field]: value } : p
     ));
   }
 
-  function handleAddRow() {
-    setItems(prev => [...prev, { id: generateId(), product_id: '', quantity: 0, unit_cost: 0 }]);
+  function handleProductChange(keyId: string, productId: number) {
+    console.log('productId', productId);
+    
+    handleItemChange(keyId, 'product_id', productId);
   }
 
-  function handleRemoveRow(id: string) {
+  // Agregar fila
+  function handleAddRow() {
+    setItems(prev => [...prev, { keyId: generateId(), product_id: null, quantity: 1, unit_cost: 0, subtotal: 0 }]);
+  }
+
+  // Eliminar fila
+  function handleRemoveRow(keyId: string) {
     setItems(prev => {
       if (prev.length <= 1) return prev;
-      return prev.filter(p => p.id !== id);
+      return prev.filter(p => p.keyId !== keyId);
     });
   }
 
@@ -172,11 +182,11 @@ export default function MovementCreatePage() {
       .finally(() => { });
   }, []);
 
-  // cargar demo de los select
+  // cargar valores demo de los select
   useEffect(() => {
-    setValue("movement_type_id", DEMO_VALUES.movement_type_id);
-    setValue("destination_warehouse_id", DEMO_VALUES.destination_warehouse_id);
-    setValue("third_party_id", DEMO_VALUES.third_party_id);
+    setValue("movement_type_id", mergedDefaults.movement_type_id);
+    setValue("destination_warehouse_id", mergedDefaults.destination_warehouse_id);
+    setValue("third_party_id", mergedDefaults.third_party_id);
   }, [movementTypes, customers, suppliers, warehouses]);
 
   // Select para tipos de movimientos
@@ -220,6 +230,8 @@ export default function MovementCreatePage() {
       allow_out_of_stock: data.allow_out_of_stock,
       generate_reverse_movement: data.generate_reverse_movement,
       observations: data.observations || null,
+      // Detalles del movimiento
+      details: items
     };
     console.log('Payload:', payload);
     // TODO: llamar al servicio de creación de movimiento
@@ -467,17 +479,17 @@ export default function MovementCreatePage() {
                   {items.map(p => {
                     const subtotal = p.quantity * p.unit_cost;
                     return (
-                      <tr key={p.id}>
+                      <tr key={p.keyId}>
                         <td>
                           <select
                             name="items[].product_id"
                             className="select select-md w-full"
                             value={p.product_id}
-                            onChange={e => handleItemChange(p.id, 'product_id', e.target.value)}
+                            onChange={e => handleProductChange(p.keyId, Number(e.target.value))}
                           >
                             <option value="" disabled>Seleccionar</option>
                             {PRODUCT_OPTIONS.map(op => (
-                              <option key={op} value={op}>{op}</option>
+                              <option key={op} value='1'>{op}</option>
                             ))}
                           </select>
                         </td>
@@ -490,7 +502,7 @@ export default function MovementCreatePage() {
                             min={0}
                             step={0.01}
                             value={p.quantity}
-                            onChange={e => handleItemChange(p.id, 'quantity', parseFloat(e.target.value) || 0)}
+                            onChange={e => handleItemChange(p.keyId, 'quantity', parseFloat(e.target.value) || 0)}
                           />
                         </td>
                         <td>
@@ -502,7 +514,7 @@ export default function MovementCreatePage() {
                             min={0}
                             step={0.01}
                             value={p.unit_cost}
-                            onChange={e => handleItemChange(p.id, 'unit_cost', parseFloat(e.target.value) || 0)}
+                            onChange={e => handleItemChange(p.keyId, 'unit_cost', parseFloat(e.target.value) || 0)}
                           />
                         </td>
                         <td>
@@ -520,7 +532,7 @@ export default function MovementCreatePage() {
                             type="button"
                             className="btn btn-ghost btn-sm btn-square"
                               disabled={items.length === 1}
-                              onClick={() => handleRemoveRow(p.id)}
+                              onClick={() => handleRemoveRow(p.keyId)}
                           >
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-4">
                               <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />

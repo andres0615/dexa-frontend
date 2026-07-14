@@ -1,3 +1,5 @@
+import type { MovementDetail, CreateMovementDetailPayload } from '@/types/movement-detail';
+
 export interface Movement {
   id: number;
   movement_type_id: number;
@@ -20,9 +22,12 @@ export interface Movement {
   created_by: number | null;
   created_at: string;
   updated_at: string;
+  details: MovementDetail[] | null;
 }
 
 export type CreateMovementPayload =
-  Omit<Movement, 'id' | 'created_at' | 'updated_at' | 'total' | 'status' | 'created_by'>;
+  Omit<Movement, 'id' | 'created_at' | 'updated_at' | 'total' | 'status' | 'created_by' | 'details'> & {
+    details: CreateMovementDetailPayload[];
+  };
 
 export type UpdateMovementPayload = Partial<CreateMovementPayload>;
