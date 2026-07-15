@@ -22,6 +22,10 @@ const PRODUCT_OPTIONS = [
   'PROD-005 — Webcam HD',
 ];
 
+function calculateSubtotal(quantity: number, unitCost: number): number {
+  return (Number(quantity) || 0) * (Number(unitCost) || 0);
+}
+
 export default function MovementCreatePage() {
   const { showToast } = useToast();
   // const mergedDefaults: any = {
@@ -40,6 +44,7 @@ export default function MovementCreatePage() {
   //   allow_out_of_stock: false,
   //   generate_reverse_movement: true,
   //   observations: null,
+  //   details: [{ product_id: null, quantity: 1, unit_cost: 0, subtotal: 0 }],
   // };
   
   // Valores demo
@@ -216,7 +221,7 @@ export default function MovementCreatePage() {
       // Detalles del movimiento
       details: data.details.map(d => ({
         ...d,
-        subtotal: (Number(d.quantity) || 0) * (Number(d.unit_cost) || 0),
+        subtotal: calculateSubtotal(d.quantity, d.unit_cost),
       })),
     };
     console.log('Payload:', payload);
@@ -462,7 +467,10 @@ export default function MovementCreatePage() {
                 </thead>
                 <tbody id="items_container">
                   {fields.map((field, index) => {
-                    const subtotal = (Number(field.quantity) || 0) * (Number(field.unit_cost) || 0);
+                    const subtotal = calculateSubtotal(
+                      watchedDetails?.[index]?.quantity,
+                      watchedDetails?.[index]?.unit_cost
+                    );
                     return (
                       <tr key={field.id} className="[&>td]:align-top">
                         <td>
