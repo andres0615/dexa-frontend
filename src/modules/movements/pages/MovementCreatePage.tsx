@@ -12,6 +12,7 @@ import ToggleField from '@/components/ui/ToggleField';
 import { createMovement } from '@/services/movementService';
 import { useToast } from '@/components/toast/ToastContext';
 import type { CreateMovementDetailPayload } from '@/types/movement-detail';
+import ProductAutocomplete from '@/components/ui/ProductAutocomplete';
 
 // interface ItemRow {
 //   id: string;
@@ -119,7 +120,7 @@ export default function MovementCreatePage() {
     ));
   }
 
-  function handleProductChange(keyId: string, productId: number) {
+  function handleProductChange(keyId: string, productId: number | null) {
     console.log('productId', productId);
     
     handleItemChange(keyId, 'product_id', productId);
@@ -234,7 +235,6 @@ export default function MovementCreatePage() {
       details: items
     };
     console.log('Payload:', payload);
-    // TODO: llamar al servicio de creación de movimiento
 
     try {
       await createMovement(payload);
@@ -245,6 +245,20 @@ export default function MovementCreatePage() {
       showToast('Error al crear el movimiento', 'error');
     }
   };
+
+  // const productSelect = (
+  //   <select
+  //     name="items[].product_id"
+  //     className="select select-md w-full"
+  //     value={p.product_id}
+  //     onChange={e => handleProductChange(p.keyId, Number(e.target.value))}
+  //   >
+  //     <option value="" disabled>Seleccionar</option>
+  //     {PRODUCT_OPTIONS.map(op => (
+  //       <option key={op} value='1'>{op}</option>
+  //     ))}
+  //   </select>
+  // );
 
   return (
     <>
@@ -464,8 +478,8 @@ export default function MovementCreatePage() {
         <div className="card bg-base-100 shadow-md mb-6">
           <div className="card-body">
             <h3 className="card-title text-lg mb-4">Detalle de Productos</h3>
-            <div className="overflow-x-auto">
-              <table className="table w-full">
+            <div>
+              <table className="table w-full overflow-x-auto">
                 <thead>
                   <tr>
                     <th className="w-2/5">Producto</th>
@@ -481,17 +495,12 @@ export default function MovementCreatePage() {
                     return (
                       <tr key={p.keyId}>
                         <td>
-                          <select
-                            name="items[].product_id"
-                            className="select select-md w-full"
+                          {/*productSelect*/}
+                          <ProductAutocomplete
+                            registration={register('product_id')}
                             value={p.product_id}
-                            onChange={e => handleProductChange(p.keyId, Number(e.target.value))}
-                          >
-                            <option value="" disabled>Seleccionar</option>
-                            {PRODUCT_OPTIONS.map(op => (
-                              <option key={op} value='1'>{op}</option>
-                            ))}
-                          </select>
+                            onChange={(id) => handleProductChange(p.keyId, id)}
+                          />
                         </td>
                         <td>
                           <input
