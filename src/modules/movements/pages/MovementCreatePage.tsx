@@ -14,13 +14,6 @@ import { useToast } from '@/components/toast/ToastContext';
 import type { CreateMovementDetailPayload } from '@/types/movement-detail';
 import ProductAutocomplete from '@/components/ui/ProductAutocomplete';
 
-// interface ItemRow {
-//   id: string;
-//   product_id: string;
-//   quantity: number;
-//   unit_cost: number;
-// }
-
 const PRODUCT_OPTIONS = [
   'PROD-001 — Laptop HP',
   'PROD-002 — Mouse Inalámbrico',
@@ -28,11 +21,6 @@ const PRODUCT_OPTIONS = [
   'PROD-004 — Monitor 27"',
   'PROD-005 — Webcam HD',
 ];
-
-// let nextRowId = 1;
-// function generateId() {
-//   return `fila_${nextRowId++}`;
-// }
 
 export default function MovementCreatePage() {
   const { showToast } = useToast();
@@ -242,20 +230,6 @@ export default function MovementCreatePage() {
       showToast('Error al crear el movimiento', 'error');
     }
   };
-
-  // const productSelect = (
-  //   <select
-  //     name="items[].product_id"
-  //     className="select select-md w-full"
-  //     value={p.product_id}
-  //     onChange={e => handleProductChange(p.keyId, Number(e.target.value))}
-  //   >
-  //     <option value="" disabled>Seleccionar</option>
-  //     {PRODUCT_OPTIONS.map(op => (
-  //       <option key={op} value='1'>{op}</option>
-  //     ))}
-  //   </select>
-  // );
 
   return (
     <>
