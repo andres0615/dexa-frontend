@@ -59,7 +59,7 @@ export default function MovementCreatePage() {
     allow_out_of_stock: false,
     generate_reverse_movement: true,
     observations: 'Observaciones de prueba',
-    details: [],
+    details: [{ product_id: null, quantity: 1, unit_cost: 0, subtotal: 0 }],
   };
 
   const {
@@ -464,7 +464,7 @@ export default function MovementCreatePage() {
                   {fields.map((field, index) => {
                     const subtotal = (Number(field.quantity) || 0) * (Number(field.unit_cost) || 0);
                     return (
-                      <tr key={field.id}>
+                      <tr key={field.id} className="[&>td]:align-top">
                         <td>
                           <ProductAutocomplete
                             registration={register(`details.${index}.product_id`, { required: 'El producto es requerido' })}
