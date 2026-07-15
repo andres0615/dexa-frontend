@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, useFieldArray } from 'react-hook-form';
 import type { CreateMovementPayload } from '@/types/movements';
 import type { MovementType } from '@/types/movement-types';
 import { fetchMovementTypes } from '@/services/movementTypeService';
@@ -29,10 +29,10 @@ const PRODUCT_OPTIONS = [
   'PROD-005 — Webcam HD',
 ];
 
-let nextRowId = 1;
-function generateId() {
-  return `fila_${nextRowId++}`;
-}
+// let nextRowId = 1;
+// function generateId() {
+//   return `fila_${nextRowId++}`;
+// }
 
 export default function MovementCreatePage() {
   const { showToast } = useToast();
@@ -71,10 +71,12 @@ export default function MovementCreatePage() {
     allow_out_of_stock: false,
     generate_reverse_movement: true,
     observations: 'Observaciones de prueba',
+    details: [],
   };
 
   const {
     register,
+    control,
     handleSubmit,
     formState: { errors },
     watch,
@@ -84,10 +86,12 @@ export default function MovementCreatePage() {
     // defaultValues: mergedDefaults,
   });
 
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: 'details',
+  });
+
   const movementType = watch('movement_type_id');
-  const [items, setItems] = useState<CreateMovementDetailPayload[]>([
-    { product_id: null, quantity: 1, unit_cost: 0, subtotal: 0 },
-  ]);
   const [warehouses, setWarehouses] = useState<Warehouse[]>([]);
   const [customers, setCustomers] = useState<ThirdParty[]>([]);
   const [suppliers, setSuppliers] = useState<ThirdParty[]>([]);
@@ -111,32 +115,22 @@ export default function MovementCreatePage() {
 
   const [movementTypes, setMovementTypes] = useState<MovementType[]>([]);
 
-  const total = items.reduce((acc, p) => acc + p.quantity * p.unit_cost, 0);
-
-  // Manejar cambios en los items
-  function handleItemChange(keyId: string, field: 'product_id' | 'quantity' | 'unit_cost', value: string | number) {
-    setItems(prev => prev.map(p =>
-      p.keyId === keyId ? { ...p, [field]: value } : p
-    ));
-  }
-
-  function handleProductChange(keyId: string, productId: number | null) {
-    console.log('productId', productId);
-    
-    handleItemChange(keyId, 'product_id', productId);
-  }
+  const watchedDetails = watch('details');
+  const total = (watchedDetails || []).reduce((acc, d) => {
+    const qty = Number(d.quantity) || 0;
+    const cost = Number(d.unit_cost) || 0;
+    return acc + qty * cost;
+  }, 0);
 
   // Agregar fila
   function handleAddRow() {
-    setItems(prev => [...prev, { keyId: generateId(), product_id: null, quantity: 1, unit_cost: 0, subtotal: 0 }]);
+    append({ product_id: null, quantity: 1, unit_cost: 0, subtotal: 0 });
   }
 
   // Eliminar fila
-  function handleRemoveRow(keyId: string) {
-    setItems(prev => {
-      if (prev.length <= 1) return prev;
-      return prev.filter(p => p.keyId !== keyId);
-    });
+  function handleRemoveRow(index: number) {
+    if (fields.length <= 1) return;
+    remove(index);
   }
 
   // Cargar los tipos de movimiento
@@ -232,7 +226,10 @@ export default function MovementCreatePage() {
       generate_reverse_movement: data.generate_reverse_movement,
       observations: data.observations || null,
       // Detalles del movimiento
-      details: items
+      details: data.details.map(d => ({
+        ...d,
+        subtotal: (Number(d.quantity) || 0) * (Number(d.unit_cost) || 0),
+      })),
     };
     console.log('Payload:', payload);
 
@@ -490,45 +487,46 @@ export default function MovementCreatePage() {
                   </tr>
                 </thead>
                 <tbody id="items_container">
-                  {items.map(p => {
-                    const subtotal = p.quantity * p.unit_cost;
+                  {fields.map((field, index) => {
+                    const subtotal = (Number(field.quantity) || 0) * (Number(field.unit_cost) || 0);
                     return (
-                      <tr key={p.keyId}>
+                      <tr key={field.id}>
                         <td>
-                          {/*productSelect*/}
                           <ProductAutocomplete
-                            registration={register('product_id')}
-                            value={p.product_id}
-                            onChange={(id) => handleProductChange(p.keyId, id)}
+                            registration={register(`details.${index}.product_id`, { required: 'El producto es requerido' })}
+                            value={field.product_id}
+                            onChange={(id) => setValue(`details.${index}.product_id`, id)}
+                            error={errors.details?.[index]?.product_id}
                           />
                         </td>
                         <td>
                           <input
-                            name="items[].quantity"
                             type="number"
-                            className="input input-md w-full"
+                            className={`input input-md w-full ${errors.details?.[index]?.quantity ? 'input-error' : ''}`}
                             placeholder="0"
                             min={0}
                             step={0.01}
-                            value={p.quantity}
-                            onChange={e => handleItemChange(p.keyId, 'quantity', parseFloat(e.target.value) || 0)}
+                            {...register(`details.${index}.quantity`, { required: 'La cantidad es requerida', min: { value: 0.01, message: 'Debe ser mayor a 0' }, valueAsNumber: true })}
                           />
+                          {errors.details?.[index]?.quantity && (
+                            <p className="text-error text-xs mt-1">{errors.details?.[index]?.quantity?.message}</p>
+                          )}
                         </td>
                         <td>
                           <input
-                            name="items[].unit_cost"
                             type="number"
-                            className="input input-md w-full"
+                            className={`input input-md w-full ${errors.details?.[index]?.unit_cost ? 'input-error' : ''}`}
                             placeholder="0.00"
                             min={0}
                             step={0.01}
-                            value={p.unit_cost}
-                            onChange={e => handleItemChange(p.keyId, 'unit_cost', parseFloat(e.target.value) || 0)}
+                            {...register(`details.${index}.unit_cost`, { required: 'El costo es requerido', min: { value: 0, message: 'No puede ser negativo' }, valueAsNumber: true })}
                           />
+                          {errors.details?.[index]?.unit_cost && (
+                            <p className="text-error text-xs mt-1">{errors.details?.[index]?.unit_cost?.message}</p>
+                          )}
                         </td>
                         <td>
                           <input
-                            name="items[].subtotal"
                             type="text"
                             className="input input-md w-full"
                             placeholder="0.00"
@@ -540,8 +538,8 @@ export default function MovementCreatePage() {
                           <button
                             type="button"
                             className="btn btn-ghost btn-sm btn-square"
-                              disabled={items.length === 1}
-                              onClick={() => handleRemoveRow(p.keyId)}
+                              disabled={fields.length === 1}
+                              onClick={() => handleRemoveRow(index)}
                           >
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-4">
                               <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />

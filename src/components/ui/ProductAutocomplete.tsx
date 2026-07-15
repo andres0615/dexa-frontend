@@ -1,15 +1,16 @@
 import { fetchProductsPaginated } from '@/services/productService';
 import type { Product } from '@/types/product';
 import { useState, useEffect, useRef } from 'react';
-import type { UseFormRegisterReturn } from 'react-hook-form';
+import type { UseFormRegisterReturn, FieldError } from 'react-hook-form';
 
 interface ProductAutocompleteProps {
   registration: UseFormRegisterReturn;
   value: number | null;
   onChange: (productId: number | null) => void;
+  error?: FieldError;
 }
 
-export default function ProductAutocomplete({ registration, value, onChange }: ProductAutocompleteProps) {
+export default function ProductAutocomplete({ registration, value, onChange, error }: ProductAutocompleteProps) {
   const [query, setQuery] = useState('');
   const [suggestions, setSuggestions] = useState<Product[]>([]);
   const [isOpen, setIsOpen] = useState(false);
@@ -85,7 +86,7 @@ export default function ProductAutocomplete({ registration, value, onChange }: P
         <input
           type="text"
           placeholder="Producto"
-          className="input input-md w-full"
+          className={`input input-md w-full ${error ? 'input-error' : ''}`}
           {...registration}
           value={query}
           onChange={e => {
@@ -94,6 +95,9 @@ export default function ProductAutocomplete({ registration, value, onChange }: P
           }}
         />
       </label>
+      {error && (
+        <p className="text-error text-xs mt-1">{error.message}</p>
+      )}
       {isOpen && (
         <ul className="absolute z-50 top-full mt-1 w-full bg-base-100 shadow-md rounded-box max-h-48 overflow-y-auto">
           {loading && <li className="p-2 text-sm opacity-60">Buscando...</li>}
