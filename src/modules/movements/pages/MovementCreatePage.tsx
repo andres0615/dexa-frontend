@@ -477,7 +477,15 @@ export default function MovementCreatePage() {
                           <ProductAutocomplete
                             registration={register(`details.${index}.product_id`, { required: 'El producto es requerido' })}
                             value={field.product_id}
-                            onChange={(id) => setValue(`details.${index}.product_id`, id)}
+                            onChange={(product) => {
+                              if(product){
+                                setValue(`details.${index}.product_id`, product.id)
+                                setValue(`details.${index}.unit_cost`, product.cost_price as number)
+                              } else {
+                                setValue(`details.${index}.product_id`, null);
+                                setValue(`details.${index}.unit_cost`, 0);
+                              }
+                            }}
                             error={errors.details?.[index]?.product_id}
                           />
                         </td>

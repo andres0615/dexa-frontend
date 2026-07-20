@@ -6,7 +6,7 @@ import type { UseFormRegisterReturn, FieldError } from 'react-hook-form';
 interface ProductAutocompleteProps {
   registration: UseFormRegisterReturn;
   value: number | null;
-  onChange: (productId: number | null) => void;
+  onChange: (productId: Product) => void;
   error?: FieldError;
 }
 
@@ -23,7 +23,7 @@ export default function ProductAutocomplete({ registration, value, onChange, err
   const handleSuggestionClick = (product: Product) => {
     console.log('handleSuggestionClick: ', product);
     setSelectedProduct(product);
-    onChange(product.id);
+    onChange(product);
     setQuery(product.name);
     setIsOpen(false);
   };
