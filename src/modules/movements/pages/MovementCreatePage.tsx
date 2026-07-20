@@ -34,7 +34,6 @@ export default function MovementCreatePage() {
             <h2 className="text-2xl font-bold mb-8">Registrar Movimiento de Inventario</h2>
             <MovementForm
                 onSubmit={handleSubmit}
-                submitLabel="Registrar Movimiento"
             />
         </>
     );
