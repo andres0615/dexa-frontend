@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { createMovement } from '@/services/movementService';
 import { useToast } from '@/components/toast/ToastContext';
 import MovementForm from '../components/MovementForm';
@@ -14,7 +14,7 @@ export default function MovementCreatePage() {
         try {
             await createMovement(data);
             showToast('Movimiento creado exitosamente', 'success');
-            // navigate('/movements');
+            navigate('/movements');
         } catch (error) {
             console.error(error);
             showToast('Error al crear el movimiento', 'error');
@@ -26,8 +26,8 @@ export default function MovementCreatePage() {
             {/* Breadcrumbs */}
             <nav className="breadcrumbs text-sm mb-4" aria-label="Breadcrumb">
                 <ul>
-                    <li><span>Movimientos de Inventario</span></li>
-                    <li><span className="text-base-content/70">Crear</span></li>
+                    <li><Link to="/movements">Movimientos de Inventario</Link></li>
+                    <li className="text-base-content/70">Crear</li>
                 </ul>
             </nav>
 
