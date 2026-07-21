@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useLayoutContext } from '../../../contexts/LayoutContext';
-import type { Product, PaginationMeta, ProductFilters } from '../../../types/product';
+import type { Product, ProductFilters } from '../../../types/product';
+import type { PaginationMeta } from '@/types/pagination';
 import { fetchProductsPaginated, deleteProduct } from '../../../services/productService';
 import ConfirmDeleteModal from '../components/ConfirmDeleteModal';
 import { useToast } from '../../../components/toast/ToastContext';

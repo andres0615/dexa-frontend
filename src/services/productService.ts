@@ -1,4 +1,5 @@
-import type { Product, CreateProductPayload, UpdateProductPayload, PaginatedResult, ProductFilters } from '../types/product';
+import type { Product, CreateProductPayload, UpdateProductPayload, ProductFilters } from '../types/product';
+import type { PaginatedResult } from '@/types/pagination';
 
 // Obtener todos los productos
 export async function fetchProducts(): Promise<Product[]> {
