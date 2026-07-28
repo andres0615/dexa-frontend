@@ -1,15 +1,40 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useLayoutContext } from '@/contexts/LayoutContext';
 import { Link } from 'react-router-dom';
+import { fetchMovementsPaginated } from '@/services/movementService';
+import type { Movement } from '@/types/movements';
+import type { PaginationMeta } from '@/types/pagination';
 
 export default function MovementListPage() {
-
+  // variables de estado
   const { setMaxWidth } = useLayoutContext();
+  const [loadingMovements, setLoadingMovements] = useState(false)
+  const [movements, setMovements] = useState<Movement[]>([]);
+  const [pagination, setPagination] = useState<PaginationMeta | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+
+  // Seccion de useEffects
 
   useEffect(() => {
     setMaxWidth('max-w-[61rem]');
     return () => setMaxWidth('max-w-4xl');
   }, [setMaxWidth]);
+
+  // Cargar productos
+    useEffect(() => {
+      setLoadingMovements(true)
+      fetchMovementsPaginated(currentPage, 10/*, filters*/)
+        .then((result) => {
+          setMovements(result.data);
+          setPagination(result.pagination);
+          console.log('movimientos: ', result);
+          // return result; // pasa al siguiente then
+        })
+        // .then(() => sleep(loadingProductsTimeout)) // espera 1s después del fetch
+        .catch((err) => setError(err.message))
+        .finally(() => setLoadingMovements(false));
+    }, [currentPage]);
 
   return (
     <>
