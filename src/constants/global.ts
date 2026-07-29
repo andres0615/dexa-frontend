@@ -17,3 +17,9 @@ export const DEMO_VALUES = {
   third_party_id: 1,
   movement_type_id: MOVEMENT_TYPE_IDS.COMPRA,
 } as const;
+
+export const MOVEMENT_STATUSES = {
+  PENDIENTE: 1,
+  COMPLETADO: 2,
+  CANCELADO: 3,
+} as const;

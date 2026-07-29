@@ -4,6 +4,9 @@ import { Link } from 'react-router-dom';
 import { fetchMovementsPaginated } from '@/services/movementService';
 import type { Movement } from '@/types/movements';
 import type { PaginationMeta } from '@/types/pagination';
+import { fetchMovementStatus } from '@/services/movementStatusService';
+import type { MovementStatus } from '@/types/movement-status';
+import MovementStatusBadge from '@/modules/movements/components/MovementStatusBadge';
 
 export default function MovementListPage() {
   // variables de estado
@@ -13,6 +16,7 @@ export default function MovementListPage() {
   const [pagination, setPagination] = useState<PaginationMeta | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
+  const [movementStatusList, setMovementStatusList] = useState<MovementStatus[]>([]);
 
   // Seccion de useEffects
 
@@ -22,19 +26,31 @@ export default function MovementListPage() {
   }, [setMaxWidth]);
 
   // Cargar productos
-    useEffect(() => {
-      setLoadingMovements(true)
-      fetchMovementsPaginated(currentPage, 10/*, filters*/)
-        .then((result) => {
-          setMovements(result.data);
-          setPagination(result.pagination);
-          console.log('movimientos: ', result);
-          // return result; // pasa al siguiente then
-        })
-        // .then(() => sleep(loadingProductsTimeout)) // espera 1s después del fetch
-        .catch((err) => setError(err.message))
-        .finally(() => setLoadingMovements(false));
-    }, [currentPage]);
+  useEffect(() => {
+    setLoadingMovements(true)
+    fetchMovementsPaginated(currentPage, 10/*, filters*/)
+      .then((result) => {
+        setMovements(result.data);
+        setPagination(result.pagination);
+        console.log('movimientos: ', result);
+        // return result; // pasa al siguiente then
+      })
+      // .then(() => sleep(loadingProductsTimeout)) // espera 1s después del fetch
+      .catch((err) => setError(err.message))
+      .finally(() => setLoadingMovements(false));
+  }, [currentPage]);
+
+  // Cargar status de movimientos
+  useEffect(() => {
+    setLoadingMovements(true)
+    fetchMovementStatus()
+      .then((result) => {
+        setMovementStatusList(result);
+        console.log('status de movimientos: ', result);
+      })
+      .catch((err) => setError(err.message))
+      .finally(() => setLoadingMovements(false));
+  }, []);
 
   return (
     <>
@@ -169,7 +185,9 @@ export default function MovementListPage() {
                     <td className="font-mono text-sm">{ movement.voucher }</td>
                     <td className="text-right text-sm font-medium">${ movement.total }</td>
                     <td className="text-center">
-                      <span className="badge badge-success badge-xs">{ movement.status.name }</span>
+                      {/* Status del movimiento */}
+                      {/* <span className="badge badge-success badge-xs">{ movement.status.name }</span> */}
+                      <MovementStatusBadge movement={movement} statuses={movementStatusList} />
                     </td>
                     <td>
                       <div className="flex items-center gap-1">

@@ -26,11 +26,11 @@ export interface Movement {
   updated_at: string;
   details: MovementDetail[] | null;
   movement_type: MovementType;
-  movement_status: MovementStatus;
+  status: MovementStatus;
 }
 
 export type CreateMovementPayload =
-  Omit<Movement, 'id' | 'created_at' | 'updated_at' | 'status_id' | 'created_by' | 'details' | 'movement_type' | 'movement_status' > & {
+  Omit<Movement, 'id' | 'created_at' | 'updated_at' | 'status_id' | 'created_by' | 'details' | 'movement_type' | 'status' > & {
     details: CreateMovementDetailPayload[];
   };
 
