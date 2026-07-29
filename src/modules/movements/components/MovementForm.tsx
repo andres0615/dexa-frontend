@@ -102,6 +102,14 @@ export default function MovementForm({
     const thirdPartyTitle = movementType === MOVEMENT_TYPE_IDS.VENTA ? 'Cliente' : 'Proveedor';
     const unitCostHeader = movementType === MOVEMENT_TYPE_IDS.VENTA ? 'Precio Unitario' : 'Costo Unitario';
 
+    // Calcular total general del detalle
+    const watchedDetails = watch('details');
+    const total = (watchedDetails || []).reduce((acc, d) => {
+        const qty = Number(d.quantity) || 0;
+        const cost = Number(d.unit_cost) || 0;
+        return acc + qty * cost;
+    }, 0);
+
     const [movementTypes, setMovementTypes] = useState<MovementType[]>([]);
 
     // Cargar los tipos de movimiento
@@ -200,6 +208,7 @@ export default function MovementForm({
                 ...d,
                 subtotal: calculateSubtotal(d.quantity, d.unit_cost),
             })),
+            total: total.toFixed(2),
         };
         await parentOnSubmit(payload);
     };

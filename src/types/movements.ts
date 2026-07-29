@@ -1,4 +1,6 @@
 import type { MovementDetail, CreateMovementDetailPayload } from '@/types/movement-detail';
+import type { MovementType } from '@/types/movement-types';
+import type { MovementStatus } from '@/types/movement-status';
 
 export interface Movement {
   id: number;
@@ -18,16 +20,21 @@ export interface Movement {
   generate_reverse_movement: boolean;
   observations: string | null;
   total: string;
-  status: string;
+  status_id: number;
   created_by: number | null;
   created_at: string;
   updated_at: string;
   details: MovementDetail[] | null;
+  movement_type: MovementType;
+  movement_status: MovementStatus;
 }
 
 export type CreateMovementPayload =
-  Omit<Movement, 'id' | 'created_at' | 'updated_at' | 'total' | 'status' | 'created_by' | 'details'> & {
+  Omit<Movement, 'id' | 'created_at' | 'updated_at' | 'status_id' | 'created_by' | 'details' | 'movement_type' | 'movement_status' > & {
     details: CreateMovementDetailPayload[];
   };
 
-export type UpdateMovementPayload = Partial<CreateMovementPayload>;
+export type UpdateMovementPayload = Partial<CreateMovementPayload> & {
+    // el status_id es editable
+    status_id: number;
+  };
