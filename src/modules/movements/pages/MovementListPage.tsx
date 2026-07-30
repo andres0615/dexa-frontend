@@ -7,6 +7,9 @@ import type { PaginationMeta } from '@/types/pagination';
 import { fetchMovementStatus } from '@/services/movementStatusService';
 import type { MovementStatus } from '@/types/movement-status';
 import MovementStatusBadge from '@/modules/movements/components/MovementStatusBadge';
+import type { MovementType } from '@/types/movement-types';
+import { fetchMovementTypes } from '@/services/movementTypeService';
+import MovementTypeBadge from '@/modules/movements/components/MovementTypeBadge';
 
 export default function MovementListPage() {
   // variables de estado
@@ -17,6 +20,7 @@ export default function MovementListPage() {
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [movementStatusList, setMovementStatusList] = useState<MovementStatus[]>([]);
+  const [movementTypeList, setMovementTypeList] = useState<MovementType[]>([]);
 
   // Seccion de useEffects
 
@@ -25,7 +29,7 @@ export default function MovementListPage() {
     return () => setMaxWidth('max-w-4xl');
   }, [setMaxWidth]);
 
-  // Cargar productos
+  // Cargar movimientos
   useEffect(() => {
     setLoadingMovements(true)
     fetchMovementsPaginated(currentPage, 10/*, filters*/)
@@ -42,11 +46,21 @@ export default function MovementListPage() {
 
   // Cargar status de movimientos
   useEffect(() => {
-    setLoadingMovements(true)
     fetchMovementStatus()
       .then((result) => {
         setMovementStatusList(result);
         console.log('status de movimientos: ', result);
+      })
+      .catch((err) => setError(err.message))
+      .finally(() => setLoadingMovements(false));
+  }, []);
+
+  // Cargar tipos de movimiento
+  useEffect(() => {
+    fetchMovementTypes()
+      .then((result) => {
+        setMovementTypeList(result);
+        console.log('tipos de movimiento: ', result);
       })
       .catch((err) => setError(err.message))
       .finally(() => setLoadingMovements(false));
@@ -179,14 +193,14 @@ export default function MovementListPage() {
                       <label><input type="checkbox" className="checkbox" /></label>
                     </th>
                     <td>
-                      <span className="badge badge-success badge-sm font-medium">{ movement.movement_type.name }</span>
+                      {/* Tipo de movimiento */}
+                      <MovementTypeBadge movement={movement} types={movementTypeList} />
                     </td>
                     <td className="text-sm whitespace-nowrap">{ movement.movement_date }</td>
                     <td className="font-mono text-sm">{ movement.voucher }</td>
                     <td className="text-right text-sm font-medium">${ movement.total }</td>
                     <td className="text-center">
                       {/* Status del movimiento */}
-                      {/* <span className="badge badge-success badge-xs">{ movement.status.name }</span> */}
                       <MovementStatusBadge movement={movement} statuses={movementStatusList} />
                     </td>
                     <td>
