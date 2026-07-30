@@ -11,6 +11,9 @@ import { fetchThirdParties } from '@/services/thirdPartyService';
 import ToggleField from '@/components/ui/ToggleField';
 import type { CreateMovementDetailPayload } from '@/types/movement-detail';
 import MovementDetail from './MovementDetail';
+import { fetchMovementStatus } from '@/services/movementStatusService';
+import type { MovementStatus } from '@/types/movement-status';
+import { MOVEMENT_STATUSES } from '@/constants/global';
 
 interface MovementFormProps {
     onSubmit: (data: CreateMovementPayload) => Promise<void>;
@@ -111,6 +114,8 @@ export default function MovementForm({
     }, 0);
 
     const [movementTypes, setMovementTypes] = useState<MovementType[]>([]);
+    const [movementStatuses, setMovementStatuses] = useState<MovementStatus[]>([]);
+    const [movementStatus, setMovementStatus] = useState<number | null>(MOVEMENT_STATUSES.PENDIENTE);
 
     // Cargar los tipos de movimiento
     useEffect(() => {
@@ -162,6 +167,17 @@ export default function MovementForm({
         setValue("destination_warehouse_id", mergedDefaults.destination_warehouse_id);
         setValue("third_party_id", mergedDefaults.third_party_id);
     }, [movementTypes, customers, suppliers, warehouses]);
+
+    // Cargar los status de movimiento
+    useEffect(() => {
+        fetchMovementStatus()
+            .then((result) => {
+                console.log('movement statuses: ', result);
+                setMovementStatuses(result);
+            })
+            .catch((err) => console.error(err))
+            .finally(() => { });
+    }, []);
 
     // Select para tipos de movimientos
     const movementTypesSelect = (
@@ -432,6 +448,7 @@ export default function MovementForm({
           <div className="card-body">
             <h3 className="card-title text-lg mb-4">Configuración</h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {/* Metodo de valuacion */}
               <label className="floating-label">
                 <select
                   className={`select select-md w-full ${errors.valuation_method ? 'select-error' : ''}`}
@@ -447,18 +464,38 @@ export default function MovementForm({
                   <p className="text-error text-xs mt-1">{errors.valuation_method.message}</p>
                 )}
               </label>
+              {/* Permitir salida sin stock */}
               <div>
                 <span className="font-medium text-sm block">Permitir salida sin stock</span>
                 <div className="flex items-center gap-3 h-10">
                   <ToggleField registration={register('allow_out_of_stock')} checked={watch('allow_out_of_stock')} />
                 </div>
               </div>
+              {/* Generar movimiento inverso al anular */}
               <div>
                 <span className="font-medium text-sm block">Generar movimiento inverso al anular</span>
                 <div className="flex items-center gap-3 h-10">
                   <ToggleField registration={register('generate_reverse_movement')} checked={watch('generate_reverse_movement')} />
                 </div>
               </div>
+              {/* Status */}
+              <label className="floating-label">
+                <select
+                  className={`select select-md w-full`}
+                  disabled
+                  value={movementStatus ?? ''}
+                  onChange={(e) => setMovementStatus(e.target.value === '' ? null : Number(e.target.value))}
+                >
+                  <option value="">Seleccionar</option>
+                  {movementStatuses.map((status) => (
+                    <option key={status.id} value={status.id}>
+                      {status.name}
+                    </option>
+                  ))}
+                </select>
+                <span>Status</span>
+              </label>
+              {/* Observaciones */}
               <div className="md:col-span-3">
                 <label className="floating-label">
                   <span>Observaciones</span>
