@@ -8,6 +8,16 @@ export default function ProductCreatePage() {
     const navigate = useNavigate();
     const { showToast } = useToast();
 
+    // valores demo para propositos de prueba
+    const demoValues: any = {
+        name: "Test",
+        category_id: 1,
+        unit_of_measurement: "UND",
+        cost_price: 10000,
+        sale_price: 15000,
+        code: "CAM-001",
+    };
+
     const handleSubmit = async (data: CreateProductPayload) => {
         console.log('Payload:', data);
 
@@ -35,14 +45,7 @@ export default function ProductCreatePage() {
             <ProductForm
                 onSubmit={handleSubmit}
                 submitLabel="Guardar"
-                defaultValues={{
-                    name: "Test",
-                    category_id: 1,
-                    unit_of_measurement: "UND",
-                    cost_price: 10000,
-                    sale_price: 15000,
-                    code: "CAM-001",
-                }}
+                defaultValues={demoValues}
             />
         </>
     );

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import type { CreateMovementPayload } from '@/types/movements';
+import type { CreateMovementPayload, UpdateMovementPayload } from '@/types/movements';
 import type { MovementType } from '@/types/movement-types';
 import { fetchMovementTypes } from '@/services/movementTypeService';
 import { MOVEMENT_TYPE_IDS, TIPOS_TERCERO, DEMO_VALUES } from '@/constants/global';
@@ -16,7 +16,7 @@ import type { MovementStatus } from '@/types/movement-status';
 import { MOVEMENT_STATUSES } from '@/constants/global';
 
 interface MovementFormProps {
-    onSubmit: (data: CreateMovementPayload) => Promise<void>;
+    onSubmit: (data: CreateMovementPayload | UpdateMovementPayload) => Promise<void>;
     defaultValues?: Partial<CreateMovementPayload>;
     submitLabel?: string;
 }
@@ -31,45 +31,46 @@ export default function MovementForm({
     submitLabel = 'Guardar',
 }: MovementFormProps) {
 
-    // const mergedDefaults: any = {
-    //   movement_type_id: null,
-    //   adjustment_is_entry: false,
-    //   movement_date: '',
-    //   voucher: null,
-    //   source_warehouse_id: null,
-    //   destination_warehouse_id: null,
-    //   original_voucher: null,
-    //   third_party_id: null,
-    //   third_party_document: null,
-    //   third_party_phone: null,
-    //   note: null,
-    //   valuation_method: 'promedio',
-    //   allow_out_of_stock: false,
-    //   generate_reverse_movement: true,
-    //   observations: null,
-    //   details: [{ product_id: null, quantity: 1, unit_cost: 0, subtotal: 0 }],
-    // };
+    const mergedDefaults: any = {
+      movement_type_id: null,
+      adjustment_is_entry: false,
+      movement_date: '',
+      voucher: null,
+      source_warehouse_id: null,
+      destination_warehouse_id: null,
+      original_voucher: null,
+      third_party_id: null,
+      third_party_document: null,
+      third_party_phone: null,
+      note: null,
+      valuation_method: 'promedio',
+      allow_out_of_stock: false,
+      generate_reverse_movement: true,
+      observations: null,
+      details: [{ product_id: null, quantity: 1, unit_cost: 0, subtotal: 0 }],
+      ...defaultValues,
+    };
 
     // Valores demo
-    const mergedDefaults: any = {
-        movement_type_id: DEMO_VALUES.movement_type_id,
-        adjustment_is_entry: false,
-        movement_date: new Date().toISOString().split('T')[0],
-        voucher: 'FV-001-00000123',
-        source_warehouse_id: null,
-        destination_warehouse_id: DEMO_VALUES.destination_warehouse_id,
-        original_voucher: null,
-        third_party_id: DEMO_VALUES.third_party_id,
-        third_party_document: '12345678',
-        third_party_phone: '999888777',
-        note: 'Compra de prueba — verificar flujo completo',
-        valuation_method: 'promedio',
-        allow_out_of_stock: false,
-        generate_reverse_movement: true,
-        observations: 'Observaciones de prueba',
-        details: [{ product_id: null, quantity: 1, unit_cost: 0, subtotal: 0 }],
-        ...defaultValues,
-    };
+    // const mergedDefaults: any = {
+    //     movement_type_id: DEMO_VALUES.movement_type_id,
+    //     adjustment_is_entry: false,
+    //     movement_date: new Date().toISOString().split('T')[0],
+    //     voucher: 'FV-001-00000123',
+    //     source_warehouse_id: null,
+    //     destination_warehouse_id: DEMO_VALUES.destination_warehouse_id,
+    //     original_voucher: null,
+    //     third_party_id: DEMO_VALUES.third_party_id,
+    //     third_party_document: '12345678',
+    //     third_party_phone: '999888777',
+    //     note: 'Compra de prueba — verificar flujo completo',
+    //     valuation_method: 'promedio',
+    //     allow_out_of_stock: false,
+    //     generate_reverse_movement: true,
+    //     observations: 'Observaciones de prueba',
+    //     details: [{ product_id: null, quantity: 1, unit_cost: 0, subtotal: 0 }],
+    //     ...defaultValues,
+    // };
 
     const {
         register,
@@ -203,8 +204,8 @@ export default function MovementForm({
         </label>
     );
 
-    const onSubmit = async (data: any) => {
-        const payload: CreateMovementPayload = {
+    const onSubmit = async (data: CreateMovementPayload | UpdateMovementPayload) => {
+        const payload: CreateMovementPayload | UpdateMovementPayload = {
             movement_type_id: data.movement_type_id,
             adjustment_is_entry: data.adjustment_is_entry,
             movement_date: data.movement_date,

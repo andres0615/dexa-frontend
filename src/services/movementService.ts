@@ -1,4 +1,4 @@
-import type { Movement, CreateMovementPayload } from '../types/movements';
+import type { Movement, CreateMovementPayload, UpdateMovementPayload } from '../types/movements';
 import type { PaginatedResult } from '@/types/pagination';
 
 // Crear un nuevo movimiento de inventario
@@ -66,4 +66,58 @@ export async function fetchMovementsPaginated(
       to: movementsPaginated.to,
     },
   };
+}
+
+// Obtener un movimiento por ID
+export async function fetchMovement(id: number): Promise<any> {
+  // Petición GET al endpoint de consulta de movimiento
+  const response = await fetch(`/api/movements/${id}`, {
+    headers: { 'Accept': 'application/json' },
+  });
+  // Extraer datos del wrapper
+  const { success, data, message } = await response.json();
+
+  // Verificar si la respuesta es exitosa
+  // desde el back los errores se capturan con try-catch y se convierten en HTTP 500/422 con success: false
+  if (!success) {
+    throw new Error(message ?? 'Error al obtener el movimiento');
+  }
+  // si la respuesta es exitosa, retornar los productos
+  return data.movement;
+}
+
+// Actualizar un producto existente
+export async function updateMovement(
+  id: number,
+  payload: UpdateMovementPayload
+): Promise<Movement> {
+  // Petición PUT al endpoint de movimientos
+  const response = await fetch(`/api/movements/${id}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+    },
+    body: JSON.stringify(payload),
+  });
+
+  console.log('response: ', response);
+
+  // Extraer datos del wrapper
+  const { success, data, message, errors } = await response.json();
+
+  // Verificar si la respuesta es exitosa
+  // desde el back los errores se capturan con try-catch y se convierten en HTTP 500/422 con success: false
+  if (!success) {
+    let errorMessage = message ?? 'Error al actualizar el movimiento';
+    
+    // Si hay errores de validación, agregarlos al mensaje
+    if (errors && errors.length > 0) {
+      errorMessage += '\n' + errors.join('\n');
+    }
+    throw new Error(errorMessage);
+  }
+
+  // si la respuesta es exitosa, retornar los productos
+  return data.product;
 }
