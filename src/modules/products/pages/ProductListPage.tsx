@@ -6,7 +6,7 @@ import type { PaginationMeta } from '@/types/pagination';
 import { fetchProductsPaginated, deleteProduct } from '../../../services/productService';
 import ConfirmDeleteModal from '../components/ConfirmDeleteModal';
 import { useToast } from '../../../components/toast/ToastContext';
-import TablePagination from '../components/TablePagination';
+import TablePagination from '@/components/ui/TablePagination';
 import { fetchProductStatus } from '../../../services/productStatusService';
 import { fetchProductCategories } from '../../../services/productCategoryService';
 import type { ProductStatus } from '../../../types/product-status';

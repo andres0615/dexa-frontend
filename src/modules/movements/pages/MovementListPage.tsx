@@ -10,6 +10,7 @@ import MovementStatusBadge from '@/modules/movements/components/MovementStatusBa
 import type { MovementType } from '@/types/movement-types';
 import { fetchMovementTypes } from '@/services/movementTypeService';
 import MovementTypeBadge from '@/modules/movements/components/MovementTypeBadge';
+import TablePagination from '@/components/ui/TablePagination';
 
 export default function MovementListPage() {
   // variables de estado
@@ -21,6 +22,13 @@ export default function MovementListPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [movementStatusList, setMovementStatusList] = useState<MovementStatus[]>([]);
   const [movementTypeList, setMovementTypeList] = useState<MovementType[]>([]);
+
+  // Seccion de handlers
+
+  // Cambiar de página en la paginación
+  function handlePageChange(page: number): void {
+    setCurrentPage(page);
+  }
 
   // Seccion de useEffects
 
@@ -39,7 +47,6 @@ export default function MovementListPage() {
         console.log('movimientos: ', result);
         // return result; // pasa al siguiente then
       })
-      // .then(() => sleep(loadingProductsTimeout)) // espera 1s después del fetch
       .catch((err) => setError(err.message))
       .finally(() => setLoadingMovements(false));
   }, [currentPage]);
@@ -370,7 +377,7 @@ export default function MovementListPage() {
       </div>
 
       {/* Paginación */}
-      <div className="flex justify-between items-center">
+      {/* <div className="flex justify-between items-center">
         <p className="text-sm text-base-content/60 ml-2">Mostrando 1-10 de 248 movimientos</p>
         <div className="join">
           <button className="join-item btn btn-soft btn-sm">«</button>
@@ -381,7 +388,17 @@ export default function MovementListPage() {
           <button className="join-item btn btn-soft btn-sm">5</button>
           <button className="join-item btn btn-soft btn-sm">»</button>
         </div>
-      </div>
+      </div> */}
+
+      {/* Paginación */}
+      <TablePagination
+        currentPage={currentPage}
+        lastPage={pagination?.lastPage ?? 1}
+        total={pagination?.total ?? 0}
+        from={pagination?.from ?? null}
+        to={pagination?.to ?? null}
+        onPageChange={handlePageChange}
+      />
     </>
   );
 }

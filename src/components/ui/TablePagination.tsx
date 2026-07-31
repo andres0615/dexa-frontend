@@ -21,7 +21,7 @@ export default function TablePagination({
     <div className="flex justify-between items-center">
       {/* Texto informativo: "Mostrando X–Y de Z productos" */}
       <p className="text-sm text-base-content/60 ml-2">
-        Mostrando {from ?? 0}–{to ?? 0} de {total} registros
+        Mostrando {from ?? 0} – {to ?? 0} de {total} registros
       </p>
 
       {/* Botonera de paginación con DaisyUI join */}
