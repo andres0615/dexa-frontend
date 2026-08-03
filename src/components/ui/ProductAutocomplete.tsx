@@ -5,12 +5,12 @@ import type { UseFormRegisterReturn, FieldError } from 'react-hook-form';
 
 interface ProductAutocompleteProps {
   registration: UseFormRegisterReturn;
-  value: number | null;
+  defaultProduct?: Product | null;
   onChange: (productId: Product) => void;
   error?: FieldError;
 }
 
-export default function ProductAutocomplete({ registration, value, onChange, error }: ProductAutocompleteProps) {
+export default function ProductAutocomplete({ registration, defaultProduct, onChange, error }: ProductAutocompleteProps) {
   const [query, setQuery] = useState('');
   const [suggestions, setSuggestions] = useState<Product[]>([]);
   const [isOpen, setIsOpen] = useState(false);
@@ -20,12 +20,20 @@ export default function ProductAutocomplete({ registration, value, onChange, err
   const debounceRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const containerRef = useRef<HTMLDivElement>(null);
 
+  // Handler para cuando se hace clic en una sugerencia
   const handleSuggestionClick = (product: Product) => {
     console.log('handleSuggestionClick: ', product);
     setSelectedProduct(product);
     onChange(product);
     setQuery(product.name);
+    // Cerrar el dropdown
     setIsOpen(false);
+  };
+
+  // Manejar cambio en el input
+  const handleQueryChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
+    registration.onChange(e);
+    setQuery(e.target.value);
   };
 
   // Cuando cambia el query, buscar productos
@@ -68,6 +76,13 @@ export default function ProductAutocomplete({ registration, value, onChange, err
     return () => clearTimeout(debounceRef.current);
   }, [query]);
 
+  // Cuando se carga el componente con un producto por defecto
+  useEffect(() => {
+    if (defaultProduct) {
+      handleSuggestionClick(defaultProduct);
+    }
+  }, []);
+
   // Cerrar dropdown al hacer click fuera
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
@@ -89,21 +104,22 @@ export default function ProductAutocomplete({ registration, value, onChange, err
           className={`input input-md w-full ${error ? 'input-error' : ''}`}
           {...registration}
           value={query}
-          onChange={e => {
-            registration.onChange(e);
-            setQuery(e.target.value);
-          }}
+          onChange={e => handleQueryChange(e)}
         />
       </label>
       {error && (
         <p className="text-error text-xs mt-1">{error.message}</p>
       )}
+      {/* Suggestions dropdown */}
       {isOpen && (
         <ul className="absolute z-50 top-full mt-1 w-full bg-base-100 shadow-md rounded-box max-h-48 overflow-y-auto">
+          {/* Loading state */}
           {loading && <li className="p-2 text-sm opacity-60">Buscando...</li>}
+          {/* No results */}
           {!loading && suggestions.length === 0 && (
             <li className="p-2 text-sm opacity-60">Sin resultados</li>
           )}
+          {/* Results */}
           {!loading && suggestions.map(product => (
             <li key={product.id}>
               <button

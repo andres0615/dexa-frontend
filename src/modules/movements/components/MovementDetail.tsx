@@ -65,7 +65,7 @@ export default function MovementDetail({ control, register, errors, setValue, wa
                     <td>
                       <ProductAutocomplete
                         registration={register(`details.${index}.product_id`, { required: 'El producto es requerido' })}
-                        value={field.product_id}
+                        defaultProduct={field.product}
                         onChange={(product) => {
                           if (product) {
                             setValue(`details.${index}.product_id`, product.id)

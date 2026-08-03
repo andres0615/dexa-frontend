@@ -1,3 +1,5 @@
+import type { Product } from '@/types/product';
+
 export interface MovementDetail {
   id: number;
   movement_id: number;
@@ -8,6 +10,7 @@ export interface MovementDetail {
   created_at: string;
   updated_at: string;
   keyId?: string; // key para el front
+  product?: Product
 }
 
 export type CreateMovementDetailPayload =
