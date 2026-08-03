@@ -1,14 +1,14 @@
 import { useFieldArray } from 'react-hook-form';
 import type { Control, FieldErrors, UseFormRegister, UseFormSetValue, UseFormWatch } from 'react-hook-form';
-import type { CreateMovementPayload } from '@/types/movements';
+import type { CreateMovementPayload, UpdateMovementPayload } from '@/types/movements';
 import ProductAutocomplete from '@/components/ui/ProductAutocomplete';
 
 interface MovementDetailProps {
-  control: Control<CreateMovementPayload>;
-  register: UseFormRegister<CreateMovementPayload>;
-  errors: FieldErrors<CreateMovementPayload>;
-  setValue: UseFormSetValue<CreateMovementPayload>;
-  watch: UseFormWatch<CreateMovementPayload>;
+  control: Control<CreateMovementPayload|UpdateMovementPayload>;
+  register: UseFormRegister<CreateMovementPayload|UpdateMovementPayload>;
+  errors: FieldErrors<CreateMovementPayload|UpdateMovementPayload>;
+  setValue: UseFormSetValue<CreateMovementPayload|UpdateMovementPayload>;
+  watch: UseFormWatch<CreateMovementPayload|UpdateMovementPayload>;
   unitCostHeader: string;
 }
 

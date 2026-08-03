@@ -4,6 +4,7 @@ import type { Movement, UpdateMovementPayload } from '@/types/movements';
 import { fetchMovement, updateMovement } from '@/services/movementService';
 import { useToast } from '@/components/toast/ToastContext';
 import MovementForm from '../components/MovementForm';
+import { formatDateToInput } from '@/utils/utils';
 
 export default function MovementEditPage() {
   const { id } = useParams<{ id: string }>();
@@ -33,7 +34,11 @@ export default function MovementEditPage() {
       .then((movement) => {
         // Aquí puedes hacer algo con el movimiento obtenido
         console.log('Movimiento obtenido:', movement);
-        setMovement(movement);
+        setMovement({
+          ...movement,
+          // formatear la fecha para el input date
+          movement_date: formatDateToInput(movement.movement_date)
+        });
       })
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
