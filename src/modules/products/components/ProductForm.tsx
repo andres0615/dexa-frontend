@@ -301,6 +301,7 @@ export default function ProductForm({
                                     placeholder="Stock Inicial"
                                     className={`input input-md w-full ${errors.initial_stock ? 'input-error' : ''}`}
                                     min="0"
+                                    disabled={isEdit}
                                     {...register('initial_stock', { required: 'El stock inicial es requerido', valueAsNumber: true, min: 0 })} />
                             </label>
                             {errors.initial_stock && <p className="text-error text-xs mt-1">{errors.initial_stock.message}</p>}
