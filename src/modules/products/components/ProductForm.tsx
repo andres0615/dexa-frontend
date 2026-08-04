@@ -12,12 +12,14 @@ interface ProductFormProps {
     onSubmit: (data: CreateProductPayload | UpdateProductPayload) => Promise<void>;
     defaultValues?: Partial<CreateProductPayload>;
     submitLabel?: string;
+    isEdit?: boolean;
 }
 
 export default function ProductForm({
     onSubmit: parentOnSubmit,
     defaultValues,
     submitLabel = 'Guardar',
+    isEdit = false,
 }: ProductFormProps) {
     // Valores por defecto fusionados con los defaultValues del padre.
     // Garantiza valores iniciales aunque el padre no los provea.
@@ -303,6 +305,19 @@ export default function ProductForm({
                             </label>
                             {errors.initial_stock && <p className="text-error text-xs mt-1">{errors.initial_stock.message}</p>}
                         </div>
+                        {isEdit && (
+                          <div>
+                            <label className="floating-label">
+                              <span>Stock Actual</span>
+                              <input type="number"
+                                placeholder="Stock Actual"
+                                className={`input input-md w-full ${errors.qty_on_hand ? 'input-error' : ''}`}
+                                min="0"
+                                disabled
+                                {...register('qty_on_hand', { valueAsNumber: true, min: 0 })} />
+                            </label>
+                          </div>
+                        )}
                         <div>
                             <label className="floating-label">
                                 <span>Stock Mínimo</span>

@@ -16,6 +16,7 @@ export interface Product {
   applies_tax: boolean;
   vat_percentage: number;
   initial_stock: number;
+  qty_on_hand: number;
   minimum_stock: number;
   maximum_stock: number | null;
   location: string | null;

@@ -52,7 +52,7 @@ export default function MovementEditPage() {
     try {
       await updateMovement(numericId, data);
       showToast('Movimiento actualizado exitosamente', 'success');
-      navigate('/movements');
+      // navigate('/movements');
     } catch (err) {
       showToast(err instanceof Error ? err.message : 'Error al actualizar el movimiento', 'error');
     }

@@ -86,6 +86,7 @@ export default function ProductEditPage() {
         onSubmit={handleSubmit}
         submitLabel="Actualizar"
         defaultValues={product ?? undefined}
+        isEdit={true}
       />
     </>
   );
