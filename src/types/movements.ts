@@ -8,8 +8,6 @@ export interface Movement {
   adjustment_is_entry: boolean | null;
   movement_date: string;
   voucher: string | null;
-  source_warehouse_id: number | null;
-  destination_warehouse_id: number | null;
   original_voucher: string | null;
   third_party_id: number | null;
   third_party_document: string | null;

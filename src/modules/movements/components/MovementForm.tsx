@@ -4,8 +4,6 @@ import type { CreateMovementPayload, UpdateMovementPayload } from '@/types/movem
 import type { MovementType } from '@/types/movement-types';
 import { fetchMovementTypes } from '@/services/movementTypeService';
 import { MOVEMENT_TYPE_IDS, TIPOS_TERCERO, DEMO_VALUES } from '@/constants/global';
-import type { Warehouse } from '@/types/warehouse';
-import { fetchWarehouses } from '@/services/warehouseService';
 import type { ThirdParty } from '@/types/third-party';
 import { fetchThirdParties } from '@/services/thirdPartyService';
 import ToggleField from '@/components/ui/ToggleField';
@@ -36,8 +34,6 @@ export default function MovementForm({
       adjustment_is_entry: false,
       movement_date: '',
       voucher: null,
-      source_warehouse_id: null,
-      destination_warehouse_id: null,
       original_voucher: null,
       third_party_id: null,
       third_party_document: null,
@@ -64,18 +60,11 @@ export default function MovementForm({
     });
 
     const movementType = watch('movement_type_id');
-    const [warehouses, setWarehouses] = useState<Warehouse[]>([]);
     const [customers, setCustomers] = useState<ThirdParty[]>([]);
     const [suppliers, setSuppliers] = useState<ThirdParty[]>([]);
 
     // Mostrar u ocultar campos según el tipo de movimiento
     const showAdjustmentToggle = movementType === MOVEMENT_TYPE_IDS.AJUSTE;
-    const showSourceWarehouse = movementType === MOVEMENT_TYPE_IDS.VENTA
-        || movementType === MOVEMENT_TYPE_IDS.AJUSTE
-        || movementType === MOVEMENT_TYPE_IDS.TRASLADO;
-    const showDestinationWarehouse = movementType === MOVEMENT_TYPE_IDS.COMPRA
-        || movementType === MOVEMENT_TYPE_IDS.DEVOLUCION
-        || movementType === MOVEMENT_TYPE_IDS.TRASLADO;
     const showOriginalVoucher = movementType === MOVEMENT_TYPE_IDS.DEVOLUCION;
     const showThirdParty = movementType !== MOVEMENT_TYPE_IDS.AJUSTE && movementType !== MOVEMENT_TYPE_IDS.TRASLADO && movementType !== null;
     const showCustomers = movementType === MOVEMENT_TYPE_IDS.VENTA;
@@ -108,17 +97,6 @@ export default function MovementForm({
             .finally(() => { });
     }, []);
 
-    // Cargar los almacenes
-    useEffect(() => {
-        fetchWarehouses()
-            .then((result) => {
-                console.log('warehouses: ', result);
-                setWarehouses(result);
-            })
-            .catch((err) => console.error(err))
-            .finally(() => { });
-    }, []);
-
     // Cargar los clientes
     useEffect(() => {
         fetchThirdParties({ third_party_type_id: TIPOS_TERCERO.CLIENTE })
@@ -144,9 +122,8 @@ export default function MovementForm({
     // cargar valores demo de los select
     useEffect(() => {
         setValue("movement_type_id", mergedDefaults.movement_type_id);
-        setValue("destination_warehouse_id", mergedDefaults.destination_warehouse_id);
         setValue("third_party_id", mergedDefaults.third_party_id);
-    }, [movementTypes, customers, suppliers, warehouses]);
+    }, [movementTypes, customers, suppliers]);
 
     // Cargar los status de movimiento
     useEffect(() => {
@@ -189,8 +166,6 @@ export default function MovementForm({
             adjustment_is_entry: data.adjustment_is_entry,
             movement_date: data.movement_date,
             voucher: data.voucher || null,
-            source_warehouse_id: data.source_warehouse_id || null,
-            destination_warehouse_id: data.destination_warehouse_id || null,
             original_voucher: data.original_voucher || null,
             third_party_id: data.third_party_id ?? null,
             third_party_document: data.third_party_document || null,
@@ -261,55 +236,6 @@ export default function MovementForm({
                   {...register('voucher')}
                 />
               </label>
-              {showSourceWarehouse && (
-                <div id="source_warehouse_id">
-                  <label className="floating-label">
-                    <select
-                      className={`select select-md w-full ${errors.source_warehouse_id ? 'select-error' : ''}`}
-                      {...register('source_warehouse_id', {
-                        required: showSourceWarehouse ? 'El almacén origen es requerido' : false,
-                        setValueAs: (v: string) => v === '' ? null : Number(v),
-                      })}
-                    >
-                      <option value="">Seleccionar</option>
-                      {warehouses.map((warehouse) => (
-                        <option key={warehouse.id} value={warehouse.id}>
-                          {warehouse.name}
-                        </option>
-                      ))}
-                    </select>
-                    <span>Almacén Origen</span>
-                    {errors.source_warehouse_id && (
-                      <p className="text-error text-xs mt-1">{errors.source_warehouse_id.message}</p>
-                    )}
-                  </label>
-                </div>
-              )}
-
-              {showDestinationWarehouse && (
-                <div id="destination_warehouse_id">
-                  <label className="floating-label">
-                    <select
-                      className={`select select-md w-full ${errors.destination_warehouse_id ? 'select-error' : ''}`}
-                      {...register('destination_warehouse_id', {
-                        required: showDestinationWarehouse ? 'El almacén destino es requerido' : false,
-                        setValueAs: (v: string) => v === '' ? null : Number(v),
-                      })}
-                    >
-                      <option value="">Seleccionar</option>
-                      {warehouses.map((warehouse) => (
-                        <option key={warehouse.id} value={warehouse.id}>
-                          {warehouse.name}
-                        </option>
-                      ))}
-                    </select>
-                    <span>Almacén Destino</span>
-                    {errors.destination_warehouse_id && (
-                      <p className="text-error text-xs mt-1">{errors.destination_warehouse_id.message}</p>
-                    )}
-                  </label>
-                </div>
-              )}
 
               {showOriginalVoucher && (
                 <div id="original_voucher_wrapper" className="md:col-span-3">
