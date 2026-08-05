@@ -121,3 +121,19 @@ export async function updateMovement(
   // si la respuesta es exitosa, retornar los productos
   return data.product;
 }
+
+// Completar un movimiento de inventario
+export async function completeMovement(id: number): Promise<Movement> {
+  const response = await fetch(`/api/movements/${id}/complete`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+  });
+
+  const { success, data, message } = await response.json();
+
+  if (!success) {
+    throw new Error(message ?? 'Error al completar el movimiento');
+  }
+
+  return data.movement;
+}

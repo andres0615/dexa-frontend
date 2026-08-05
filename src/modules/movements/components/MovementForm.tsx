@@ -363,7 +363,6 @@ export default function MovementForm({
                   <option value="promedio">Promedio Ponderado</option>
                   <option value="peps">PEPS</option>
                   <option value="ueps">UEPS</option>
-                  <option value="costo-promedio">Costo Promedio</option>
                 </select>
                 <span>Método de Valuación</span>
                 {errors.valuation_method && (

@@ -1,7 +1,9 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useLayoutContext } from '@/contexts/LayoutContext';
 import { Link } from 'react-router-dom';
-import { fetchMovementsPaginated } from '@/services/movementService';
+import { fetchMovementsPaginated, completeMovement } from '@/services/movementService';
+import { useToast } from '@/components/toast/ToastContext';
+import ConfirmCompleteModal from '@/modules/movements/components/ConfirmCompleteModal';
 import type { Movement } from '@/types/movements';
 import type { PaginationMeta } from '@/types/pagination';
 import { fetchMovementStatus } from '@/services/movementStatusService';
@@ -22,12 +24,42 @@ export default function MovementListPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [movementStatusList, setMovementStatusList] = useState<MovementStatus[]>([]);
   const [movementTypeList, setMovementTypeList] = useState<MovementType[]>([]);
+  const [movementToComplete, setMovementToComplete] = useState<Movement | null>(null);
+  const completeDialogRef = useRef<HTMLDialogElement>(null);
+  const { showToast } = useToast();
 
   // Seccion de handlers
 
   // Cambiar de página en la paginación
   function handlePageChange(page: number): void {
     setCurrentPage(page);
+  }
+
+  // Click en el botón de completar
+  function handleCompleteClick(movement: Movement): void {
+    setMovementToComplete(movement);
+    // mostrar el modal de confirmación
+    completeDialogRef.current?.showModal();
+  }
+
+  // Cuando el usuario confirma el completado
+  async function handleConfirmComplete(): Promise<void> {
+    // Si no hay un movimiento para completar, salir
+    if (!movementToComplete) return;
+    try {
+      const updated = await completeMovement(movementToComplete.id);
+      console.log('movimiento actualizado: ', updated);
+      
+      // Actualizar el movimiento en la lista local sin recargar del backend
+      setMovements((prev) => prev.map((m) => (m.id === updated.id ? updated : m)));
+      showToast('Movimiento completado exitosamente', 'success');
+    } catch (err) {
+      console.error(err);
+      showToast(err as string, 'error');
+    } finally {
+      // Cerrar el modal limpiando el movimiento seleccionado
+      setMovementToComplete(null);
+    }
   }
 
   // Seccion de useEffects
@@ -220,11 +252,13 @@ export default function MovementListPage() {
                             </svg>
                           </Link>
                         </div>
-                        {/* Eliminar */}
-                        <div className="tooltip" data-tip="Eliminar">
-                          <button className="btn btn-ghost btn-sm btn-square text-error hover:bg-error/10">
+                        {/* Completar */}
+                        <div className="tooltip" data-tip="Completar">
+                          <button 
+                            onClick={() => handleCompleteClick(movement)}
+                            className="btn btn-ghost btn-sm btn-square text-primary">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="size-5">
-                              <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
+                              <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
                             </svg>
                           </button>
                         </div>
@@ -246,6 +280,12 @@ export default function MovementListPage() {
         from={pagination?.from ?? null}
         to={pagination?.to ?? null}
         onPageChange={handlePageChange}
+      />
+
+      <ConfirmCompleteModal
+        dialogRef={completeDialogRef}
+        name={movementToComplete?.voucher ?? null}
+        onConfirm={handleConfirmComplete}
       />
     </>
   );
