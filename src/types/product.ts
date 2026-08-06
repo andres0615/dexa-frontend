@@ -13,6 +13,7 @@ export interface Product {
   cost_price: number | string;
   sale_price: number | string;
   wholesale_price: number | string | null;
+  inventory_value: number | string;
   applies_tax: boolean;
   vat_percentage: number;
   initial_stock: number;

@@ -13,6 +13,7 @@ import type { MovementType } from '@/types/movement-types';
 import { fetchMovementTypes } from '@/services/movementTypeService';
 import MovementTypeBadge from '@/modules/movements/components/MovementTypeBadge';
 import TablePagination from '@/components/ui/TablePagination';
+import { MOVEMENT_STATUSES } from '@/constants/global';
 
 export default function MovementListPage() {
   // variables de estado
@@ -253,15 +254,17 @@ export default function MovementListPage() {
                           </Link>
                         </div>
                         {/* Completar */}
-                        <div className="tooltip" data-tip="Completar">
-                          <button 
-                            onClick={() => handleCompleteClick(movement)}
-                            className="btn btn-ghost btn-sm btn-square text-primary">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="size-5">
-                              <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-                            </svg>
-                          </button>
-                        </div>
+                        {movement.status_id === MOVEMENT_STATUSES.PENDIENTE && (
+                          <div className="tooltip" data-tip="Completar">
+                            <button
+                              onClick={() => handleCompleteClick(movement)}
+                              className="btn btn-ghost btn-sm btn-square text-primary">
+                              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="size-5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                              </svg>
+                            </button>
+                          </div>
+                        )}
                       </div>
                     </td>
                   </tr>

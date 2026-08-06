@@ -13,7 +13,6 @@ export interface Movement {
   third_party_document: string | null;
   third_party_phone: string | null;
   note: string | null;
-  valuation_method: string;
   allow_out_of_stock: boolean;
   generate_reverse_movement: boolean;
   observations: string | null;

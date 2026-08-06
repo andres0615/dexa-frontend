@@ -15,7 +15,7 @@ import { MOVEMENT_STATUSES } from '@/constants/global';
 
 interface MovementFormProps {
     onSubmit: (data: CreateMovementPayload | UpdateMovementPayload) => Promise<void>;
-    defaultValues?: Partial<CreateMovementPayload>;
+    defaultValues?: Partial<UpdateMovementPayload>;
     submitLabel?: string;
 }
 
@@ -39,7 +39,6 @@ export default function MovementForm({
       third_party_document: null,
       third_party_phone: null,
       note: null,
-      valuation_method: 'promedio',
       allow_out_of_stock: false,
       generate_reverse_movement: true,
       observations: null,
@@ -84,7 +83,7 @@ export default function MovementForm({
 
     const [movementTypes, setMovementTypes] = useState<MovementType[]>([]);
     const [movementStatuses, setMovementStatuses] = useState<MovementStatus[]>([]);
-    const [movementStatus, setMovementStatus] = useState<number | null>(MOVEMENT_STATUSES.PENDIENTE);
+    const [movementStatus, setMovementStatus] = useState<number | null>(mergedDefaults?.status_id ?? MOVEMENT_STATUSES.PENDIENTE);
 
     // Cargar los tipos de movimiento
     useEffect(() => {
@@ -131,10 +130,18 @@ export default function MovementForm({
             .then((result) => {
                 console.log('movement statuses: ', result);
                 setMovementStatuses(result);
+                console.log('mergedDefaults: ', mergedDefaults);                
+                console.log('defaultValues: ', defaultValues);                
             })
             .catch((err) => console.error(err))
             .finally(() => { });
     }, []);
+
+    // Establecer el status por defecto
+    useEffect(() => {
+        if (movementStatuses.length === 0) return;
+        setMovementStatus(mergedDefaults?.status_id ?? MOVEMENT_STATUSES.PENDIENTE);
+    }, [movementStatuses, mergedDefaults]);
 
     // Select para tipos de movimientos
     const movementTypesSelect = (
@@ -171,7 +178,6 @@ export default function MovementForm({
             third_party_document: data.third_party_document || null,
             third_party_phone: data.third_party_phone || null,
             note: data.note || null,
-            valuation_method: data.valuation_method,
             allow_out_of_stock: data.allow_out_of_stock,
             generate_reverse_movement: data.generate_reverse_movement,
             observations: data.observations || null,
@@ -354,21 +360,6 @@ export default function MovementForm({
           <div className="card-body">
             <h3 className="card-title text-lg mb-4">Configuración</h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {/* Metodo de valuacion */}
-              <label className="floating-label">
-                <select
-                  className={`select select-md w-full ${errors.valuation_method ? 'select-error' : ''}`}
-                  {...register('valuation_method', { required: 'El método de valuación es requerido' })}
-                >
-                  <option value="promedio">Promedio Ponderado</option>
-                  <option value="peps">PEPS</option>
-                  <option value="ueps">UEPS</option>
-                </select>
-                <span>Método de Valuación</span>
-                {errors.valuation_method && (
-                  <p className="text-error text-xs mt-1">{errors.valuation_method.message}</p>
-                )}
-              </label>
               {/* Permitir salida sin stock */}
               <div>
                 <span className="font-medium text-sm block">Permitir salida sin stock</span>
