@@ -282,7 +282,20 @@ export default function MovementListPage() {
                 </tr>
               </thead>
               <tbody>
-                {movements.map((movement) => (
+                {loadingMovements ? (
+                  <tr>
+                    <td colSpan={7} className="text-center py-8">
+                      <span className="loading loading-ring loading-lg text-primary"></span>
+                    </td>
+                  </tr>
+                ) : movements.length === 0 ? (
+                  <tr>
+                    <td colSpan={7} className="text-center py-8 text-base-content/60">
+                      No hay movimientos
+                    </td>
+                  </tr>
+                ) : (
+                  movements.map((movement) => (
                   <tr>
                     <th>
                       <label><input type="checkbox" className="checkbox" /></label>
@@ -337,7 +350,8 @@ export default function MovementListPage() {
                       </div>
                     </td>
                   </tr>
-                ))}
+                  ))
+                )}
               </tbody>
             </table>
           </div>
