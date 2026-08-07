@@ -5,7 +5,7 @@ import { fetchMovementsPaginated, completeMovement, cancelMovement } from '@/ser
 import { useToast } from '@/components/toast/ToastContext';
 import ConfirmCompleteModal from '@/modules/movements/components/ConfirmCompleteModal';
 import ConfirmCancelModal from '@/modules/movements/components/ConfirmCancelModal';
-import type { Movement } from '@/types/movements';
+import type { Movement, MovementFilters } from '@/types/movements';
 import type { PaginationMeta } from '@/types/pagination';
 import { fetchMovementStatus } from '@/services/movementStatusService';
 import type { MovementStatus } from '@/types/movement-status';
@@ -15,6 +15,7 @@ import { fetchMovementTypes } from '@/services/movementTypeService';
 import MovementTypeBadge from '@/modules/movements/components/MovementTypeBadge';
 import TablePagination from '@/components/ui/TablePagination';
 import { MOVEMENT_STATUSES } from '@/constants/global';
+import { sleep, ucfirst } from '@/utils/utils';
 
 export default function MovementListPage() {
   // variables de estado
@@ -31,12 +32,34 @@ export default function MovementListPage() {
   const [movementToCancel, setMovementToCancel] = useState<Movement | null>(null);
   const cancelDialogRef = useRef<HTMLDialogElement>(null);
   const { showToast } = useToast();
+  const [filters, setFilters] = useState<MovementFilters>({ voucher: '', movement_type_id: null, date_from: null, date_to: null });
+  const [countFilters, setCountFilters] = useState(0)
+  const loadingMovementsTimeout: number = 1000;
 
   // Seccion de handlers
 
   // Cambiar de página en la paginación
   function handlePageChange(page: number): void {
     setCurrentPage(page);
+  }
+
+  // Aplicar filtros al listado de movimientos
+  function handleFilter(): void {
+    setCurrentPage(1)
+    setLoadingMovements(true)
+
+    // Contar filtros activos
+    const count = Object.values(filters).filter(value => value !== null && value !== '').length;
+    setCountFilters(count);
+
+    fetchMovementsPaginated(1, 10, filters)
+      .then((result) => {
+        setMovements(result.data);
+        setPagination(result.pagination);
+      })
+      .then(() => sleep(loadingMovementsTimeout)) // espera 1s después del fetch
+      .catch((err) => setError(err.message))
+      .finally(() => setLoadingMovements(false));
   }
 
   // Click en el botón de completar
@@ -103,7 +126,7 @@ export default function MovementListPage() {
   // Cargar movimientos
   useEffect(() => {
     setLoadingMovements(true)
-    fetchMovementsPaginated(currentPage, 10/*, filters*/)
+    fetchMovementsPaginated(currentPage, 10, filters)
       .then((result) => {
         setMovements(result.data);
         setPagination(result.pagination);
@@ -205,32 +228,34 @@ export default function MovementListPage() {
                   <svg className="h-5 w-5 opacity-60" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                   </svg>
-                  <input type="text" placeholder="Comprobante" className="grow" />
+                  <input type="text" placeholder="Comprobante" className="grow" value={filters.voucher ?? ''} onChange={(e) => setFilters(prev => ({ ...prev, voucher: e.target.value }))} />
                 </label>
               </label>
             </div>
             <label className="floating-label w-full lg:w-auto min-w-[180px]">
               <span>Tipo de Movimiento</span>
-              <select className="select select-md w-full">
-                <option disabled selected>Seleccionar</option>
-                <option>Compra</option>
-                <option>Venta</option>
-                <option>Ajuste</option>
-                <option>Devolución</option>
-                <option>Traslado</option>
+              <select className="select select-md w-full"
+                value={filters.movement_type_id ?? ''}
+                onChange={(e) => setFilters(prev => ({ ...prev, movement_type_id: e.target.value ? Number(e.target.value) : null }))}>
+                <option value="">Seleccionar</option>
+                {movementTypeList.map((type) => (
+                  <option key={type.id} value={type.id}>{ucfirst(type.name)}</option>
+                ))}
               </select>
             </label>
             <label className="floating-label w-full lg:w-auto min-w-[150px]">
               <span>Fecha desde</span>
-              <input type="date" className="input input-md w-full" />
+              <input type="date" className="input input-md w-full" value={filters.date_from ?? ''} onChange={(e) => setFilters(prev => ({ ...prev, date_from: e.target.value }))} />
             </label>
             <label className="floating-label w-full lg:w-auto min-w-[150px]">
               <span>Fecha hasta</span>
-              <input type="date" className="input input-md w-full" />
+              <input type="date" className="input input-md w-full" value={filters.date_to ?? ''} onChange={(e) => setFilters(prev => ({ ...prev, date_to: e.target.value }))} />
             </label>
             <div className="indicator w-full lg:w-auto">
-              <span className="indicator-item badge badge-primary badge-sm">3</span>
-              <button className="btn btn-soft btn-md w-full">Filtrar</button>
+              {countFilters > 0 && (
+                <span className="indicator-item badge badge-primary badge-sm">{countFilters}</span>
+              )}
+              <button className="btn btn-soft btn-md w-full" onClick={handleFilter}>Filtrar</button>
             </div>
           </div>
         </div>

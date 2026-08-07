@@ -1,4 +1,4 @@
-import type { Movement, CreateMovementPayload, UpdateMovementPayload } from '../types/movements';
+import type { Movement, CreateMovementPayload, UpdateMovementPayload, MovementFilters } from '../types/movements';
 import type { PaginatedResult } from '@/types/pagination';
 
 // Crear un nuevo movimiento de inventario
@@ -30,20 +30,20 @@ export async function createMovement(payload: CreateMovementPayload): Promise<Mo
 export async function fetchMovementsPaginated(
   page: number = 1,
   perPage: number = 10,
-  // filters?: ProductFilters
+  filters?: MovementFilters
 ): Promise<PaginatedResult<Movement>> {
   const params = new URLSearchParams();
   params.set('page', String(page));
   params.set('per_page', String(perPage));
 
   // Agregar filtros si existen
-  // if (filters) {
-  //   for (const [key, value] of Object.entries(filters)) {
-  //     if (value !== undefined && value !== null && value !== '') {
-  //       params.append(key, String(value));
-  //     }
-  //   }
-  // }
+  if (filters) {
+    for (const [key, value] of Object.entries(filters)) {
+      if (value !== undefined && value !== null && value !== '') {
+        params.append(key, String(value));
+      }
+    }
+  }
 
   const url = `/api/movements?${params.toString()}`;
 

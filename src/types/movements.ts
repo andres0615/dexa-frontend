@@ -35,3 +35,10 @@ export type UpdateMovementPayload = Partial<CreateMovementPayload> & {
     // el status_id es editable
     status_id: number;
   };
+
+export interface MovementFilters {
+  voucher: string | null;
+  movement_type_id: number | null;
+  date_from: string | null;
+  date_to: string | null;
+}
