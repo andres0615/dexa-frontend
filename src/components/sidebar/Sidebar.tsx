@@ -6,8 +6,8 @@ export default function Sidebar() {
     <div className="w-72 bg-base-100 border-r border-base-300 flex flex-col">
       {/* Header del sidebar */}
       <div className="p-4 border-b border-base-300">
-        <h2 className="font-bold text-lg">Formulario</h2>
-        <p className="text-xs text-base-content/60">Green v3</p>
+        <h2 className="font-bold text-lg">Dexa</h2>
+        <p className="text-xs text-base-content/60">v1.0.0</p>
       </div>
 
       {/* Menú daisyUI */}

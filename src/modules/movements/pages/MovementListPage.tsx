@@ -1,9 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
 import { useLayoutContext } from '@/contexts/LayoutContext';
 import { Link } from 'react-router-dom';
-import { fetchMovementsPaginated, completeMovement } from '@/services/movementService';
+import { fetchMovementsPaginated, completeMovement, cancelMovement } from '@/services/movementService';
 import { useToast } from '@/components/toast/ToastContext';
 import ConfirmCompleteModal from '@/modules/movements/components/ConfirmCompleteModal';
+import ConfirmCancelModal from '@/modules/movements/components/ConfirmCancelModal';
 import type { Movement } from '@/types/movements';
 import type { PaginationMeta } from '@/types/pagination';
 import { fetchMovementStatus } from '@/services/movementStatusService';
@@ -27,6 +28,8 @@ export default function MovementListPage() {
   const [movementTypeList, setMovementTypeList] = useState<MovementType[]>([]);
   const [movementToComplete, setMovementToComplete] = useState<Movement | null>(null);
   const completeDialogRef = useRef<HTMLDialogElement>(null);
+  const [movementToCancel, setMovementToCancel] = useState<Movement | null>(null);
+  const cancelDialogRef = useRef<HTMLDialogElement>(null);
   const { showToast } = useToast();
 
   // Seccion de handlers
@@ -43,6 +46,33 @@ export default function MovementListPage() {
     completeDialogRef.current?.showModal();
   }
 
+  // Click en el botón de cancelar
+  function handleCancelClick(movement: Movement): void {
+    setMovementToCancel(movement);
+    // mostrar el modal de confirmación
+    cancelDialogRef.current?.showModal();
+  }
+
+  // Cuando el usuario confirma la cancelación
+  async function handleConfirmCancel(): Promise<void> {
+    // Si no hay un movimiento para cancelar, salir
+    if (!movementToCancel) return;
+    try {
+      const updated = await cancelMovement(movementToCancel.id);
+      console.log('movimiento actualizado: ', updated);
+
+      // Actualizar el movimiento en la lista local sin recargar del backend
+      setMovements((prev) => prev.map((m) => (m.id === updated.id ? updated : m)));
+      showToast('Movimiento cancelado exitosamente', 'success');
+    } catch (err) {
+      console.error(err);
+      showToast(err as string, 'error');
+    } finally {
+      // Cerrar el modal limpiando el movimiento seleccionado
+      setMovementToCancel(null);
+    }
+  }
+
   // Cuando el usuario confirma el completado
   async function handleConfirmComplete(): Promise<void> {
     // Si no hay un movimiento para completar, salir
@@ -56,7 +86,7 @@ export default function MovementListPage() {
       showToast('Movimiento completado exitosamente', 'success');
     } catch (err) {
       console.error(err);
-      showToast(err as string, 'error');
+      showToast(err.message, 'error');
     } finally {
       // Cerrar el modal limpiando el movimiento seleccionado
       setMovementToComplete(null);
@@ -239,20 +269,22 @@ export default function MovementListPage() {
                     <td className="text-sm whitespace-nowrap">{ movement.movement_date }</td>
                     <td className="font-mono text-sm">{ movement.voucher }</td>
                     <td className="text-right text-sm font-medium">${ movement.total }</td>
-                    <td className="text-center">
+                    <td className="text-center ">
                       {/* Status del movimiento */}
                       <MovementStatusBadge movement={movement} statuses={movementStatusList} />
                     </td>
-                    <td>
+                    <td className="px-1">
                       <div className="flex items-center gap-1">
                         {/* Editar */}
-                        <div className="tooltip" data-tip="Editar">
-                          <Link to={`/movements/${movement.id}/edit`} className="btn btn-ghost btn-sm btn-square">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="size-5">
-                              <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
-                            </svg>
-                          </Link>
-                        </div>
+                        {movement.status_id === MOVEMENT_STATUSES.PENDIENTE && (
+                          <div className="tooltip" data-tip="Editar">
+                            <Link to={`/movements/${movement.id}/edit`} className="btn btn-ghost btn-sm btn-square">
+                              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="size-5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
+                              </svg>
+                            </Link>
+                          </div>
+                        )}
                         {/* Completar */}
                         {movement.status_id === MOVEMENT_STATUSES.PENDIENTE && (
                           <div className="tooltip" data-tip="Completar">
@@ -261,6 +293,18 @@ export default function MovementListPage() {
                               className="btn btn-ghost btn-sm btn-square text-primary">
                               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="size-5">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                              </svg>
+                            </button>
+                          </div>
+                        )}
+                        {/* Cancelar */}
+                        {movement.status_id === MOVEMENT_STATUSES.PENDIENTE && (
+                          <div className="tooltip" data-tip="Cancelar">
+                            <button
+                              onClick={() => handleCancelClick(movement)}
+                              className="btn btn-ghost btn-sm btn-square text-error">
+                              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="size-5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
                               </svg>
                             </button>
                           </div>
@@ -289,6 +333,11 @@ export default function MovementListPage() {
         dialogRef={completeDialogRef}
         name={movementToComplete?.voucher ?? null}
         onConfirm={handleConfirmComplete}
+      />
+      <ConfirmCancelModal
+        dialogRef={cancelDialogRef}
+        name={movementToCancel?.voucher ?? null}
+        onConfirm={handleConfirmCancel}
       />
     </>
   );

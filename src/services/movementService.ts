@@ -9,10 +9,18 @@ export async function createMovement(payload: CreateMovementPayload): Promise<Mo
     body: JSON.stringify(payload),
   });
 
-  const { success, data, message } = await response.json();
+  const { success, data, message, errors } = await response.json();
 
   if (!success) {
-    throw new Error(message ?? 'Error al crear el movimiento');
+
+    let errorMessage = message ?? 'Error al crear el movimiento';
+
+    // Si hay errores de validación, agregarlos al mensaje
+    if (errors && errors.length > 0) {
+      errorMessage += '\n' + errors.join('\n');
+    }
+
+    throw new Error(errorMessage);
   }
 
   return data.movement;
@@ -133,6 +141,22 @@ export async function completeMovement(id: number): Promise<Movement> {
 
   if (!success) {
     throw new Error(message ?? 'Error al completar el movimiento');
+  }
+
+  return data.movement;
+}
+
+// Cancelar un movimiento de inventario
+export async function cancelMovement(id: number): Promise<Movement> {
+  const response = await fetch(`/api/movements/${id}/cancel`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+  });
+
+  const { success, data, message } = await response.json();
+
+  if (!success) {
+    throw new Error(message ?? 'Error al cancelar el movimiento');
   }
 
   return data.movement;
