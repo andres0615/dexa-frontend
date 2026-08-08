@@ -9,6 +9,9 @@ import ProductEditPage from './modules/products/pages/ProductEditPage'
 import MovementCreatePage from './modules/movements/pages/MovementCreatePage'
 import MovementListPage from '@/modules/movements/pages/MovementListPage'
 import MovementEditPage from './modules/movements/pages/MovementEditPage'
+import UserListPage from '@/modules/users/pages/UserListPage'
+import UserCreatePage from '@/modules/users/pages/UserCreatePage'
+import UserEditPage from '@/modules/users/pages/UserEditPage'
 import './App.css'
 
 function App() {
@@ -24,6 +27,9 @@ function App() {
             <Route path="/movements" element={<MovementListPage />} />
             <Route path="/movements/create" element={<MovementCreatePage />} />
             <Route path="/movements/:id/edit" element={<MovementEditPage />} />
+            <Route path="/users" element={<UserListPage />} />
+            <Route path="/users/create" element={<UserCreatePage />} />
+            <Route path="/users/:id/edit" element={<UserEditPage />} />
           </Routes>
         </LayoutAdmin>
         {/* Componente que muestra los notificaciones en la esquina inferior derecha */}
