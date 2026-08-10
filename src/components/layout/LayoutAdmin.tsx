@@ -1,12 +1,8 @@
-import { useState, type ReactNode } from 'react'
+import { Outlet } from 'react-router-dom'
 import Sidebar from '../sidebar/Sidebar'
 import { useLayoutContext } from '../../contexts/LayoutContext'
 
-interface LayoutProps {
-  children: ReactNode
-}
-
-export default function LayoutAdmin({ children }: LayoutProps) {
+export default function LayoutAdmin() {
   const { maxWidth } = useLayoutContext()
 
   return (
@@ -19,7 +15,7 @@ export default function LayoutAdmin({ children }: LayoutProps) {
         <main className="flex-1 overflow-auto">
             <div className={`${maxWidth} mx-auto py-8`}>
                 {/* Content */}
-                {children}
+                <Outlet />
             </div>
         </main>
     </div>
