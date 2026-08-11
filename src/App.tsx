@@ -15,6 +15,7 @@ import UserEditPage from '@/modules/users/pages/UserEditPage'
 import './App.css'
 import { AuthProvider } from '@/contexts/AuthContext';
 import AuthGuard from '@/components/guards/AuthGuard';
+import GuestGuard from '@/components/guards/GuestGuard';
 import LoginPage from '@/modules/auth/pages/LoginPage';
 
 function App() {
@@ -23,8 +24,9 @@ function App() {
       <LayoutProvider>
         <ToastProvider>
           <Routes>
-            {/* Paginas con el layout de admin */}
-            {/* <Route element={<AuthGuard />}> */}
+            {/* Rutas protegidas por auth */}
+            <Route element={<AuthGuard />}>
+              {/* Paginas con el layout de admin */}
               <Route element={<LayoutAdmin />}>
                 <Route path="/" element={<Navigate to="/products" replace />} />
                 <Route path="/products" element={<ProductListPage />} />
@@ -36,16 +38,13 @@ function App() {
                 <Route path="/users" element={<UserListPage />} />
                 <Route path="/users/create" element={<UserCreatePage />} />
                 <Route path="/users/:id/edit" element={<UserEditPage />} />
-
-                {/* Rutas protegidas por auth */}
-                <Route element={<AuthGuard />}>
-                  {/* <Route path="/users" element={<UserListPage />} /> */}
-                </Route>
               </Route>
-            {/* </Route> */}
+            </Route>
 
             {/* Rutas públicas */}
-            <Route path="/login" element={<LoginPage />} />
+            <Route element={<GuestGuard />}>
+              <Route path="/login" element={<LoginPage />} />
+            </Route>
           </Routes>
           {/* Componente que muestra los notificaciones en la esquina inferior derecha */}
           <Toast />
