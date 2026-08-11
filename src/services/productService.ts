@@ -1,12 +1,11 @@
+import apiClient from '@/api/apiClient';
 import type { Product, CreateProductPayload, UpdateProductPayload, ProductFilters } from '../types/product';
 import type { PaginatedResult } from '@/types/pagination';
 
 // Obtener todos los productos
 export async function fetchProducts(): Promise<Product[]> {
   // Petición GET al endpoint de productos
-  const response = await fetch('/api/products', {
-    headers: { 'Accept': 'application/json' },
-  });
+  const response = await apiClient('/products');
   
   // Extraer datos del wrapper
   const { success, data, message } = await response.json();
@@ -40,11 +39,9 @@ export async function fetchProductsPaginated(
     }
   }
 
-  const url = `/api/products?${params.toString()}`;
+  const url = `/products?${params.toString()}`;
 
-  const response = await fetch(url, {
-    headers: { 'Accept': 'application/json' },
-  });
+  const response = await apiClient(url);
 
   const body = await response.json();
   const { success, data, message } = body;
@@ -76,13 +73,9 @@ export async function createProduct(
   payload: CreateProductPayload
 ): Promise<Product> {
   // Petición POST al endpoint de productos
-  const response = await fetch('/api/products', {
+  const response = await apiClient('/products', {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Accept': 'application/json',
-    },
-    body: JSON.stringify(payload),
+    body: payload,
   });
 
   // Extraer datos del wrapper
@@ -107,9 +100,8 @@ export async function createProduct(
 // Eliminar un producto
 export async function deleteProduct(id: number): Promise<void> {
   // Petición DELETE al endpoint de productos
-  const response = await fetch(`/api/products/${id}`, {
+  const response = await apiClient(`/products/${id}`, {
     method: 'DELETE',
-    headers: { 'Accept': 'application/json' },
   });
 
   // Extraer datos del wrapper
@@ -124,9 +116,7 @@ export async function deleteProduct(id: number): Promise<void> {
 // Obtener un producto por ID
 export async function fetchProduct(id: number): Promise<any> {
   // Petición GET al endpoint de consulta de producto
-  const response = await fetch(`/api/products/${id}`, {
-    headers: { 'Accept': 'application/json' },
-  });
+  const response = await apiClient(`/products/${id}`);
   // Extraer datos del wrapper
   const { success, data, message } = await response.json();
 
@@ -145,13 +135,9 @@ export async function updateProduct(
   payload: UpdateProductPayload
 ): Promise<Product> {
   // Petición PUT al endpoint de productos
-  const response = await fetch(`/api/products/${id}`, {
+  const response = await apiClient(`/products/${id}`, {
     method: 'PUT',
-    headers: {
-      'Content-Type': 'application/json',
-      'Accept': 'application/json',
-    },
-    body: JSON.stringify(payload),
+    body: payload,
   });
 
   console.log('response: ', response);

@@ -1,3 +1,5 @@
+import type { ApiClientOptions } from '@/types/api-client';
+
 const BASE_URL = import.meta.env.VITE_API_URL || '/api';
 
 let isRefreshing = false;
@@ -45,18 +47,19 @@ async function refreshToken(): Promise<string> {
 
 /**
  * Wrapper de `fetch` que agrega headers JSON + token, serializa el body,
- * maneja el refresh de token ante 401 (con reintento único), normaliza
- * errores HTTP y devuelve `null` en respuestas 204.
+ * maneja el refresh de token ante 401 (con reintento único) y devuelve
+ * el `Response` crudo para que el servicio que lo llama lo procese.
  */
-async function apiClient<T>(
+async function apiClient(
   endpoint: string,
-  options: RequestInit = {},
+  options: ApiClientOptions = {},
   retry = true,
-): Promise<T | null> {
+): Promise<Response> {
   const token = localStorage.getItem('access_token');
 
   const config: RequestInit = {
     ...options,
+    body: undefined, // lo asignamos abajo ya serializado
     headers: {
       'Content-Type': 'application/json',
       Accept: 'application/json',
@@ -65,9 +68,8 @@ async function apiClient<T>(
     },
   };
 
-  if (config.body && typeof config.body !== 'string') {
-    config.body = JSON.stringify(config.body) as string;
-  }
+  // serialización del body
+  config.body = JSON.stringify(options.body) as string;
 
   const response = await fetch(`${BASE_URL}${endpoint}`, config);
 
@@ -97,19 +99,7 @@ async function apiClient<T>(
     });
   }
 
-  if (!response.ok) {
-    const errorData = await response.json().catch(() => null);
-    const error: Error & { status?: number; data?: unknown } =
-      new Error(errorData?.message || 'Error en la petición');
-    error.status = response.status;
-    error.data = errorData;
-    throw error;
-  }
-
-  // Algunas respuestas (204 No Content) no traen body
-  if (response.status === 204) return null;
-
-  return response.json();
+  return response;
 }
 
 export default apiClient;
