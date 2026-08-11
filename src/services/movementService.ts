@@ -1,12 +1,12 @@
+import apiClient from '@/api/apiClient';
 import type { Movement, CreateMovementPayload, UpdateMovementPayload, MovementFilters } from '../types/movements';
 import type { PaginatedResult } from '@/types/pagination';
 
 // Crear un nuevo movimiento de inventario
 export async function createMovement(payload: CreateMovementPayload): Promise<Movement> {
-  const response = await fetch('/api/movements', {
+  const response = await apiClient('/movements', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-    body: JSON.stringify(payload),
+    body: payload,
   });
 
   const { success, data, message, errors } = await response.json();
@@ -45,11 +45,9 @@ export async function fetchMovementsPaginated(
     }
   }
 
-  const url = `/api/movements?${params.toString()}`;
+  const url = `/movements?${params.toString()}`;
 
-  const response = await fetch(url, {
-    headers: { 'Accept': 'application/json' },
-  });
+  const response = await apiClient(url);
 
   const body = await response.json();
   const { success, data, message } = body;
@@ -79,9 +77,7 @@ export async function fetchMovementsPaginated(
 // Obtener un movimiento por ID
 export async function fetchMovement(id: number): Promise<any> {
   // Petición GET al endpoint de consulta de movimiento
-  const response = await fetch(`/api/movements/${id}`, {
-    headers: { 'Accept': 'application/json' },
-  });
+  const response = await apiClient(`/movements/${id}`);
   // Extraer datos del wrapper
   const { success, data, message } = await response.json();
 
@@ -100,13 +96,9 @@ export async function updateMovement(
   payload: UpdateMovementPayload
 ): Promise<Movement> {
   // Petición PUT al endpoint de movimientos
-  const response = await fetch(`/api/movements/${id}`, {
+  const response = await apiClient(`/movements/${id}`, {
     method: 'PUT',
-    headers: {
-      'Content-Type': 'application/json',
-      'Accept': 'application/json',
-    },
-    body: JSON.stringify(payload),
+    body: payload,
   });
 
   console.log('response: ', response);
@@ -132,9 +124,8 @@ export async function updateMovement(
 
 // Completar un movimiento de inventario
 export async function completeMovement(id: number): Promise<Movement> {
-  const response = await fetch(`/api/movements/${id}/complete`, {
+  const response = await apiClient(`/movements/${id}/complete`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
   });
 
   const { success, data, message } = await response.json();
@@ -148,9 +139,8 @@ export async function completeMovement(id: number): Promise<Movement> {
 
 // Cancelar un movimiento de inventario
 export async function cancelMovement(id: number): Promise<Movement> {
-  const response = await fetch(`/api/movements/${id}/cancel`, {
+  const response = await apiClient(`/movements/${id}/cancel`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
   });
 
   const { success, data, message } = await response.json();

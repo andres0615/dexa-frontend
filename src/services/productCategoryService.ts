@@ -1,11 +1,10 @@
+import apiClient from '@/api/apiClient';
 import type { ProductCategory } from '../types/product-category';
 
 // Obtener todas las categorias de productos
 export async function fetchProductCategories(): Promise<ProductCategory[]> {
   // Petición GET al endpoint de categorias de productos
-  const response = await fetch('/api/product-category', {
-    headers: { 'Accept': 'application/json' },
-  });
+  const response = await apiClient('/product-category');
   
   // Extraer datos del wrapper
   const { success, data, message } = await response.json();

@@ -1,11 +1,10 @@
+import apiClient from '@/api/apiClient';
 import type { Warehouse } from '../types/warehouse';
 
 // Obtener todos los almacenes
 export async function fetchWarehouses(): Promise<Warehouse[]> {
   // Petición GET al endpoint de almacenes
-  const response = await fetch('/api/warehouses', {
-    headers: { 'Accept': 'application/json' },
-  });
+  const response = await apiClient('/warehouses');
 
   // Extraer datos del wrapper
   const { success, data, message } = await response.json();

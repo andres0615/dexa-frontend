@@ -1,12 +1,11 @@
+import apiClient from '@/api/apiClient';
 import type { User, CreateUserPayload, UpdateUserPayload } from '../types/user';
 import type { PaginatedResult } from '@/types/pagination';
 
 // Obtener todos los usuarios
 export async function fetchUsers(): Promise<User[]> {
   // Petición GET al endpoint de usuarios
-  const response = await fetch('/api/users', {
-    headers: { 'Accept': 'application/json' },
-  });
+  const response = await apiClient('/users');
 
   // Extraer datos del wrapper
   const { success, data, message } = await response.json();
@@ -29,11 +28,9 @@ export async function fetchUsersPaginated(
   params.set('page', String(page));
   params.set('per_page', String(perPage));
 
-  const url = `/api/users?${params.toString()}`;
+  const url = `/users?${params.toString()}`;
 
-  const response = await fetch(url, {
-    headers: { 'Accept': 'application/json' },
-  });
+  const response = await apiClient(url);
 
   const body = await response.json();
   const { success, data, message } = body;
@@ -65,13 +62,9 @@ export async function createUser(
   payload: CreateUserPayload
 ): Promise<User> {
   // Petición POST al endpoint de usuarios
-  const response = await fetch('/api/users', {
+  const response = await apiClient('/users', {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Accept': 'application/json',
-    },
-    body: JSON.stringify(payload),
+    body: payload,
   });
 
   // Extraer datos del wrapper
@@ -95,9 +88,8 @@ export async function createUser(
 // Eliminar un usuario
 export async function deleteUser(id: number): Promise<void> {
   // Petición DELETE al endpoint de usuarios
-  const response = await fetch(`/api/users/${id}`, {
+  const response = await apiClient(`/users/${id}`, {
     method: 'DELETE',
-    headers: { 'Accept': 'application/json' },
   });
 
   // Extraer datos del wrapper
@@ -112,9 +104,7 @@ export async function deleteUser(id: number): Promise<void> {
 // Obtener un usuario por ID
 export async function fetchUser(id: number): Promise<User> {
   // Petición GET al endpoint de consulta de usuario
-  const response = await fetch(`/api/users/${id}`, {
-    headers: { 'Accept': 'application/json' },
-  });
+  const response = await apiClient(`/users/${id}`);
   // Extraer datos del wrapper
   const { success, data, message } = await response.json();
 
@@ -132,13 +122,9 @@ export async function updateUser(
   payload: UpdateUserPayload
 ): Promise<User> {
   // Petición PUT al endpoint de usuarios
-  const response = await fetch(`/api/users/${id}`, {
+  const response = await apiClient(`/users/${id}`, {
     method: 'PUT',
-    headers: {
-      'Content-Type': 'application/json',
-      'Accept': 'application/json',
-    },
-    body: JSON.stringify(payload),
+    body: payload,
   });
 
   console.log('response: ', response);

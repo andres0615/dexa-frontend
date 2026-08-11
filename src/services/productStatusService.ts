@@ -1,11 +1,10 @@
+import apiClient from '@/api/apiClient';
 import type { ProductStatus } from '../types/product-status';
 
 // Obtener todos los status de productos
 export async function fetchProductStatus(): Promise<ProductStatus[]> {
   // Petición GET al endpoint de status de productos
-  const response = await fetch('/api/product-status', {
-    headers: { 'Accept': 'application/json' },
-  });
+  const response = await apiClient('/product-status');
   
   // Extraer datos del wrapper
   const { success, data, message } = await response.json();

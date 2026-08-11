@@ -1,11 +1,10 @@
+import apiClient from '@/api/apiClient';
 import type { MovementStatus } from '@/types/movement-status';
 
 // Obtener todos los status de movimientos
 export async function fetchMovementStatus(): Promise<MovementStatus[]> {
   // Petición GET al endpoint de status de movimientos
-  const response = await fetch('/api/movement-status', {
-    headers: { 'Accept': 'application/json' },
-  });
+  const response = await apiClient('/movement-status');
   
   // Extraer datos del wrapper
   const { success, data, message } = await response.json();

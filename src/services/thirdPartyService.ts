@@ -1,3 +1,4 @@
+import apiClient from '@/api/apiClient';
 import type { ThirdParty, ThirdPartyFilters } from '../types/third-party';
 
 // Obtener todos los terceros (proveedores/clientes)
@@ -16,12 +17,10 @@ export async function fetchThirdParties(
     }
   }
 
-  const url = `/api/third-party?${params.toString()}`;
+  const url = `/third-party?${params.toString()}`;
 
   // Petición GET al endpoint de terceros
-  const response = await fetch(url, {
-    headers: { 'Accept': 'application/json' },
-  });
+  const response = await apiClient(url);
 
   // Extraer datos del wrapper
   const { success, data, message } = await response.json();
