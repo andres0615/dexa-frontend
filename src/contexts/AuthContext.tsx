@@ -28,7 +28,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const fetchUser = async () => {
     try {
-      const data = await apiClient<User>('/me');
+      const data = await apiClient<User>('/me',{
+        method: 'POST',
+      });
       setUser(data);
     } catch {
       localStorage.removeItem('access_token');
@@ -39,14 +41,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const login = async (credentials: LoginCredentials) => {
-    const data = await apiClient<{ access_token: string }>('/login', {
+    const response = await apiClient('/login', {
       method: 'POST',
-      body: JSON.stringify(credentials),
+      body: credentials,
     });
-    if (!data) throw new Error('Respuesta inválida del servidor');
-    localStorage.setItem('access_token', data.access_token);
+    if (!response) throw new Error('Respuesta inválida del servidor');
+    // console.log('login response: ', await response.json());
+
+    const { access_token, expires_in, token_type } = await response.json();
+    
+    localStorage.setItem('access_token', access_token);
     await fetchUser();
-    return data;
+    return response;
   };
 
   const logout = async () => {
