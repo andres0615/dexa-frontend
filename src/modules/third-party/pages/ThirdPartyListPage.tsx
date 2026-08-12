@@ -98,17 +98,12 @@ export default function ThirdPartyListPage() {
       </div>
 
       {/* Third Party Table */}
-      <div className="card bg-base-100 shadow-md mb-6">
+      <div className="card bg-base-100 shadow-md mb-6 pl-6">
         <div className="card-body p-0">
           <div className="overflow-x-auto">
             <table className="table">
               <thead>
                 <tr>
-                  <th>
-                    <label>
-                      <input type="checkbox" className="checkbox" />
-                    </label>
-                  </th>
                   <th>Tercero</th>
                   <th>Tipo</th>
                   <th>Contacto</th>
@@ -119,24 +114,19 @@ export default function ThirdPartyListPage() {
               <tbody>
                 {loading ? (
                   <tr>
-                    <td colSpan={6} className="text-center py-8">
+                    <td colSpan={5} className="text-center py-8">
                       <span className="loading loading-ring loading-lg text-primary"></span>
                     </td>
                   </tr>
                 ) : thirdParties.length === 0 ? (
                   <tr>
-                    <td colSpan={6} className="text-center py-8 text-base-content/60">
+                    <td colSpan={5} className="text-center py-8 text-base-content/60">
                       No hay terceros
                     </td>
                   </tr>
                 ) : (
                   thirdParties.map((thirdParty) => (
                     <tr key={thirdParty.id}>
-                      <th>
-                        <label>
-                          <input type="checkbox" className="checkbox" />
-                        </label>
-                      </th>
                       <td>
                         <div className="flex items-center gap-3">
                           <div className="avatar avatar-placeholder">
