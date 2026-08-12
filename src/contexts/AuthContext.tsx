@@ -46,7 +46,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       body: credentials,
     });
     if (!response) throw new Error('Respuesta inválida del servidor');
-    // console.log('login response: ', await response.json());
 
     const { access_token, expires_in, token_type } = await response.json();
     
