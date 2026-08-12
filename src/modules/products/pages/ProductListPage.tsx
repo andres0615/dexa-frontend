@@ -4,7 +4,7 @@ import { useLayoutContext } from '../../../contexts/LayoutContext';
 import type { Product, ProductFilters } from '../../../types/product';
 import type { PaginationMeta } from '@/types/pagination';
 import { fetchProductsPaginated, deleteProduct } from '../../../services/productService';
-import ConfirmDeleteModal from '../components/ConfirmDeleteModal';
+import ConfirmDeleteModal from '@/components/ui/ConfirmDeleteModal';
 import { useToast } from '../../../components/toast/ToastContext';
 import TablePagination from '@/components/ui/TablePagination';
 import { fetchProductStatus } from '../../../services/productStatusService';

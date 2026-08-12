@@ -17,6 +17,9 @@ import { AuthProvider } from '@/contexts/AuthContext';
 import AuthGuard from '@/components/guards/AuthGuard';
 import GuestGuard from '@/components/guards/GuestGuard';
 import LoginPage from '@/modules/auth/pages/LoginPage';
+import ThirdPartyListPage from '@/modules/third-party/pages/ThirdPartyListPage';
+import ThirdPartyCreatePage from '@/modules/third-party/pages/ThirdPartyCreatePage';
+import ThirdPartyEditPage from '@/modules/third-party/pages/ThirdPartyEditPage';
 
 function App() {
   return (
@@ -38,6 +41,9 @@ function App() {
                 <Route path="/users" element={<UserListPage />} />
                 <Route path="/users/create" element={<UserCreatePage />} />
                 <Route path="/users/:id/edit" element={<UserEditPage />} />
+                <Route path="/third-party" element={<ThirdPartyListPage />} />
+                <Route path="/third-party/create" element={<ThirdPartyCreatePage />} />
+                <Route path="/third-party/:id/edit" element={<ThirdPartyEditPage />} />
               </Route>
             </Route>
 

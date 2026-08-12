@@ -16,3 +16,9 @@ export interface ThirdPartyFilters {
   third_party_type_id?: number;
   name?: string;
 }
+
+// Payload para crear un tercero
+export type CreateThirdPartyPayload = Omit<ThirdParty, 'id' | 'created_at' | 'updated_at'>;
+
+// Payload para actualizar un tercero (PUT parcial)
+export type UpdateThirdPartyPayload = Partial<Omit<ThirdParty, 'id' | 'created_at' | 'updated_at'>>;
