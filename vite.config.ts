@@ -20,5 +20,7 @@ export default defineConfig({
         changeOrigin: true,
       },
     },
+    host: true, // escucha en todas las interfaces, no solo localhost
+    allowedHosts: ['dexa.test'], // o true para permitir cualquiera
   },
 })
