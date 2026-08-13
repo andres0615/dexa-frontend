@@ -111,7 +111,7 @@ export default function UserListPage() {
                         <div className="font-bold">{user.name}</div>
                       </td>
                       <td>{user.email}</td>
-                      <td>{new Date(user.created_at).toLocaleDateString()}</td>
+                      <td>{user.created_at}</td>
                       <td>
                         <div className="flex items-center gap-1">
 
