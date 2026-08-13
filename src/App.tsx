@@ -20,6 +20,9 @@ import LoginPage from '@/modules/auth/pages/LoginPage';
 import ThirdPartyListPage from '@/modules/third-party/pages/ThirdPartyListPage';
 import ThirdPartyCreatePage from '@/modules/third-party/pages/ThirdPartyCreatePage';
 import ThirdPartyEditPage from '@/modules/third-party/pages/ThirdPartyEditPage';
+import ProductCategoryListPage from './modules/product-category/pages/ProductCategoryListPage'
+import ProductCategoryCreatePage from './modules/product-category/pages/ProductCategoryCreatePage'
+import ProductCategoryEditPage from './modules/product-category/pages/ProductCategoryEditPage'
 
 function App() {
   return (
@@ -44,6 +47,9 @@ function App() {
                 <Route path="/third-party" element={<ThirdPartyListPage />} />
                 <Route path="/third-party/create" element={<ThirdPartyCreatePage />} />
                 <Route path="/third-party/:id/edit" element={<ThirdPartyEditPage />} />
+                <Route path="/product-category" element={<ProductCategoryListPage />} />
+                <Route path="/product-category/create" element={<ProductCategoryCreatePage />} />
+                <Route path="/product-category/:id/edit" element={<ProductCategoryEditPage />} />
               </Route>
             </Route>
 
