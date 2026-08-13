@@ -45,7 +45,7 @@ export default function LoginPage() {
                 <span>Correo electrónico</span>
                 <input 
                   type="email" 
-                  placeholder="correo@ejemplo.com" 
+                  placeholder="Correo electrónico" 
                   className="input input-md w-full" 
                   required 
                   value={form.email}
@@ -58,7 +58,7 @@ export default function LoginPage() {
                 <span>Contraseña</span>
                 <input 
                   type="password" 
-                  placeholder="••••••••" 
+                  placeholder="Contraseña" 
                   className="input input-md w-full" 
                   required 
                   value={form.password}
