@@ -75,10 +75,10 @@ export default function UserForm({
                             {errors.email && <p className="text-error text-xs mt-1">{errors.email.message}</p>}
                         </div>
                         <div>
-                            <label className="floating-label">
+                            <label className="floating-label pb-1.5">
                                 <span>Contraseña</span>
                                 <input type="password"
-                                    placeholder={isEdit ? 'Dejar vacío para no cambiar' : 'Contraseña'}
+                                    placeholder='Contraseña'
                                     className={`input input-md w-full ${errors.password ? 'input-error' : ''}`}
                                     {...register('password', isEdit ? {} : { required: 'La contraseña es requerida' })} />
                             </label>
