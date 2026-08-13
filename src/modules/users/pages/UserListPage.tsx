@@ -87,7 +87,6 @@ export default function UserListPage() {
                 <tr>
                   <th>Usuario</th>
                   <th>Email</th>
-                  <th>Estado</th>
                   <th>Registro</th>
                   <th></th>
                 </tr>
@@ -95,13 +94,13 @@ export default function UserListPage() {
               <tbody>
                 {loading ? (
                   <tr>
-                    <td colSpan={6} className="text-center py-8">
+                    <td colSpan={4} className="text-center py-8">
                       <span className="loading loading-ring loading-lg text-primary"></span>
                     </td>
                   </tr>
                 ) : users.length === 0 ? (
                   <tr>
-                    <td colSpan={6} className="text-center py-8 text-base-content/60">
+                    <td colSpan={4} className="text-center py-8 text-base-content/60">
                       No hay usuarios
                     </td>
                   </tr>
@@ -112,13 +111,6 @@ export default function UserListPage() {
                         <div className="font-bold">{user.name}</div>
                       </td>
                       <td>{user.email}</td>
-                      <td>
-                        {user.email_verified_at ? (
-                          <span className="badge badge-success badge-sm">Verificado</span>
-                        ) : (
-                          <span className="badge badge-ghost badge-sm">No verificado</span>
-                        )}
-                      </td>
                       <td>{new Date(user.created_at).toLocaleDateString()}</td>
                       <td>
                         <div className="flex items-center gap-1">
