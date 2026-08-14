@@ -3,7 +3,6 @@ export interface ProductCategory {
   name: string;
   description: string;
   is_active: boolean;
-  subcategory_id: number;
 }
 
 export type CreateProductCategoryPayload = Omit<ProductCategory, 'id'>;

@@ -5,7 +5,6 @@ export interface Product {
   name: string;
   description: string | null;
   category_id: number;
-  subcategory_id: number | null;
   brand: string | null;
   image: string | null;
   unit_of_measurement: string;

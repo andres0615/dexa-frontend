@@ -31,7 +31,6 @@ export default function ProductForm({
         initial_stock: 0,
         minimum_stock: 0,
         vat_percentage: 0,
-        subcategory_id: null,
         ...defaultValues,
     };
 
@@ -67,7 +66,6 @@ export default function ProductForm({
             location: data.location || null,
             supplier_id: data.supplier_id || null,
             notes: data.notes || null,
-            subcategory_id: data.subcategory_id || null,
         };
 
         await parentOnSubmit(payload);
@@ -167,18 +165,6 @@ export default function ProductForm({
                                 <span>Categoría</span>
                             </label>
                             {errors.category_id && <p className="text-error text-xs mt-1">{errors.category_id.message}</p>}
-                        </div>
-                        <div>
-                            <label className="floating-label">
-                                <select className="select select-md w-full"
-                                    {...register('subcategory_id', { valueAsNumber: true })}>
-                                    <option value="">Seleccionar</option>
-                                    <option value="1">Opción 1</option>
-                                    <option value="2">Opción 2</option>
-                                    <option value="3">Opción 3</option>
-                                </select>
-                                <span>Subcategoría</span>
-                            </label>
                         </div>
                         <div>
                             <label className="floating-label">
