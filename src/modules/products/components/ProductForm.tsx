@@ -64,7 +64,6 @@ export default function ProductForm({
             wholesale_price: data.wholesale_price || null,
             maximum_stock: data.maximum_stock || null,
             location: data.location || null,
-            supplier_id: data.supplier_id || null,
             notes: data.notes || null,
         };
 
@@ -333,18 +332,6 @@ export default function ProductForm({
                                     placeholder="Ubicación en Bodega"
                                     className="input input-md w-full"
                                     {...register('location')} />
-                            </label>
-                        </div>
-                        <div>
-                            <label className="floating-label">
-                                <select className="select select-md w-full"
-                                    {...register('supplier_id', { valueAsNumber: true })}>
-                                    <option value="">Seleccionar</option>
-                                    <option value="1">Proveedor A</option>
-                                    <option value="2">Proveedor B</option>
-                                    <option value="3">Proveedor C</option>
-                                </select>
-                                <span>Proveedor Principal</span>
                             </label>
                         </div>
                     </div>

@@ -20,7 +20,6 @@ export interface Product {
   minimum_stock: number;
   maximum_stock: number | null;
   location: string | null;
-  supplier_id: number | null;
   allow_negative_sales: boolean;
   is_service: boolean;
   status_id: number;
