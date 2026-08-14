@@ -28,6 +28,12 @@ export default function ProductStats() {
   const displayStockValueFormatted = useTransform(stockValueCount, (v) => thousandFormatter.format(v));
   const [stockValueAnimated, setStockValueAnimated] = useState(false);
 
+  const activePercentCount = useMotionValue(0);
+  const displayActivePercent = useTransform(activePercentCount, Math.round);
+  
+  const outOfStockPercentCount = useMotionValue(0);
+  const displayOutOfStockPercent = useTransform(outOfStockPercentCount, Math.round);
+
 
   useEffect(() => {
     fetchStats().then((data) => {
@@ -62,19 +68,38 @@ export default function ProductStats() {
       onComplete: () => setStockValueAnimated(true),
     });
 
+    const activePercentControls = animate(activePercentCount, stats.active_percent, {
+      duration: animationTime,
+      ease: 'easeOut',
+    });
+    
+    const outOfStockPercentControls = animate(outOfStockPercentCount, stats.out_of_stock_percent, {
+      duration: animationTime,
+      ease: 'easeOut',
+    });
+
     return () => {
       totalControls.stop();
       activeControls.stop();
       outOfStockControls.stop();
       stockValueControls.stop();
+      activePercentControls.stop();
+      outOfStockPercentControls.stop();
     }
-  }, [totalCount, activeCount, outOfStockCount, stockValueCount, stats]);
+  }, [
+    totalCount, 
+    activeCount, 
+    outOfStockCount, 
+    stockValueCount, 
+    activePercentCount, 
+    stats
+  ]);
 
   return (
     <>
       {stats && (
         <div className="stats shadow bg-base-100 w-full mb-6 stats-vertical lg:stats-horizontal">
-          <div className="stat">
+          <div className="stat w-60">
             <div className="stat-figure text-primary">
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" className="inline-block h-8 w-8 stroke-current">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
@@ -86,7 +111,7 @@ export default function ProductStats() {
             </div>
             <div className="stat-desc">12 más que el mes pasado</div>
           </div>
-          <div className="stat">
+          <div className="stat w-48">
             <div className="stat-figure text-success">
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" className="inline-block h-8 w-8 stroke-current">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -96,9 +121,11 @@ export default function ProductStats() {
             <div className="stat-value text-success">
               <motion.span>{displayActive}</motion.span>
             </div>
-            <div className="stat-desc">79.8% del total</div>
+            <div className="stat-desc">
+              <motion.span>{displayActivePercent}</motion.span>% del total
+            </div>
           </div>
-          <div className="stat">
+          <div className="stat w-56">
             <div className="stat-figure text-error">
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" className="inline-block h-8 w-8 stroke-current">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
@@ -108,7 +135,9 @@ export default function ProductStats() {
             <div className="stat-value text-error">
               <motion.span>{displayOutOfStock}</motion.span>
             </div>
-            <div className="stat-desc">9.3% necesita reposición</div>
+            <div className="stat-desc">
+              <motion.span>{displayOutOfStockPercent}</motion.span>% necesita reposición
+            </div>
           </div>
           <div className="stat w-72">
             <div className="stat-figure text-info">
