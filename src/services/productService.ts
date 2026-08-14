@@ -160,3 +160,19 @@ export async function updateProduct(
   // si la respuesta es exitosa, retornar los productos
   return data.product;
 }
+
+export async function fetchStats(): Promise<any> {
+  // Petición GET al endpoint de estadísticas
+  const response = await apiClient('/products/stats');
+  
+  // Extraer datos del wrapper
+  const { success, data, message } = await response.json();
+
+  // Verificar si la respuesta es exitosa
+  if (!success) {
+    throw new Error(message ?? 'Error al obtener las estadísticas');
+  }
+  
+  // si la respuesta es exitosa, retornar las estadísticas
+  return data.stats;
+}
