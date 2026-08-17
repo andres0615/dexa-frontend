@@ -151,3 +151,19 @@ export async function cancelMovement(id: number): Promise<Movement> {
 
   return data.movement;
 }
+
+export async function fetchStats(): Promise<any> {
+  // Petición GET al endpoint de estadísticas
+  const response = await apiClient('/movements/stats');
+  
+  // Extraer datos del wrapper
+  const { success, data, message } = await response.json();
+
+  // Verificar si la respuesta es exitosa
+  if (!success) {
+    throw new Error(message ?? 'Error al obtener las estadísticas');
+  }
+  
+  // si la respuesta es exitosa, retornar las estadísticas
+  return data.stats;
+}

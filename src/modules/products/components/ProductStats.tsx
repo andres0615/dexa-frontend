@@ -53,6 +53,7 @@ export default function ProductStats() {
   const stockValueMomCount = useMotionValue(0);
   const displayStockValueMom = useTransform(stockValueMomCount, (v) => momFormatter.format(v));
 
+  // Carga de estadisticas
   useEffect(() => {
     fetchStats().then((data) => {
       console.log('stats: ', data);
