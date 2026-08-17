@@ -8,32 +8,50 @@ const thousandFormatter = new Intl.NumberFormat('es-ES', {
   maximumFractionDigits: 0,
 });
 
+const momFormatter = new Intl.NumberFormat('es-ES', { 
+  maximumFractionDigits: 1, 
+  minimumFractionDigits: 1 
+});
+
 export default function ProductStats() {
   const [stats, setStats] = useState<any>(null);
   
   // Variables para la animacion de los stats
   const animationTime: number = 0.7;
   
+  // total de productos
   const totalCount = useMotionValue(0);
   const displayTotalStock = useTransform(totalCount, Math.round);
   
+  // productos activos
   const activeCount = useMotionValue(0);
   const displayActive = useTransform(activeCount, Math.round);
   
+  // productos agotados
   const outOfStockCount = useMotionValue(0);
   const displayOutOfStock = useTransform(outOfStockCount, Math.round);
   
+  // valor del stock
   const stockValueCount = useMotionValue(0);
   const displayStockValue = useTransform(stockValueCount, Math.round);
   const displayStockValueFormatted = useTransform(stockValueCount, (v) => thousandFormatter.format(v));
   const [stockValueAnimated, setStockValueAnimated] = useState(false);
 
+  // porcentaje de productos activos
   const activePercentCount = useMotionValue(0);
   const displayActivePercent = useTransform(activePercentCount, Math.round);
   
+  // porcentaje de productos agotados
   const outOfStockPercentCount = useMotionValue(0);
   const displayOutOfStockPercent = useTransform(outOfStockPercentCount, Math.round);
 
+  // diferencia de stock mensual
+  const stockDiffMomCount = useMotionValue(0);
+  const displayStockDiffMom = useTransform(stockDiffMomCount, Math.round);
+
+  // valor del stock mensual
+  const stockValueMomCount = useMotionValue(0);
+  const displayStockValueMom = useTransform(stockValueMomCount, (v) => momFormatter.format(v));
 
   useEffect(() => {
     fetchStats().then((data) => {
@@ -77,6 +95,16 @@ export default function ProductStats() {
       duration: animationTime,
       ease: 'easeOut',
     });
+    
+    const stockDiffMomControls = animate(stockDiffMomCount, stats.stock_diff_mom, {
+      duration: animationTime,
+      ease: 'easeOut',
+    });
+    
+    const stockValueMomControls = animate(stockValueMomCount, stats.stock_value_mom, {
+      duration: animationTime,
+      ease: 'easeOut',
+    });
 
     return () => {
       totalControls.stop();
@@ -85,6 +113,8 @@ export default function ProductStats() {
       stockValueControls.stop();
       activePercentControls.stop();
       outOfStockPercentControls.stop();
+      stockDiffMomControls.stop();
+      stockValueMomControls.stop();
     }
   }, [
     totalCount, 
@@ -92,6 +122,9 @@ export default function ProductStats() {
     outOfStockCount, 
     stockValueCount, 
     activePercentCount, 
+    outOfStockPercentCount,
+    stockDiffMomCount,
+    stockValueMomCount,
     stats
   ]);
 
@@ -109,7 +142,9 @@ export default function ProductStats() {
             <div className="stat-value text-primary">
               <motion.span>{displayTotalStock}</motion.span>
             </div>
-            <div className="stat-desc">12 más que el mes pasado</div>
+            <div className="stat-desc">
+              <motion.span>{displayStockDiffMom}</motion.span> más que el mes pasado
+            </div>
           </div>
           <div className="stat w-48">
             <div className="stat-figure text-success">
@@ -149,7 +184,9 @@ export default function ProductStats() {
             <div className="stat-value text-info">
               $<motion.span>{stockValueAnimated ? displayStockValueFormatted : displayStockValue}</motion.span>
             </div>
-            <div className="stat-desc">+5.2% vs mes anterior</div>
+            <div className="stat-desc">
+              +<motion.span>{displayStockValueMom}</motion.span>% vs mes anterior
+            </div>
           </div>
         </div>
       )}
