@@ -221,17 +221,12 @@ export default function MovementListPage() {
       </div>
 
       {/* Table */}
-      <div className="card bg-base-100 shadow-md mb-6">
+      <div className="card bg-base-100 shadow-md mb-6 pl-7">
         <div className="card-body p-0">
           <div className="overflow-x-auto">
             <table className="table">
               <thead>
                 <tr>
-                  <th>
-                    <label>
-                      <input type="checkbox" className="checkbox" />
-                    </label>
-                  </th>
                   <th>Tipo</th>
                   <th>Fecha</th>
                   <th>Comprobante</th>
@@ -256,9 +251,6 @@ export default function MovementListPage() {
                 ) : (
                   movements.map((movement) => (
                   <tr>
-                    <th>
-                      <label><input type="checkbox" className="checkbox" /></label>
-                    </th>
                     <td>
                       {/* Tipo de movimiento */}
                       <MovementTypeBadge movement={movement} types={movementTypeList} />

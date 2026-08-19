@@ -326,17 +326,12 @@ export default function ProductListPage() {
       </div>
 
       {/* Product Table */}
-      <div className="card bg-base-100 shadow-md mb-6">
+      <div className="card bg-base-100 shadow-md mb-6 pl-6">
         <div className="card-body p-0">
           <div className="overflow-x-auto">
             <table className="table">
               <thead>
                 <tr>
-                  <th>
-                    <label>
-                      <input type="checkbox" className="checkbox" />
-                    </label>
-                  </th>
                   <th>Producto</th>
                   <th>Categoría</th>
                   <th>Precio</th>
@@ -371,11 +366,6 @@ export default function ProductListPage() {
 
                     return (
                       <tr key={product.id}>
-                        <th>
-                          <label>
-                            <input type="checkbox" className="checkbox" />
-                          </label>
-                        </th>
                         <td>
                           <div className="flex items-center gap-3">
                             <div className="avatar avatar-placeholder">
