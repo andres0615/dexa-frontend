@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import type { CreateMovementPayload, UpdateMovementPayload } from '@/types/movements';
+import type { CreateMovementPayload, Movement, UpdateMovementPayload } from '@/types/movements';
 import type { MovementType } from '@/types/movement-types';
 import { fetchMovementTypes } from '@/services/movementTypeService';
 import { MOVEMENT_TYPE_IDS, TIPOS_TERCERO, DEMO_VALUES } from '@/constants/global';
@@ -12,11 +12,13 @@ import MovementDetail from './MovementDetail';
 import { fetchMovementStatus } from '@/services/movementStatusService';
 import type { MovementStatus } from '@/types/movement-status';
 import { MOVEMENT_STATUSES } from '@/constants/global';
+import MovementStatusBadge from '@/modules/movements/components/MovementStatusBadge';
 
 interface MovementFormProps {
     onSubmit: (data: CreateMovementPayload | UpdateMovementPayload) => Promise<void>;
     defaultValues?: Partial<UpdateMovementPayload>;
     submitLabel?: string;
+    isEditing?: boolean;
 }
 
 function calculateSubtotal(quantity: number, unitCost: number): number {
@@ -27,6 +29,7 @@ export default function MovementForm({
     onSubmit: parentOnSubmit,
     defaultValues,
     submitLabel = 'Guardar',
+    isEditing = false,
 }: MovementFormProps) {
 
     const mergedDefaults: any = {
@@ -387,30 +390,17 @@ export default function MovementForm({
                   <ToggleField registration={register('allow_out_of_stock')} checked={watch('allow_out_of_stock')} />
                 </div>
               </div>
-              {/* Generar movimiento inverso al anular */}
+              {/* Status */}
               <div>
-                <span className="font-medium text-sm block">Generar movimiento inverso al anular</span>
+                <span className="font-medium text-sm block">Estado</span>
                 <div className="flex items-center gap-3 h-10">
-                  <ToggleField registration={register('generate_reverse_movement')} checked={watch('generate_reverse_movement')} />
+                  {isEditing ? (
+                    <MovementStatusBadge movement={mergedDefaults as Movement} statuses={movementStatuses} size="sm" />
+                  ) : (
+                    <span className="badge badge-warning badge-sm">Pendiente</span>
+                  )}
                 </div>
               </div>
-              {/* Status */}
-              <label className="floating-label">
-                <select
-                  className={`select select-md w-full`}
-                  disabled
-                  value={movementStatus ?? ''}
-                  onChange={(e) => setMovementStatus(e.target.value === '' ? null : Number(e.target.value))}
-                >
-                  <option value="">Seleccionar</option>
-                  {movementStatuses.map((status) => (
-                    <option key={status.id} value={status.id}>
-                      {status.name}
-                    </option>
-                  ))}
-                </select>
-                <span>Status</span>
-              </label>
               {/* Observaciones */}
               <div className="md:col-span-3">
                 <label className="floating-label">

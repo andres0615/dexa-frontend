@@ -13,9 +13,10 @@ const badgeColorMap: Record<string, string> = {
   neutral: 'badge-neutral',
 };
 
-export default function MovementStatusBadge({ movement, statuses }: {
+export default function MovementStatusBadge({ movement, statuses, size = 'xs' }: {
   movement: Movement;
   statuses: MovementStatus[];
+  size?: 'xs' | 'sm' | 'md' | 'lg';
 }) {
   // Obtener el status del movimiento
   const status = statuses.find((status) => status.id === movement.status_id);
@@ -24,6 +25,6 @@ export default function MovementStatusBadge({ movement, statuses }: {
   const badgeClass = badgeColorMap[status?.color ?? ''] ?? 'badge-ghost';
 
   return (
-    <span className={`badge ${badgeClass} badge-xs`}>{ucfirst(status?.name || '')}</span>
+    <span className={`badge ${badgeClass} badge-${size}`}>{ucfirst(status?.name || '')}</span>
   );
 }

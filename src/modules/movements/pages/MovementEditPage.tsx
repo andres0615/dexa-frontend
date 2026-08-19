@@ -91,6 +91,7 @@ export default function MovementEditPage() {
         onSubmit={handleSubmit}
         submitLabel="Actualizar"
         defaultValues={movement ?? undefined}
+        isEditing={true}
       />
     </>
   );
