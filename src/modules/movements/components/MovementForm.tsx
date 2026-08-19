@@ -5,7 +5,7 @@ import type { MovementType } from '@/types/movement-types';
 import { fetchMovementTypes } from '@/services/movementTypeService';
 import { MOVEMENT_TYPE_IDS, TIPOS_TERCERO, DEMO_VALUES } from '@/constants/global';
 import type { ThirdParty } from '@/types/third-party';
-import { fetchThirdParties } from '@/services/thirdPartyService';
+import { fetchThirdParties, fetchThirdParty } from '@/services/thirdPartyService';
 import ToggleField from '@/components/ui/ToggleField';
 import type { CreateMovementDetailPayload } from '@/types/movement-detail';
 import MovementDetail from './MovementDetail';
@@ -85,6 +85,8 @@ export default function MovementForm({
     const [movementStatuses, setMovementStatuses] = useState<MovementStatus[]>([]);
     const [movementStatus, setMovementStatus] = useState<number | null>(mergedDefaults?.status_id ?? MOVEMENT_STATUSES.PENDIENTE);
 
+    const thirdPartyId = watch('third_party_id');
+
     // Cargar los tipos de movimiento
     useEffect(() => {
         fetchMovementTypes()
@@ -142,6 +144,18 @@ export default function MovementForm({
         if (movementStatuses.length === 0) return;
         setMovementStatus(mergedDefaults?.status_id ?? MOVEMENT_STATUSES.PENDIENTE);
     }, [movementStatuses, mergedDefaults]);
+
+    // autocompletar datos de tercero
+    useEffect(() => {
+      if (!thirdPartyId) return;
+      fetchThirdParty(thirdPartyId)
+        .then((thirdPartyData) => {
+          setValue("third_party_document", thirdPartyData.tax_id);
+          setValue("third_party_phone", thirdPartyData.phone);
+        })
+        .catch((err) => console.error(err))
+        .finally(() => { });
+    }, [thirdPartyId]);
 
     // Select para tipos de movimientos
     const movementTypesSelect = (
