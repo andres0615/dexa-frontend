@@ -157,6 +157,12 @@ export default function MovementForm({
         .finally(() => { });
     }, [thirdPartyId]);
 
+    useEffect(() => {
+      setValue("third_party_id", null);
+      setValue("third_party_document", null);
+      setValue("third_party_phone", null);
+    }, [movementType]);
+
     // Select para tipos de movimientos
     const movementTypesSelect = (
         <label className="floating-label">
