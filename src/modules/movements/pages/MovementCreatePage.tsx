@@ -3,31 +3,18 @@ import { createMovement } from '@/services/movementService';
 import { useToast } from '@/components/toast/ToastContext';
 import MovementForm from '../components/MovementForm';
 import type { CreateMovementPayload } from '@/types/movements';
-import { DEMO_VALUES } from '@/constants/global';
+import { USE_DEMO_VALUES, MOVEMENT_DEMO_VALUES } from '@/constants/global';
 
 export default function MovementCreatePage() {
     const navigate = useNavigate();
     const { showToast } = useToast();
 
-    // valores demo para propositos de prueba
-    const demoValues: any = {
-      movement_type_id: DEMO_VALUES.movement_type_id,
-      adjustment_is_entry: false,
-      movement_date: new Date().toISOString().split('T')[0],
-      voucher: 'FV-001-00000123',
-      source_warehouse_id: null,
-      destination_warehouse_id: DEMO_VALUES.destination_warehouse_id,
-      original_voucher: null,
-      third_party_id: DEMO_VALUES.third_party_id,
-      third_party_document: '12345678',
-      third_party_phone: '999888777',
-      note: 'Compra de prueba — verificar flujo completo',
-      valuation_method: 'promedio',
-      allow_out_of_stock: false,
-      generate_reverse_movement: true,
-      observations: 'Observaciones de prueba',
-      details: [{ product_id: null, quantity: 1, unit_cost: 0, subtotal: 0 }],
-    };
+    let demoValues: any = null;
+
+    if (USE_DEMO_VALUES) {
+      // valores demo para propositos de prueba
+      demoValues = MOVEMENT_DEMO_VALUES;
+    }
 
     const handleSubmit = async (data: CreateMovementPayload) => {
         console.log('Payload:', data);

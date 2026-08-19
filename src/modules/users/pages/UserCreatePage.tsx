@@ -3,18 +3,18 @@ import { createUser } from '../../../services/userService';
 import { useToast } from '../../../components/toast/ToastContext';
 import UserForm from '../components/UserForm';
 import type { CreateUserPayload } from '../../../types/user';
+import { USE_DEMO_VALUES, USER_DEMO_VALUES } from '@/constants/global';
 
 export default function UserCreatePage() {
     const navigate = useNavigate();
     const { showToast } = useToast();
 
-    // valores demo para propositos de prueba
-    const demoValues: any = {
-        name: "Test",
-        email: "test@example.com",
-        password: "manzana12345",
-        password_confirmation: "manzana12345",
-    };
+    let demoValues: any = null;
+
+    if(USE_DEMO_VALUES) {
+      // valores demo para propositos de prueba
+      demoValues = USER_DEMO_VALUES;
+    }
 
     const handleSubmit = async (data: CreateUserPayload) => {
         console.log('Payload:', data);
