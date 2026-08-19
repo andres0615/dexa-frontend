@@ -399,8 +399,8 @@ export default function ProductListPage() {
                         <td>${Number(product.sale_price).toFixed(2)}</td>
                         <td>
                           <div className="flex items-center gap-2">
-                            <span>{product.initial_stock}</span>
-                            <progress className={`progress progress-${progressColor} w-16`} value={stockRatio} max="100" />
+                            <span>{product.qty_on_hand}</span>
+                            <progress className={`progress progress-${progressColor} w-16`} value={product.qty_on_hand} max={product.maximum_stock} />
                           </div>
                         </td>
                         <td>
