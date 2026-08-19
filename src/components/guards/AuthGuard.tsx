@@ -1,5 +1,6 @@
 import { Navigate, Outlet } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
+import LoadingPage from '@/components/ui/LoadingPage';
 
 export default function AuthGuard() {
   const auth = useAuth();
@@ -7,7 +8,7 @@ export default function AuthGuard() {
 
   const { user, loading } = auth;
 
-  if (loading) return <div>Cargando...</div>;
+  if (loading) return <LoadingPage />;
   if (!user) return <Navigate to="/login" replace />;
 
   return <Outlet />;
