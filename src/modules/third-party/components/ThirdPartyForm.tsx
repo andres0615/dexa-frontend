@@ -4,6 +4,7 @@ import type { CreateThirdPartyPayload, UpdateThirdPartyPayload } from '@/types/t
 import ToggleField from '@/components/ui/ToggleField';
 import { fetchThirdPartyTypes } from '@/services/thirdPartyTypeService';
 import type { ThirdPartyType } from '@/types/third-party-type';
+import { Link } from 'react-router-dom';
 
 interface ThirdPartyFormProps {
     onSubmit: (data: CreateThirdPartyPayload | UpdateThirdPartyPayload) => Promise<void>;
@@ -193,7 +194,9 @@ export default function ThirdPartyForm({
                     </svg>
                     {submitLabel}
                 </button>
-                <button type="reset" className="btn btn-soft">Cancelar</button>
+                <Link to="/third-party" className="btn btn-soft">
+                    Cancelar
+                </Link>
             </div>
         </form>
     );

@@ -13,6 +13,7 @@ import { fetchMovementStatus } from '@/services/movementStatusService';
 import type { MovementStatus } from '@/types/movement-status';
 import { MOVEMENT_STATUSES } from '@/constants/global';
 import MovementStatusBadge from '@/modules/movements/components/MovementStatusBadge';
+import { Link } from 'react-router-dom';
 
 interface MovementFormProps {
     onSubmit: (data: CreateMovementPayload | UpdateMovementPayload) => Promise<void>;
@@ -430,7 +431,9 @@ export default function MovementForm({
             </svg>
             {submitLabel}
           </button>
-          <button type="reset" className="btn btn-soft">Cancelar</button>
+          <Link to="/movements" className="btn btn-soft">
+            Cancelar
+          </Link>
         </div>
       </form>
     </>

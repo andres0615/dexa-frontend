@@ -1,6 +1,7 @@
 import { useForm } from 'react-hook-form';
 import type { CreateProductCategoryPayload, UpdateProductCategoryPayload } from '@/types/product-category';
 import ToggleField from '@/components/ui/ToggleField';
+import { Link } from 'react-router-dom';
 
 interface ProductCategoryFormProps {
     onSubmit: (data: CreateProductCategoryPayload | UpdateProductCategoryPayload) => Promise<void>;
@@ -95,7 +96,9 @@ export default function ProductCategoryForm({
                     </svg>
                     {submitLabel}
                 </button>
-                <button type="reset" className="btn btn-soft">Cancelar</button>
+                <Link to="/product-category" className="btn btn-soft">
+                    Cancelar
+                </Link>
             </div>
         </form>
     );

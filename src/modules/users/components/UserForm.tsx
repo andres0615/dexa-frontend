@@ -1,5 +1,6 @@
 import { useForm } from 'react-hook-form';
 import type { CreateUserPayload, UpdateUserPayload } from '../../../types/user';
+import { Link } from 'react-router-dom';
 
 interface UserFormProps {
     onSubmit: (data: CreateUserPayload | UpdateUserPayload) => Promise<void>;
@@ -107,7 +108,9 @@ export default function UserForm({
                     </svg>
                     {submitLabel}
                 </button>
-                <button type="reset" className="btn btn-soft">Cancelar</button>
+                <Link to="/users" className="btn btn-soft">
+                    Cancelar
+                </Link>
             </div>
         </form>
     );

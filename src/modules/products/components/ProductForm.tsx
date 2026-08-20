@@ -7,6 +7,7 @@ import { useEffect, useState } from 'react';
 import { fetchProductStatus } from '../../../services/productStatusService';
 import { fetchProductCategories } from '../../../services/productCategoryService';
 import ToggleField from '../../../components/ui/ToggleField';
+import { Link } from 'react-router-dom';
 
 interface ProductFormProps {
     onSubmit: (data: CreateProductPayload | UpdateProductPayload) => Promise<void>;
@@ -388,7 +389,9 @@ export default function ProductForm({
                     </svg>
                     {submitLabel}
                 </button>
-                <button type="reset" className="btn btn-soft">Cancelar</button>
+                <Link to="/products" className="btn btn-soft">
+                  Cancelar
+                </Link>
             </div>
         </form>
     );
