@@ -166,6 +166,12 @@ export default function MovementForm({
       setValue("third_party_phone", null);
     }, [movementType]);
 
+    // Scroll al inicio al abrir el formulario.
+    useEffect(() => {
+      window.scrollTo(0, 0);
+      document.querySelector('main')?.scrollTo(0, 0);
+    }, []);
+
     // Select para tipos de movimientos
     const movementTypesSelect = (
         <label className="floating-label">

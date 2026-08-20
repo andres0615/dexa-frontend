@@ -90,6 +90,12 @@ export default function ProductForm({
             .finally(() => { });
     }, []);
 
+    // Scroll al inicio al abrir el formulario.
+    useEffect(() => {
+        window.scrollTo(0, 0);
+        document.querySelector('main')?.scrollTo(0, 0);
+    }, []);
+
     const statusSelect = (
         <select className="select select-md w-full"
             {...register('status_id', { required: true })}>
