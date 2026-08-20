@@ -25,7 +25,7 @@ export interface Movement {
   details: MovementDetail[] | null;
   movement_type: MovementType;
   status: MovementStatus;
-  thirdParty: ThirdParty;
+  third_party: ThirdParty;
 }
 
 export type CreateMovementPayload =

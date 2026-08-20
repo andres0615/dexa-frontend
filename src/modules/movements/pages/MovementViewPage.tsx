@@ -6,6 +6,7 @@ import { MOVEMENT_TYPE_IDS } from '@/constants/global';
 import { ucfirst } from '@/utils/utils';
 import MovementStatusBadge from '@/modules/movements/components/MovementStatusBadge';
 import { fetchMovementStatus } from '@/services/movementStatusService';
+import type { MovementStatus } from '@/types/movement-status';
 
 const badgeColorMap: Record<string, string> = {
   info: 'badge-info',
