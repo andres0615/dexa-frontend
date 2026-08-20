@@ -332,7 +332,7 @@ export default function ProductListPage() {
             <table className="table">
               <thead>
                 <tr>
-                  <th className="pl-12">Producto</th>
+                  <th className="pl-11">Producto</th>
                   <th>Categoría</th>
                   <th>Precio</th>
                   <th>Stock</th>
@@ -366,7 +366,7 @@ export default function ProductListPage() {
 
                     return (
                       <tr key={product.id} className="hover:bg-base-300">
-                        <td className="pl-12">
+                        <td className="pl-11">
                           <div className="flex items-center gap-3">
                             <div className="avatar avatar-placeholder">
                               <div className="bg-primary text-primary-content w-12 rounded-full">
