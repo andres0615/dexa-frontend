@@ -23,6 +23,7 @@ import ThirdPartyEditPage from '@/modules/third-party/pages/ThirdPartyEditPage';
 import ProductCategoryListPage from './modules/product-category/pages/ProductCategoryListPage'
 import ProductCategoryCreatePage from './modules/product-category/pages/ProductCategoryCreatePage'
 import ProductCategoryEditPage from './modules/product-category/pages/ProductCategoryEditPage'
+import MovementViewPage from '@/modules/movements/pages/MovementViewPage'
 
 function App() {
   return (
@@ -41,6 +42,7 @@ function App() {
                 <Route path="/movements" element={<MovementListPage />} />
                 <Route path="/movements/create" element={<MovementCreatePage />} />
                 <Route path="/movements/:id/edit" element={<MovementEditPage />} />
+                <Route path="/movements/:id/view" element={<MovementViewPage />} />
                 <Route path="/users" element={<UserListPage />} />
                 <Route path="/users/create" element={<UserCreatePage />} />
                 <Route path="/users/:id/edit" element={<UserEditPage />} />

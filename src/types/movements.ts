@@ -1,6 +1,7 @@
 import type { MovementDetail, CreateMovementDetailPayload } from '@/types/movement-detail';
 import type { MovementType } from '@/types/movement-types';
 import type { MovementStatus } from '@/types/movement-status';
+import type { ThirdParty } from '@/types/third-party';
 
 export interface Movement {
   id: number;
@@ -24,6 +25,7 @@ export interface Movement {
   details: MovementDetail[] | null;
   movement_type: MovementType;
   status: MovementStatus;
+  thirdParty: ThirdParty;
 }
 
 export type CreateMovementPayload =
