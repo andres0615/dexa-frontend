@@ -221,13 +221,13 @@ export default function MovementListPage() {
       </div>
 
       {/* Table */}
-      <div className="card bg-base-100 shadow-md mb-6 pl-7">
+      <div className="card bg-base-100 shadow-md mb-6">
         <div className="card-body p-0">
           <div className="overflow-x-auto">
             <table className="table">
               <thead>
                 <tr>
-                  <th>Tipo</th>
+                  <th className="pl-12">Tipo</th>
                   <th>Fecha</th>
                   <th>Comprobante</th>
                   <th className="text-right">Total</th>
@@ -250,8 +250,8 @@ export default function MovementListPage() {
                   </tr>
                 ) : (
                   movements.map((movement) => (
-                  <tr>
-                    <td>
+                  <tr className="hover:bg-base-300">
+                    <td className="pl-12">
                       {/* Tipo de movimiento */}
                       <MovementTypeBadge movement={movement} types={movementTypeList} />
                     </td>

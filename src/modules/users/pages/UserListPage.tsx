@@ -79,13 +79,13 @@ export default function UserListPage() {
       </div>
 
       {/* User Table */}
-      <div className="card bg-base-100 shadow-md mb-6 pl-6">
+      <div className="card bg-base-100 shadow-md mb-6">
         <div className="card-body p-0">
           <div className="overflow-x-auto">
             <table className="table">
               <thead>
                 <tr>
-                  <th>Usuario</th>
+                  <th className="pl-11">Usuario</th>
                   <th>Email</th>
                   <th>Registro</th>
                   <th></th>
@@ -106,8 +106,8 @@ export default function UserListPage() {
                   </tr>
                 ) : (
                   users.map((user) => (
-                    <tr key={user.id}>
-                      <td>
+                    <tr key={user.id} className="hover:bg-base-300">
+                      <td className="pl-11">
                         <div className="font-bold">{user.name}</div>
                       </td>
                       <td>{user.email}</td>

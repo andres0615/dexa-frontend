@@ -98,13 +98,13 @@ export default function ThirdPartyListPage() {
       </div>
 
       {/* Third Party Table */}
-      <div className="card bg-base-100 shadow-md mb-6 pl-6">
+      <div className="card bg-base-100 shadow-md mb-6">
         <div className="card-body p-0">
           <div className="overflow-x-auto">
             <table className="table">
               <thead>
                 <tr>
-                  <th>Tercero</th>
+                  <th className="pl-11">Tercero</th>
                   <th>Tipo</th>
                   <th>Contacto</th>
                   <th>Estado</th>
@@ -126,8 +126,8 @@ export default function ThirdPartyListPage() {
                   </tr>
                 ) : (
                   thirdParties.map((thirdParty) => (
-                    <tr key={thirdParty.id}>
-                      <td>
+                    <tr key={thirdParty.id} className="hover:bg-base-300">
+                      <td className="pl-11">
                         <div className="flex items-center gap-3">
                           <div className="avatar avatar-placeholder">
                             <div className="bg-primary text-primary-content w-12 rounded-full">

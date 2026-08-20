@@ -326,13 +326,13 @@ export default function ProductListPage() {
       </div>
 
       {/* Product Table */}
-      <div className="card bg-base-100 shadow-md mb-6 pl-6">
+      <div className="card bg-base-100 shadow-md mb-6">
         <div className="card-body p-0">
           <div className="overflow-x-auto">
             <table className="table">
               <thead>
                 <tr>
-                  <th>Producto</th>
+                  <th className="pl-12">Producto</th>
                   <th>Categoría</th>
                   <th>Precio</th>
                   <th>Stock</th>
@@ -365,8 +365,8 @@ export default function ProductListPage() {
                     const statusColor = isOutOfStock ? 'error' : isLowStock ? 'warning' : 'success';
 
                     return (
-                      <tr key={product.id}>
-                        <td>
+                      <tr key={product.id} className="hover:bg-base-300">
+                        <td className="pl-12">
                           <div className="flex items-center gap-3">
                             <div className="avatar avatar-placeholder">
                               <div className="bg-primary text-primary-content w-12 rounded-full">

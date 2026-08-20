@@ -82,13 +82,13 @@ export default function ProductCategoryListPage() {
       </div>
 
       {/* Category Table */}
-      <div className="card bg-base-100 shadow-md mb-6 pl-6">
+      <div className="card bg-base-100 shadow-md mb-6">
         <div className="card-body p-0">
           <div className="overflow-x-auto">
             <table className="table">
               <thead>
                 <tr>
-                  <th>Categoría</th>
+                  <th className="pl-11">Categoría</th>
                   <th>Descripción</th>
                   <th>Estado</th>
                   <th></th>
@@ -109,8 +109,8 @@ export default function ProductCategoryListPage() {
                   </tr>
                 ) : (
                   categories.map((category) => (
-                    <tr key={category.id}>
-                      <td>
+                    <tr key={category.id} className="hover:bg-base-300">
+                      <td className="pl-11">
                         <div className="font-bold">{category.name}</div>
                       </td>
                       <td>
