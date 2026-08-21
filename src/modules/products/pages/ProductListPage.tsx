@@ -15,6 +15,7 @@ import { ucfirst, sleep } from '../../../utils/utils';
 import ProductStatusBadge from '../components/ProductStatusBadge';
 import CategoryLabel from '../components/CategoryLabel';
 import ProductStats from '@/modules/products/components/ProductStats';
+import StockBar from '@/modules/products/components/StockBar';
 
 export default function ProductListPage() {
   const { setMaxWidth } = useLayoutContext();
@@ -355,15 +356,6 @@ export default function ProductListPage() {
                   </tr>
                 ) : (
                   products.map((product) => {
-                    const stockRatio = product.maximum_stock
-                      ? Math.min((product.initial_stock / product.maximum_stock) * 100, 100)
-                      : Math.min(product.initial_stock, 100);
-                    const isOutOfStock = product.initial_stock === 0;
-                    const isLowStock = product.initial_stock <= product.minimum_stock && !isOutOfStock;
-                    const progressColor = isOutOfStock ? 'error' : isLowStock ? 'warning' : 'success';
-                    const statusLabel = isOutOfStock ? 'Agotado' : isLowStock ? 'Stock Bajo' : 'Activo';
-                    const statusColor = isOutOfStock ? 'error' : isLowStock ? 'warning' : 'success';
-
                     return (
                       <tr key={product.id} className="hover:bg-base-300">
                         <td className="pl-11">
@@ -388,10 +380,7 @@ export default function ProductListPage() {
                         </td>
                         <td>${Number(product.sale_price).toFixed(2)}</td>
                         <td>
-                          <div className="flex items-center gap-2">
-                            <span>{product.qty_on_hand}</span>
-                            <progress className={`progress progress-${progressColor} w-16`} value={product.qty_on_hand} max={product.maximum_stock} />
-                          </div>
+                          <StockBar product={product} />
                         </td>
                         <td>
                           {/* <span className={`badge badge-${statusColor} badge-sm`}>{statusLabel}</span> */}
