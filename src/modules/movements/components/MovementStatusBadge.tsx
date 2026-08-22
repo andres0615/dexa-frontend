@@ -13,7 +13,7 @@ const badgeColorMap: Record<string, string> = {
   neutral: 'badge-neutral',
 };
 
-export default function MovementStatusBadge({ movement, statuses, size = 'xs' }: {
+export default function MovementStatusBadge({ movement, statuses, size = 'sm' }: {
   movement: Movement;
   statuses: MovementStatus[];
   size?: 'xs' | 'sm' | 'md' | 'lg';
