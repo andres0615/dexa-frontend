@@ -33,6 +33,7 @@ export default function ProductListPage() {
   const [loadingProducts, setLoadingProducts] = useState(false)
   const loadingProductsTimeout: number = 1000;
   const [countFilters, setCountFilters] = useState(0)
+  const [statsRefreshKey, setStatsRefreshKey] = useState(0)
 
   // Click en el botón de eliminar
   function handleDeleteClick(product: Product): void {
@@ -211,6 +212,8 @@ export default function ProductListPage() {
       await deleteProduct(productToDelete.id);
       // Remover el producto eliminado de la lista local sin recargar del backend
       setProducts((prev) => prev.filter((p) => p.id !== productToDelete.id));
+      // Remontar ProductStats para refrescar los stats
+      setStatsRefreshKey((prev) => prev + 1);
       showToast('Producto eliminado exitosamente', 'success');
     } catch (err) {
       console.error(err);
@@ -282,7 +285,7 @@ export default function ProductListPage() {
       </div>
 
       {/* Stats */}
-      <ProductStats />
+      <ProductStats key={statsRefreshKey} />
 
       {/* Filters */}
       <div className="card bg-base-100 shadow-sm mb-4">
