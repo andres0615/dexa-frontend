@@ -2,11 +2,11 @@
 
 #### Login
 
-![Login](docs\img\login.gif)
+![Login](docs/img/login.gif)
 
 #### Listado de productos
 
-![Listado de productos](docs\img\product-list.gif)
+![Listado de productos](docs/img/product-list.gif)
 
 #### Formulario de productos
 
