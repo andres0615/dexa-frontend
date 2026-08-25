@@ -36,6 +36,7 @@ export default function MovementListPage() {
   const [filters, setFilters] = useState<MovementFilters>({ voucher: '', movement_type_id: null, date_from: null, date_to: null });
   const [countFilters, setCountFilters] = useState(0)
   const loadingMovementsTimeout: number = 1000;
+  const [statsRefreshKey, setStatsRefreshKey] = useState(0)
 
   // Seccion de handlers
 
@@ -88,6 +89,8 @@ export default function MovementListPage() {
       // Actualizar el movimiento en la lista local sin recargar del backend
       setMovements((prev) => prev.map((m) => (m.id === updated.id ? updated : m)));
       showToast('Movimiento cancelado exitosamente', 'success');
+      // Actualizar stats
+      setStatsRefreshKey((prev) => prev + 1);
     } catch (err) {
       console.error(err);
       showToast(err as string, 'error');
@@ -108,6 +111,8 @@ export default function MovementListPage() {
       // Actualizar el movimiento en la lista local sin recargar del backend
       setMovements((prev) => prev.map((m) => (m.id === updated.id ? updated : m)));
       showToast('Movimiento completado exitosamente', 'success');
+      // Actualizar stats
+      setStatsRefreshKey((prev) => prev + 1);
     } catch (err) {
       console.error(err);
       showToast(err.message, 'error');
@@ -174,7 +179,7 @@ export default function MovementListPage() {
       </div>
 
       {/* Stats */}
-      <MovementStats />
+      <MovementStats key={statsRefreshKey} />
 
       {/* Filters */}
       <div className="card bg-base-100 shadow-sm mb-4">
