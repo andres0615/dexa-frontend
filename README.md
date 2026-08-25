@@ -10,12 +10,12 @@
 
 #### Formulario de productos
 
-![Formulario de productos](docs\img\product-form.gif)
+![Formulario de productos](docs/img/product-form.gif)
 
 #### Listado de movimientos de inventario
 
-![Listado de movimientos](docs\img\movement-list.gif)
+![Listado de movimientos](docs/img/movement-list.gif)
 
 #### Formulario de movimientos de inventario
 
-![Formulario de movimientos](docs\img\movement-form.gif)
+![Formulario de movimientos](docs/img/movement-form.gif)
