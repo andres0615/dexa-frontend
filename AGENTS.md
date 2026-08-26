@@ -1,16 +1,17 @@
 # dexa-frontend
 
-Stack: React 19 + TypeScript 6 + Vite 8 + Tailwind 4 + daisyUI 5 + React Router 7.
+Stack: React 19 + TypeScript 6 + Vite 8 + Tailwind 4 + daisyUI 5 + React Router 7, con react-hook-form y framer-motion.
 
 ## Comandos
 
-- `npm run dev` — dev server
+- `npm run dev` — dev server (proxy `/api` → `http://dexa-backend.test`; sirve en `dexa.test`)
 - `npm run build` — `tsc -b && vite build` (typecheck + build)
 - `npm run lint` — ESLint 10 flat config
 - No hay test runner configurado
 
 ## TypeScript (tsconfig.app.json)
 
+- Alias `@/` → `src/`; en el código se mezclan imports relativos y con `@/`
 - `verbatimModuleSyntax` → usa `import type` para imports solo de tipos
 - `erasableSyntaxOnly` → prohibido: enums, namespaces, parameter properties
 - `noUnusedLocals` / `noUnusedParameters` → error en compilación si sobran
@@ -18,45 +19,67 @@ Stack: React 19 + TypeScript 6 + Vite 8 + Tailwind 4 + daisyUI 5 + React Router 
 ## Tailwind 4 + daisyUI 5
 
 - `src/index.css` usa `@import "tailwindcss"` + `@plugin "daisyui"` (no `@tailwind`)
-- Variables CSS globales (colores, tipografía) definidas en `:root` en `index.css`
+- Variables CSS globales (colores, fuentes Lexend/Inter) definidas en `:root` en `index.css`
 
-## Enrutamiento
+## API (src/api + src/services)
 
-- `BrowserRouter` en `main.tsx`; rutas en `App.tsx` con `<Routes>` / `<Route>`
-- Sidebar usa `<NavLink>` con callback `isActive`
-- Navegación inline usa `<Link>` de `react-router-dom`
+- `src/api/apiClient.ts`: wrapper de `fetch` que agrega headers JSON + token, serializa el body y, ante 401, refresca el token vía POST `/refresh` y reintenta una vez (los reintentos concurrentes se encolan hasta que el refresh termine).
+- Token en `localStorage` bajo `access_token`. Si el refresh falla, limpia el token y redirige a `/login`.
+- `BASE_URL = import.meta.env.VITE_API_URL || '/api'` (no hay `.env` en el repo).
+- Convención de respuesta del backend: `{ success, data, message, errors }`. Los servicios lanzan `Error(message + errors)` cuando `success` es `false` (el back devuelve 500/422 con `success: false`).
+- Paginación: query params `page` / `per_page`; el back devuelve el objeto paginado al estilo Laravel y los servicios lo mapean a `PaginatedResult<T>` / `PaginationMeta` (`src/types/pagination.ts`).
+- Un archivo de servicio por dominio en `src/services/` con exports nombrados (`fetchX`, `createX`, `updateX`, `deleteX`).
+- Endpoints de auth: POST `/login`, POST `/logout`, POST `/me`, POST `/refresh`.
 
 ## Arquitectura
 
 ```
 src/
-  components/layout/   → Layout, Sidebar
-  modules/{domain}/    → pages/ + components/  (activo: products)
-  services/            → API layer (vacio)
-  types/               → interfaces TS (vacio)
+  api/               → apiClient.ts (único wrapper fetch)
+  components/        → layout/, sidebar/, guards/, toast/, ui/ (compartidos)
+  constants/         → global.ts: ids (tipos de movimiento, tipos de tercero, estados), DEMO_VALUES, USE_DEMO_VALUES
+  contexts/          → AuthContext (user, login, logout, loading), LayoutContext (maxWidth)
+  modules/{domain}/  → pages/ + components/
+  services/          → un archivo por dominio
+  types/             → interfaces por dominio + api-response.ts, pagination.ts
+  utils/             → ucfirst, sleep, formatDateToInput
 ```
 
-## Estado del proyecto
+Módulos: `auth`, `products`, `movements`, `users`, `third-party`, `product-category`.
 
-Fase temprana de maquetación UI. Placeholders sin implementar:
-- `src/services/productService.ts`
-- `src/types/product.ts`
-- `src/modules/products/components/ProductForm.tsx`
-- `src/modules/products/components/ProductTable.tsx`
+## Enrutamiento y auth
 
-## Skill disponible
+- `BrowserRouter` en `main.tsx`; rutas en `App.tsx`.
+- `AuthGuard` protege las rutas admin (envueltas en `LayoutAdmin`); `GuestGuard` protege `/login`.
+- Patrón de rutas: `/{module}`, `/{module}/create`, `/{module}/:id/edit` (+ `movements/:id/view`). `/` redirige a `/products`.
+- Sidebar usa `<NavLink>` con callback `isActive`; navegación inline usa `<Link>`.
+- `LayoutAdmin` usa `useLayoutContext().maxWidth` para el ancho del contenido (las páginas lo ajustan con `setMaxWidth`).
 
-`fill-basic-component` — scaffolding rápido de componentes funcionales sin props.
+## Formularios
+
+- `react-hook-form` con `useForm`; usar la opción `values` (no `defaultValues`) para que re-renderice con datos asíncronos.
+- Antes del submit, convertir strings vacíos a `null` para que el back los interprete como "sin valor".
+- `ToggleField` (`src/components/ui/ToggleField.tsx`) para checkboxes.
+- Las páginas envuelven el form y manejan el submit (crear/editar) con `useNavigate`.
+
+## Convenciones
+
+- Comentarios y textos de UI en español; identificadores en inglés.
+- Skill `load-convention-files` → archivos de referencia para interfaces, servicios y formularios.
+- Reglas globales en `~\.config\opencode\rules.md` (cargadas por la skill `load-rules`).
+
+## Skills del proyecto
+
+`docs-products`, `enumerate-modifications`, `execute-plan-point`, `fill-basic-component`, `load-convention-files`, `load-rules`, `read-files-constraints`.
 
 ## Notas
 
-- `opencode.json` y `maquetas/` están en `.gitignore`
+- `.gitignore` excluye: `opencode.json`, `maquetas/`, `otros/`, `.opencode/`
+- `opencode.json` configura el MCP `mcp-obsidian` apuntando al vault de documentación de dexa (la skill `docs-products` lee la nota `Modulos/Productos/Productos.md`)
 - No hay Prettier, no hay CI
-- CSS Modules disponibles (`Layout.module.css`) pero sin uso activo
 
 ## Context7 (consulta de documentación)
 
-- Usa `context7` para consultar la documentación de React.
-- El id de la libreria de react es `/reactjs/react.dev`
-- El id de la libreria de Reack Hook Form es `/react-hook-form/react-hook-form`
-- El id de la libreria de Daisy UI es `/websites/daisyui`
+- React: `/reactjs/react.dev`
+- React Hook Form: `/react-hook-form/react-hook-form`
+- DaisyUI: `/websites/daisyui`
