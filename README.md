@@ -26,6 +26,8 @@
 
 </div>
 
+<br>
+
 ### Capturas de pantalla
 
 #### Login
