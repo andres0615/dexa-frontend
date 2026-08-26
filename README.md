@@ -1,3 +1,11 @@
+<div align="center">
+
+<p align="center">
+    <img src="docs/logotipo/logotipo-500.png" alt="Dexa" width="250" title="Dexa" />
+</p>
+
+</div>
+
 **Dexa** es un sistema de gestión de inventario (kardex) con frontend en **React + TypeScript** y backend **API REST en Laravel**.
 
 ### Funcionalidades
